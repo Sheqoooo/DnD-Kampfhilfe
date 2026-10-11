@@ -234,3 +234,5 @@ html[data-theme=dark] .reorder-controls span{color:#9bb28a}
 .selection-actions button[aria-pressed=true]{background:#bd9d5840;border-color:#b49a55}
 .selection-actions small{margin-left:auto;opacity:.7;font-size:10px}
 .selection-actions button:disabled{opacity:.4;cursor:default}
+
+#map #shapes>.selected-shape .door-leaf{stroke:#b49a55;stroke-width:7}html[data-theme=dark] .door-leaf{stroke:#d1a26b}#map [data-door]{cursor:pointer}

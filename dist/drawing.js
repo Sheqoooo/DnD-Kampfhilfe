@@ -127,7 +127,7 @@ export function transformSelection(shapes,index,point){
  const sx=b.w?w/b.w:1,sy=b.h?h/b.h:1,x=b.w?Math.min(p.x,anchor.x):b.x,y=b.h?Math.min(p.y,anchor.y):b.y;
  const map=q=>({x:x+(q.x-b.x)*sx,y:y+(q.y-b.y)*sy});
  const next=shapes.map(sh=>{const out=structuredClone(sh);if(out.rings)out.rings=out.rings.map(r=>r.map(map));else if(out.points)out.points=out.points.map(map);else{Object.assign(out,map(out));out.w*=sx;out.h*=sy;}return out;});
- if(next.some(sh=>sh.w!==undefined&&(sh.w<1||sh.h<1)))return shapes;
+ if(next.some(sh=>sh.w!==undefined&&(sh.w<1||sh.h<1)||sh.type==='door'&&dist(...sh.points)<1))return shapes;
  return next;
 }
 export function moveSelection(shapes,dx,dy){
@@ -138,4 +138,19 @@ export function moveSelection(shapes,dx,dy){
 export function shapesInBox(shapes,a,b){
  const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),right=Math.max(a.x,b.x),bottom=Math.max(a.y,b.y);
  return shapes.filter(s=>{const r=shapeBounds(s);return r.x>=x&&r.y>=y&&r.x+r.w<=right&&r.y+r.h<=bottom;}).map(s=>s.id);
+}
+
+export function placeDoor(point,shapes,{length=50,tolerance=30,grid=true}={}){
+ let best=null,nearest=tolerance;
+ for(const shape of shapes){if(shape.type==='door')continue;const rings=roomRings(shape),segments=rings?edges(rings):shape.points?.slice(1).map((b,i)=>({a:shape.points[i],b}))||[];
+ for(const edge of segments){const q=project(point,edge.a,edge.b),distance=dist(point,q),size=dist(edge.a,edge.b);if(distance>=nearest||size<1)continue;best={edge,q,size,shape};nearest=distance;}}
+ if(!best)return null;
+ const {edge,size,shape}=best,ux=(edge.b.x-edge.a.x)/size,uy=(edge.b.y-edge.a.y)/size;
+ const curved=shape.type==='ellipse'||shape.type==='room'&&size<length;
+ const width=curved?length:Math.min(length,size);
+ let offset=dist(edge.a,best.q);if(grid&&!curved)offset=Math.round(offset/25)*25;
+ if(!curved)offset=Math.max(width/2,Math.min(size-width/2,offset));
+ const center=lerp(edge.a,edge.b,offset/size),points=[{x:center.x-ux*width/2,y:center.y-uy*width/2},{x:center.x+ux*width/2,y:center.y+uy*width/2}];
+ if(points.some(p=>p.x<0||p.x>1000||p.y<0||p.y>700))return null;
+ return{type:'door',points,open:false};
 }
