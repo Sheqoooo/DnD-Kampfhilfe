@@ -70,3 +70,5 @@ main{padding-top:clamp(120px,17vh,190px)}
 .page-footer{color:#3a6144;background:#fffdf0dc;border-radius:10px;padding:15px 18px;margin-top:18px;margin-bottom:22px}
 @media(max-width:720px){main{padding-top:120px}.party-panel{padding:17px}.party-heading{align-items:flex-start;gap:10px}.party-heading h2{font-size:20px}.party-heading p{max-width:180px;line-height:1.5}.primary.compact{font-size:10px;padding:10px}.character-list{display:flex;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:5px}.hero-card{min-width:230px;scroll-snap-align:start}.party-empty{min-width:230px}.encounter-heading{padding:16px}.encounter-title{font-size:24px}.file-actions .text-button{padding:7px}.page-footer{font-size:9px}.party-heading .eyebrow{font-size:8px;letter-spacing:1.3px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+.character-actions{display:flex;justify-content:space-between;gap:12px;margin-top:14px}.character-actions button:last-child{color:#b48070}
