@@ -1,5 +1,5 @@
 import{validState}from'../dist/core.js';
-import test from 'node:test';import assert from 'node:assert/strict';import{integrateShape,snapDrawingPoint,roomRings,unionRooms,translateShape}from'../dist/drawing.js';
+import test from 'node:test';import assert from 'node:assert/strict';import{integrateShape,snapDrawingPoint,roomRings,unionRooms,translateShape,reshapeShape}from'../dist/drawing.js';
 const rect=(id,x,y,w,h)=>({id,type:'rect',x,y,w,h});
 const area=s=>Math.abs(roomRings(s).reduce((total,r)=>total+r.reduce((n,p,i)=>{const q=r[(i+1)%r.length];return n+p.x*q.y-p.y*q.x;},0)/2,0));
 test('snaps raw wall endpoints to existing endpoints and edges ahead of grid',()=>{assert.deepEqual(snapDrawingPoint({x:113,y:105},[{type:'wall',points:[{x:100,y:100},{x:300,y:100}]}],true),{x:100,y:100,attached:true});const p=snapDrawingPoint({x:189,y:110},[rect('r',100,100,200,100)],false);assert.equal(p.y,100);assert.equal(p.x,189);});
@@ -14,3 +14,32 @@ test('switching auto-connect off keeps overlapping shapes independent',()=>{asse
 test('moving rooms preserves shape and clamps the whole room to the board',()=>{const moved=translateShape(rect('a',900,600,100,100),100,100);assert.equal(moved.x,900);assert.equal(moved.y,600);const irregular=unionRooms([rect('a',100,100,100,100),rect('b',150,150,100,100)]);const shift=translateShape(irregular,-200,-200);assert.equal(Math.min(...shift.rings.flat().map(p=>p.x)),0);assert.equal(area(shift),area(irregular));});
 
 test('merged rooms survive JSON save validation',()=>{const merged=integrateShape([rect('a',100,100,200,200)],rect('b',250,250,200,200)).shapes[0];const state={version:1,title:'Test',round:1,active:null,people:[],shapes:[merged]};assert.equal(validState(JSON.parse(JSON.stringify(state))),true);assert.equal(validState({...state,shapes:[{id:'bad',type:'room',rings:[[{x:-1,y:0},{x:10,y:0},{x:0,y:10}]]}]}),false);});
+
+test('interior rooms survive within buildings and remain separate on editing',()=>{
+ const building=rect('building',100,100,300,300),inside={...rect('bedroom',100,100,150,150),interior:true};
+ const result=integrateShape([building],inside);
+ assert.equal(result.shapes.length,2);assert.deepEqual(result.shapes[0],building);
+ const edited=reshapeShape(inside,2,{x:300,y:300});
+ assert.equal(edited.interior,true);
+ assert.equal(integrateShape([building],edited).shapes.length,2);
+ const moved=translateShape(inside,50,50);
+ assert.equal(moved.interior,true);
+ assert.equal(integrateShape([building],moved).shapes.length,2);
+ assert.equal(validState({version:1,title:'Rooms',round:1,active:null,people:[],shapes:JSON.parse(JSON.stringify(result.shapes))}),true);
+});
+test('an extension merges with the building without consuming its interior rooms',()=>{
+ const building=rect('building',100,100,200,200),bedroom={...rect('bedroom',100,100,100,100),interior:true};
+ const result=integrateShape([building,bedroom],rect('extension',300,100,100,200));
+ assert.equal(result.merged,1);assert.equal(result.shapes.length,2);
+ assert.deepEqual(result.shapes.find(s=>s.id==='bedroom'),bedroom);
+ assert.equal(area(result.shapes.find(s=>s.id==='extension')),60000);
+});
+test('closed interior wall loops become rooms without dissolving into the building',()=>{
+ const building=rect('building',100,100,300,300);
+ const points=[{x:150,y:150},{x:250,y:150},{x:250,y:250},{x:150,y:250}];
+ const walls=points.slice(0,3).map((p,i)=>({id:'w'+i,type:'wall',interior:true,points:[p,points[i+1]]}));
+ const result=integrateShape([building,...walls],{id:'last',type:'wall',interior:true,points:[points[3],points[0]]});
+ assert.equal(result.closed,true);assert.equal(result.shapes.length,2);
+ assert.equal(result.shapes.find(s=>s.id==='last').interior,true);
+ assert.equal(area(result.shapes.find(s=>s.id==='last')),10000);
+});

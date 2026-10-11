@@ -67,27 +67,27 @@ export function unionRooms(shapes){
 }
 function mergeConnected(shapes,newRoom){
  let current=newRoom,removed=[],rest=[...shapes],changed=true;
- while(changed){changed=false;for(let i=0;i<rest.length;i++){const r=roomRings(rest[i]);if(!r||!overlap(roomRings(current),r))continue;
+ while(changed){changed=false;for(let i=0;i<rest.length;i++){const r=roomRings(rest[i]);if(rest[i].interior||!r||!overlap(roomRings(current),r))continue;
  const merged=unionRooms([current,rest[i]]);current={...merged,id:newRoom.id};removed.push(rest[i]);rest.splice(i,1);changed=true;break;}}
  return{shapes:[...rest,current],merged:removed.length};
 }
 function closeWalls(shapes,newWall,idFactory){
  const walls=shapes.filter(s=>s.type==='wall'&&s.points.length===2),others=shapes.filter(s=>!walls.includes(s)),split=[];
  for(const w of walls){const cuts=[w.points[0],w.points[1]];for(const p of newWall.points){const q=project(p,...w.points);if(dist(p,q)<.001&&dist(p,w.points[0])>.001&&dist(p,w.points[1])>.001)cuts.push({...p});}
- cuts.sort((a,b)=>dist(a,w.points[0])-dist(b,w.points[0]));for(let i=1;i<cuts.length;i++)if(dist(cuts[i-1],cuts[i])>.001)split.push({id:i===1?w.id:idFactory(),type:'wall',points:[cuts[i-1],cuts[i]]});}
+ cuts.sort((a,b)=>dist(a,w.points[0])-dist(b,w.points[0]));for(let i=1;i<cuts.length;i++)if(dist(cuts[i-1],cuts[i])>.001)split.push({...w,id:i===1?w.id:idFactory(),type:'wall',points:[cuts[i-1],cuts[i]]});}
  const [start,end]=newWall.points;
  if(split.some(w=>(dist(w.points[0],start)<.001&&dist(w.points[1],end)<.001)||(dist(w.points[1],start)<.001&&dist(w.points[0],end)<.001)))return{shapes:[...others,...split],closed:false,duplicate:true};
  const queue=[{p:start,points:[start],used:[]}],visited=new Set([key(start)]);let found=null;
  while(queue.length){const item=queue.shift();if(dist(item.p,end)<.001){found=item;break;}
  for(const w of split){let next=dist(w.points[0],item.p)<.001?w.points[1]:dist(w.points[1],item.p)<.001?w.points[0]:null;if(!next||visited.has(key(next)))continue;visited.add(key(next));queue.push({p:next,points:[...item.points,next],used:[...item.used,w.id]});}}
  if(found&&found.points.length>=3){const area=Math.abs(found.points.reduce((s,p,i)=>s+cross(p,found.points[(i+1)%found.points.length]),0))/2;
- if(area>20){const room={id:newWall.id,type:'room',rings:[found.points]};return{shapes:[...others,...split.filter(w=>!found.used.includes(w.id))],room,closed:true};}}
+ if(area>20){const room={id:newWall.id,type:'room',rings:[found.points],...(newWall.interior?{interior:true}:{})};return{shapes:[...others,...split.filter(w=>!found.used.includes(w.id))],room,closed:true};}}
  return{shapes:[...others,...split,newWall],closed:false};
 }
 export function integrateShape(shapes,shape,{connect=true,idFactory=()=>crypto.randomUUID()}={}){
- if(!connect)return{shapes:[...shapes,shape],merged:0,closed:false};
+ if(!connect||shape.interior&&roomRings(shape))return{shapes:[...shapes,shape],merged:0,closed:false};
  if(roomRings(shape))return{...mergeConnected(shapes,shape),closed:false};
- if(shape.type==='wall'&&shape.points.length===2){const wall=closeWalls(shapes,shape,idFactory);if(wall.room)return{...mergeConnected(wall.shapes,wall.room),closed:true};return{...wall,merged:0};}
+ if(shape.type==='wall'&&shape.points.length===2){const wall=closeWalls(shapes,shape,idFactory);if(wall.room){if(wall.room.interior)return{shapes:[...wall.shapes,wall.room],merged:0,closed:true};return{...mergeConnected(wall.shapes,wall.room),closed:true};}return{...wall,merged:0};}
  return{shapes:[...shapes,shape],merged:0,closed:false};
 }
 
