@@ -1,32 +1,25 @@
-# Initiative — Dein Kampftisch
+# Initiative — DnD-Kampfhilfe
 
-Eine deutschsprachige, browserbasierte Hilfe für spontane DnD-Kämpfe.
+Deutschsprachiger Kampftisch mit illustriertem Anime-Fantasy-Hintergrund.
 
-## Funktionen
+## Spieler und Kämpfe
 
-- Helden und Gegner mit Namen, HP und Initiative hinzufügen; mehrere Gegner auf einmal.
-- Initiative absteigend sortieren, Runden und aktive Figur verfolgen; Gleichstände behalten Einfügereihenfolge.
-- Schaden und Heilung mit frei wählbarem Betrag. Figuren bei 0 HP bleiben für Todesrettungswürfe etc. in der Zugfolge.
-- SVG-Kampffeld mit Raster, geraden Wänden, Rechtecken, Ovalen und Freihand-Formerkennung.
-- Figuren verschieben; Tastatur-Pfeile bewegen fokussierte Figuren.
-- Rückgängig für die letzten 60 Änderungen, lokale Speicherung, JSON-Export und validierter Import.
+Spielercharaktere stehen prominent über dem Kampftisch und werden dauerhaft mit HP, maximalen HP, Klasse, Level, Rüstungsklasse, Initiative-Bonus, Zuständen und Notizen gespeichert. HP-Änderungen im aktiven Kampf aktualisieren den Charakter. Ein neuer Kampf übernimmt ausgewählte Spieler mit ihren aktuellen Werten. Über den Kampfverlauf lassen sich frühere Kämpfe mit ihrer damaligen Karte, HP, Runde und Zugfolge wieder öffnen. Das Öffnen eines alten Kampfes verändert den aktuellen Charakterstand nicht.
 
-## Lokal starten
+Bestehende Browserdaten werden automatisch aus der ersten Version übernommen. Alle Daten liegen ausschließlich im Browser; es gibt keine Geräte-Synchronisation. Sichern exportiert Spieler und den gesamten Verlauf. Laden akzeptiert vollständige Sicherungen und alte einzelne Kampfsicherungen.
 
-`python3 -m http.server 4173 --bind 127.0.0.1 --directory dist`
+## Zeichnen und Initiative
 
-Anschließend `http://127.0.0.1:4173` im Browser öffnen.
+Helden und Gegner hinzufügen, HP verändern, Initiative sortieren, Runden weiterschalten, Rückgängig. Raster mit verschiebbaren Figuren; Freihandlinien werden vereinfacht, geschlossene Rechtecke und Ovale zu sauberen Räumen.
 
-## Tests
+## Starten und testen
 
-`node --test tests/core.test.js`
+Statische App ohne Build oder JavaScript-Abhängigkeiten. Für lokale Nutzung aus dem Repository: `python3 -m http.server 4173 --bind 127.0.0.1 --directory dist` und dann http://127.0.0.1:4173 öffnen.
 
-Kein Build und keine JavaScript-Abhängigkeiten erforderlich. `dist/` kann von jedem statischen Webhost bereitgestellt werden. `.openai/hosting.json` enthält die Sites-Projektzuordnung; diese beim Umzug zu einem anderen Anbieter nicht übernehmen.
+Tests: `node --test tests/*.test.js`. Die GitHub-Pages-Veröffentlichung prüft die Tests und stellt die App sowohl an der Projektwurzel als auch unter /dist/ bereit.
 
-## Daten und Grenzen
+## Assets
 
-Alle Kampf- und Kartendaten liegen im localStorage des jeweiligen Browsers und der jeweiligen Website-Adresse. Keine geräteübergreifende Synchronisierung, keine Mehrspielerfunktion. Mit „Sichern“ regelmäßig exportieren; über „Laden“ lassen sich Daten auch von der lokalen Vorschau zur veröffentlichten App übertragen. Browserdatenlöschung entfernt lokale Kämpfe. Rückgängig-Verlauf endet beim Neuladen.
+`dist/adventure-world.png`: eigenes generiertes Anime-Fantasy-Landschaftsbild mit sonniger Wiese, Bergen, Burgen und Drachen. Erstellt mit dem eingebauten Imagegen-Werkzeug. Prompt: Original anime fantasy background painting, bright daytime meadow with flowers, distant medieval castles, layered blue-green mountains, clouds and two flying dragons; hand-painted animation background, no text or UI.
 
-Freihand-Erkennung arbeitet geometrisch, ohne KI-Dienst: einfache annähernd geschlossene Rechtecke/Ovale werden zu Räumen, offene Linien werden vereinfacht und optional am Raster ausgerichtet. Keine Erkennung komplexer Grundrisse oder künstlerische Kartengenerierung.
-
-Schriften werden aktuell von Google Fonts geladen; bei fehlender Verbindung werden Systemschriften verwendet.
+Die Dateien im Ordner outputs sind ältere Exporte der ersten App-Version. Aktueller App-Quellcode befindet sich in dist.

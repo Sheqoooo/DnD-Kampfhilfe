@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Test combat and campaign logic
+        run: node --test tests/*.test.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare stable app URLs
