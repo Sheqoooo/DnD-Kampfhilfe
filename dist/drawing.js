@@ -99,3 +99,15 @@ export function translateShape(shape,dx,dy){
  else if(s.points)s.points=s.points.map(p=>({x:p.x+dx,y:p.y+dy}));
  else{s.x+=dx;s.y+=dy;}return s;
 }
+
+export function shapeBounds(shape){const points=roomRings(shape)?.flat()??shape.points;return{x:Math.min(...points.map(p=>p.x)),y:Math.min(...points.map(p=>p.y)),w:Math.max(...points.map(p=>p.x))-Math.min(...points.map(p=>p.x)),h:Math.max(...points.map(p=>p.y))-Math.min(...points.map(p=>p.y))};}
+export function shapeHandles(shape){if(shape.points)return shape.points;const b=shapeBounds(shape);return[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h}];}
+export function reshapeShape(shape,index,point){
+ const s=structuredClone(shape),p={x:Math.max(0,Math.min(1000,point.x)),y:Math.max(0,Math.min(700,point.y))};
+ if(s.points){if(!s.points[index])return s;if(s.points.length===2&&dist(p,s.points[1-index])<8)return s;s.points[index]=p;return s;}
+ const b=shapeBounds(s),opposite=shapeHandles(s)[(index+2)%4];if(!opposite)return s;
+ if(Math.abs(p.x-opposite.x)<10||Math.abs(p.y-opposite.y)<10)return s;
+ const next={x:Math.min(p.x,opposite.x),y:Math.min(p.y,opposite.y),w:Math.abs(p.x-opposite.x),h:Math.abs(p.y-opposite.y)};
+ if(s.rings)s.rings=s.rings.map(r=>r.map(q=>({x:next.x+(q.x-b.x)/b.w*next.w,y:next.y+(q.y-b.y)/b.h*next.h})));
+ else Object.assign(s,next);return s;
+}
