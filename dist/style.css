@@ -228,3 +228,9 @@ html[data-theme=dark] .order-status{background:#374e33;border-color:#4e6640;colo
 html[data-theme=dark] .reorder-controls button{background:#435b3b;border-color:#60754c;color:#bdd0a6}
 html[data-theme=dark] .reorder-controls span{color:#9bb28a}
 @media(max-width:720px){.map-history-actions{top:10px;left:10px;padding:3px}.map-history-actions button{width:28px;height:28px}.order-status{font-size:9px}}
+
+.selection-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 20px;background:var(--surface);font-size:12px}
+.selection-actions .secondary{padding:7px 10px;font-size:12px}
+.selection-actions button[aria-pressed=true]{background:#bd9d5840;border-color:#b49a55}
+.selection-actions small{margin-left:auto;opacity:.7;font-size:10px}
+.selection-actions button:disabled{opacity:.4;cursor:default}

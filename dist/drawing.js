@@ -111,3 +111,31 @@ export function reshapeShape(shape,index,point){
  if(s.rings)s.rings=s.rings.map(r=>r.map(q=>({x:next.x+(q.x-b.x)/b.w*next.w,y:next.y+(q.y-b.y)/b.h*next.h})));
  else Object.assign(s,next);return s;
 }
+
+export function selectionBounds(shapes){
+ const boxes=shapes.map(shapeBounds);if(!boxes.length)return null;
+ const x=Math.min(...boxes.map(b=>b.x)),y=Math.min(...boxes.map(b=>b.y));
+ return{x,y,w:Math.max(...boxes.map(b=>b.x+b.w))-x,h:Math.max(...boxes.map(b=>b.y+b.h))-y};
+}
+export function transformSelection(shapes,index,point){
+ const b=selectionBounds(shapes);if(!b)return shapes;
+ const corners=[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h}],anchor=corners[(index+2)%4];
+ if(!anchor)return shapes;
+ const p={x:Math.max(0,Math.min(1000,point.x)),y:Math.max(0,Math.min(700,point.y))};
+ const w=b.w?Math.abs(p.x-anchor.x):0,h=b.h?Math.abs(p.y-anchor.y):0;
+ if(b.w&&w<10||b.h&&h<10)return shapes;
+ const sx=b.w?w/b.w:1,sy=b.h?h/b.h:1,x=b.w?Math.min(p.x,anchor.x):b.x,y=b.h?Math.min(p.y,anchor.y):b.y;
+ const map=q=>({x:x+(q.x-b.x)*sx,y:y+(q.y-b.y)*sy});
+ const next=shapes.map(sh=>{const out=structuredClone(sh);if(out.rings)out.rings=out.rings.map(r=>r.map(map));else if(out.points)out.points=out.points.map(map);else{Object.assign(out,map(out));out.w*=sx;out.h*=sy;}return out;});
+ if(next.some(sh=>sh.w!==undefined&&(sh.w<1||sh.h<1)))return shapes;
+ return next;
+}
+export function moveSelection(shapes,dx,dy){
+ const b=selectionBounds(shapes);if(!b)return shapes;
+ dx=Math.max(-b.x,Math.min(1000-b.x-b.w,dx));dy=Math.max(-b.y,Math.min(700-b.y-b.h,dy));
+ return shapes.map(s=>translateShape(s,dx,dy));
+}
+export function shapesInBox(shapes,a,b){
+ const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),right=Math.max(a.x,b.x),bottom=Math.max(a.y,b.y);
+ return shapes.filter(s=>{const r=shapeBounds(s);return r.x>=x&&r.y>=y&&r.x+r.w<=right&&r.y+r.h<=bottom;}).map(s=>s.id);
+}
