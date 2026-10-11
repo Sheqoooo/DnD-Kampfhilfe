@@ -72,3 +72,29 @@ main{padding-top:clamp(120px,17vh,190px)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
 
 .character-actions{display:flex;justify-content:space-between;gap:12px;margin-top:14px}.character-actions button:last-child{color:#b48070}
+
+/* The adventure world is also the interface */
+.topbar{background:linear-gradient(180deg,#eaf6ffed,#eaf6ffb0);border-bottom:1px solid #ffffff70;box-shadow:0 2px 18px #588aa310;backdrop-filter:blur(5px)}
+main{padding-top:clamp(105px,14vh,155px)}
+.party-panel{background:none;border:0;box-shadow:none;backdrop-filter:none;padding:0}
+.party-heading{background:linear-gradient(90deg,#fafff0ec,#f5ffe8bd 55%,#edf7ff33);border:1px solid #ffffffa6;border-radius:14px;padding:17px 22px;margin-bottom:14px;box-shadow:0 3px 15px #34563014;backdrop-filter:blur(3px)}
+.party-heading h2{font-family:Georgia,serif;color:#294f3c}.party-heading p{color:#628253}
+.character-list{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.hero-card{position:relative;overflow:hidden;padding:17px;background:linear-gradient(145deg,#fcfff4f5,#ecf5dbea);border:1px solid #fffde5;border-bottom:3px solid #83a86a;border-radius:16px 16px 10px 10px;box-shadow:0 7px 20px #29452538;backdrop-filter:blur(4px)}
+.hero-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 95% 0,#b9d99245,transparent 50%)}
+.hero-card:after{content:"";position:absolute;bottom:-1px;right:9px;width:85px;height:13px;pointer-events:none;background:#7fa567;clip-path:polygon(0 100%,3% 45%,9% 100%,14% 15%,20% 100%,28% 40%,34% 100%,40% 0,46% 100%,54% 35%,61% 100%,69% 15%,73% 100%,83% 30%,90% 100%,95% 45%,100% 100%)}
+.hero-avatar{background:linear-gradient(135deg,#d2e8b9,#eef5d4);border:1px solid #aeca91;box-shadow:inset 0 0 0 3px #fff8;transform:rotate(-4deg);font-family:Georgia,serif;font-size:18px;border-radius:50%}
+.hero-edit{background:#f4f9e1;border-color:#c9dab1}.hero-join{background:#d9e9c3;border-color:#bdd1a2;color:#537845}
+.hero-join:disabled{background:#edf4daf0;color:#7a9764}.hero-hp-track{background:#d9e7c4}.hero-hp-track>span{background:linear-gradient(90deg,#78a869,#a6c879)}
+.encounter-heading{background:linear-gradient(110deg,#fafff0ee,#edf7e1c9 65%,#e6f2efa6);backdrop-filter:blur(4px);border:1px solid #fffde4;border-bottom:3px solid #a2b984;border-radius:12px;box-shadow:0 6px 22px #304b2926}
+.encounter-title{color:#315238}.chronicle{background:#f8fdebdf;border:1px solid #e0ecc9;box-shadow:0 3px 14px #3e58231a}
+.initiative-panel{background:#f6fae9;border:1px solid #d1deba;box-shadow:0 10px 28px #253a272b;border-bottom:4px solid #859f6d}
+.panel-heading{background:linear-gradient(130deg,#eef5d8,#dbe9c3);border-bottom:1px solid #c6d8ac}
+.map-panel{background:#e7efcf;border:2px solid #8fa66d;box-shadow:0 12px 34px #29432238;border-radius:15px}
+.map-header{background:linear-gradient(100deg,#e9f2d3,#dbe8bc);border-bottom:1px solid #a8bd88}.map-header h2{color:#405d31}
+.map-stage{background:#cfe3ad;border-color:#a2b985}
+.map-stage:before,.map-stage:after{content:"";position:absolute;z-index:1;pointer-events:none;width:120px;height:85px;opacity:.75;background:radial-gradient(ellipse at 15% 90%,#6d9a55 0 13%,transparent 14%),radial-gradient(ellipse at 45% 98%,#92b771 0 19%,transparent 20%),radial-gradient(ellipse at 75% 100%,#739e54 0 15%,transparent 16%),radial-gradient(ellipse at 90% 70%,#adca7d 0 11%,transparent 12%)}
+.map-stage:before{left:0;bottom:0}.map-stage:after{right:0;top:0;transform:rotate(180deg)}
+.drawing-toolbar{z-index:3;background:#fafdebeF;border:1px solid #a5be86;box-shadow:0 4px 18px #38592d29}.drawing-toolbar button.selected{background:#608952}.map-corner,.map-key{z-index:2}.map-footer{background:#e5efcf;border-top:1px solid #b1c694;color:#718758}
+.page-footer{background:#eff7ddce;backdrop-filter:blur(3px);color:#4b7142;border:1px solid #e6f2d0}
+@media(max-width:720px){main{padding-top:110px}.party-panel{padding:0}.party-heading{padding:14px}.hero-card{min-width:238px}.encounter-heading{padding:16px}.party-heading h2{font-size:20px}}
