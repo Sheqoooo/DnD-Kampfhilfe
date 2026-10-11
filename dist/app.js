@@ -93,4 +93,19 @@ $('#encounter-list').onclick=e=>{
  persist();render();toast('Kampf wieder geöffnet · Runde '+state.round);
 };
 
+
+function applyTheme(mode){
+ document.documentElement.dataset.theme=mode;
+ const dark=mode==='dark',button=$('#theme-toggle');
+ button.textContent=dark?'☀':'☾';button.setAttribute('aria-pressed',String(dark));
+ button.setAttribute('aria-label',dark?'Light Mode einschalten':'Dark Mode einschalten');
+ button.title=dark?'Zum Tagmodus wechseln':'Zum Nachtmodus wechseln';
+ document.querySelector('meta[name="theme-color"]').content=dark?'#202e42':'#d4eafb';
+}
+$('#theme-toggle').onclick=()=>{
+ const mode=document.documentElement.dataset.theme==='dark'?'light':'dark';
+ applyTheme(mode);try{localStorage.setItem('mini-mind.theme',mode);}catch{}
+};
+applyTheme(document.documentElement.dataset.theme||'light');
+
 render();setTool('select');if(!storageBroken)persist();if(storageBroken)toast('Gespeicherter Stand konnte nicht geladen werden. Beispiel geöffnet.');
