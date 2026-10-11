@@ -1,5 +1,5 @@
 
-import {clamp,validState} from './core.js';
+import {clamp,validState} from './core.js?v=smart-draw-1';
 export const CAMPAIGN_KEY='initiative.campaign.v2';
 export const HERO_FIELDS=['name','hp','max','ac','initMod','characterClass','level','notes','conditions'];
 export function characterFrom(p,id){return{id,name:p.name,hp:p.hp,max:p.max,ac:p.ac??10,initMod:p.initMod??0,characterClass:p.characterClass??'',level:p.level??1,notes:p.notes??'',conditions:p.conditions??''};}
