@@ -100,3 +100,32 @@ main{padding-top:clamp(105px,14vh,155px)}
 @media(max-width:720px){main{padding-top:110px}.party-panel{padding:0}.party-heading{padding:14px}.hero-card{min-width:238px}.encounter-heading{padding:16px}.party-heading h2{font-size:20px}}
 
 .brand{gap:11px;letter-spacing:0}.brand-name{font:600 21px/1 Georgia,serif;letter-spacing:-.3px;white-space:nowrap}.brand-name>span{display:block;font-size:14px;letter-spacing:2.5px;margin-top:5px;color:#628567}.brand-mark{flex-shrink:0}.topbar{gap:24px}@media(max-width:720px){.brand-name{font-size:18px}.brand-name>span{font-size:12px;letter-spacing:2px;margin-top:4px}.header-actions{gap:8px}.topbar{gap:10px}.brand{gap:8px}.topbar .secondary{font-size:10px;padding:9px 8px}}
+
+/* Landscape composed into functional surfaces */
+body{background:radial-gradient(ellipse at 85% 0,#dcedf1,transparent 60%),#edf2df;background-attachment:scroll}
+body:before{display:none}
+.topbar{background:#f9fbee;border-bottom:1px solid #c7d7b3;backdrop-filter:none;box-shadow:0 3px 15px #45623e0a}
+main{padding-top:24px}
+.party-panel{position:relative;padding:20px 22px 29px;border:1px solid #c4d6a9;border-radius:17px;overflow:hidden;background:linear-gradient(180deg,#eef6e6,#e8f0d8);box-shadow:0 5px 20px #56733e12;isolation:isolate}
+.party-panel:before{content:"";position:absolute;inset:62% 0 0;z-index:-1;background:linear-gradient(180deg,#e8f0d8,transparent 40%),url('./adventure-world.png') center 95%/cover no-repeat;opacity:.7}
+.party-panel:after{content:"";position:absolute;left:0;right:0;bottom:0;height:15px;background:#89a568;clip-path:polygon(0 100%,0 40%,2% 80%,3% 20%,4% 90%,6% 35%,8% 100%,10% 45%,12% 85%,14% 25%,17% 100%,21% 50%,25% 90%,30% 35%,34% 100%,39% 45%,42% 90%,48% 25%,54% 100%,60% 40%,65% 90%,71% 20%,76% 100%,81% 35%,85% 95%,90% 25%,93% 100%,97% 35%,100% 70%,100% 100%);pointer-events:none}
+.party-heading{padding:0;background:none;border:0;box-shadow:none;backdrop-filter:none;margin-bottom:16px}
+.party-heading h2{font-size:23px}.party-heading p{color:#7b926c}
+.character-list{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.hero-card{background:linear-gradient(135deg,#fffef2,#eff5de);box-shadow:0 4px 12px #3e5c2d1c;border:1px solid #c3d6a3;border-bottom:3px solid #789961;backdrop-filter:none;padding:14px}
+.hero-card:before{background:radial-gradient(circle at 95% 0,#c6df9c55,transparent 55%)}
+.hero-card:after{height:10px;width:95px;background:#9aba77}
+.hero-hp-track{height:7px}.hero-join{margin-top:11px;padding:8px}
+.encounter-heading{background:none;border:0;border-radius:0;backdrop-filter:none;box-shadow:none;padding:0 3px;margin:22px 0 14px}
+.encounter-title{font-size:28px}.file-actions .text-button{background:#fffef1;border-color:#c9d8b4}
+.chronicle{background:#f9fbed;border-color:#d2dfbf;box-shadow:none;margin-bottom:16px}
+.workspace{gap:18px;align-items:stretch}
+.map-panel{border:2px solid #8ea56d;background:#d6e6bd;box-shadow:0 8px 25px #3c572524}
+.map-header{background:linear-gradient(110deg,#e8f3d6,#e2efd7);min-height:75px;padding:15px 22px}
+.map-stage{background:#d4e7b4;min-height:510px}
+.map-stage:before,.map-stage:after{display:none}
+.field-border{position:absolute;left:0;bottom:0;width:100%;height:38px;z-index:1;pointer-events:none}
+.drawing-toolbar{bottom:20px}.map-key{bottom:47px;left:17px;background:#faffebe0;border:1px solid #c9dcb7;padding:7px 10px;border-radius:8px;color:#526d42}
+.map-corner{background:#faffebd9;border:1px solid #c6d8b2;border-radius:50%;width:50px;height:58px;padding:5px;top:14px;right:15px}
+.map-footer{background:#e3edcf}.page-footer{background:transparent;border:0;backdrop-filter:none;color:#80946c}
+@media(max-width:720px){main{padding-top:18px}.party-panel{padding:16px 15px 25px}.party-heading{padding:0}.party-heading h2{font-size:20px}.party-heading p{max-width:170px}.hero-card{min-width:226px}.encounter-heading{padding:0 2px;margin-top:20px}.encounter-title{font-size:23px}.map-stage{min-height:420px}.map-header{min-height:62px;padding:14px}.field-border{height:28px}.map-key{display:none}.drawing-toolbar{bottom:15px}.map-corner{width:43px;height:51px;right:10px;top:10px}}
