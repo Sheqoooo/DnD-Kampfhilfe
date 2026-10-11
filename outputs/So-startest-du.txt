@@ -1,0 +1,11 @@
+INITIATIVE — DEIN KAMPFTISCH
+
+Initiative-Kampftisch.html herunterladen und mit Chrome, Safari, Edge oder Firefox öffnen. Die Datei enthält die gesamte App und benötigt keinen Server.
+
+Die erste Ansicht enthält einen Beispielkampf. Über „Neuer Kampf“ startest du leer. Mit ＋ ergänzt du Helden und Gegner. Die Initiative wird absteigend sortiert. Mit − und ＋ änderst du HP um den eingetragenen Betrag. „Nächster Zug“ geht weiter.
+
+Kampffeld: ✧ glättet Freihandlinien und erkennt geschlossene Rechtecke und Ovale. ▢ und ◯ zeichnen Räume direkt. ↖ verschiebt Figuren. ⌫ entfernt Formen.
+
+Daten bleiben in diesem Browser. Bei direkt geöffneten HTML-Dateien kann die automatische Speicherung je nach Browser eingeschränkt sein. Deshalb regelmäßig über „Sichern“ eine Kampfsicherung herunterladen. Mit „Laden“ kannst du sie später wieder öffnen, auch auf einem anderen Gerät oder unter einer späteren Online-Adresse. Keine Live-Synchronisierung.
+
+Initiative-Quellcode.zip enthält den bearbeitbaren Quellcode für GitHub oder einen Webhost. Die App ist bislang nicht online veröffentlicht.

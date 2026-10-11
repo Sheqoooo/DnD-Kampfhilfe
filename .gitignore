@@ -1,0 +1,12 @@
+.DS_Store
+node_modules/
+*.tar.gz
+*.tgz
+
+# Local tooling and authentication (never upload)
+work/
+.env
+.env.*
+!.env.example
+# Hosting-provider identity is local configuration
+.openai/
