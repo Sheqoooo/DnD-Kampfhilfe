@@ -236,3 +236,20 @@ html[data-theme=dark] .reorder-controls span{color:#9bb28a}
 .selection-actions button:disabled{opacity:.4;cursor:default}
 
 #map #shapes>.selected-shape .door-leaf{stroke:#b49a55;stroke-width:7}html[data-theme=dark] .door-leaf{stroke:#d1a26b}#map [data-door]{cursor:pointer}
+
+.enemy-library{margin:0 0 20px;padding:14px 18px;border:1px solid #b5c59c;border-radius:18px;background:#e6edce;color:#3f523c}
+.enemy-library summary{cursor:pointer;font-weight:750;font-size:15px}
+.enemy-library summary span{font-size:12px;opacity:.65;margin-left:6px}
+.enemy-library-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
+.enemy-library-header p{flex:1;font-size:12px;margin:0;min-width:200px}
+.enemy-library-header input{width:180px;padding:8px;font-size:12px}
+.enemy-library-header .secondary{font-size:12px;padding:8px 10px}
+.enemy-library-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;max-height:200px;overflow:auto}
+.enemy-template{display:flex;align-items:center;gap:5px;border:1px solid #c2c9a6;border-radius:12px;background:#faf1d9;padding:10px;cursor:grab}
+.enemy-template>div{flex:1;min-width:0}
+.enemy-template strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.enemy-template small{display:block;font-size:10px;opacity:.7;margin-top:4px}
+.enemy-template button{padding:4px 6px;font-size:16px;background:transparent;border:0;color:inherit;cursor:pointer}
+.enemy-template:focus-visible{outline:2px solid #ae9251}
+html[data-theme=dark] .enemy-library{background:#384c36;color:#d8e2cb;border-color:#56704a}
+html[data-theme=dark] .enemy-template{background:#48513b;border-color:#68724e}

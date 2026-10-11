@@ -1,5 +1,5 @@
 
-import {clamp,validState} from './core.js?v=doors-1';
+import {clamp,validState} from './core.js?v=enemies-1';
 export const CAMPAIGN_KEY='initiative.campaign.v2';
 export const HERO_FIELDS=['name','hp','max','ac','initMod','characterClass','level','notes','conditions'];
 export function characterFrom(p,id){return{id,name:p.name,hp:p.hp,max:p.max,ac:p.ac??10,initMod:p.initMod??0,characterClass:p.characterClass??'',level:p.level??1,notes:p.notes??'',conditions:p.conditions??''};}
@@ -8,7 +8,7 @@ export function makeCampaign(encounter,idFactory,now=Date.now()){const s=structu
 export function saveEncounter(campaign,state,now=Date.now()){const i=campaign.encounters.findIndex(e=>e.id===state.id),previous=campaign.encounters[i];const record={...structuredClone(state),createdAt:previous?.createdAt??now,savedAt:now};if(i<0)campaign.encounters.push(record);else campaign.encounters[i]=record;campaign.activeId=state.id;}
 export function syncCharacterChanges(campaign,before,after){for(const p of after.people){if(!p.characterId)continue;const c=campaign.characters.find(x=>x.id===p.characterId),old=before.people.find(x=>x.id===p.id);if(!c||!old)continue;for(const field of HERO_FIELDS)if(p[field]!==old[field]&&p[field]!==undefined)c[field]=p[field];c.hp=clamp(c.hp,0,c.max);}}
 export function addToEncounter(state,c,id,initiative=10){if(state.people.some(p=>p.characterId===c.id))return false;if(state.people.length>=100)throw Error('Maximal 100 Beteiligte');const n=state.people.length;state.people.push({...structuredClone(c),id,characterId:c.id,kind:'ally',init:initiative,x:75+(n%18)*50,y:75+(Math.floor(n/18)%12)*50});return true;}
-export function validCampaign(c){if(!c||c.version!==2||!Array.isArray(c.characters)||c.characters.length>500||!Array.isArray(c.encounters)||c.encounters.length>500)return false;const ids=new Set();for(const p of c.characters){if(!p||typeof p.id!=='string'||ids.has(p.id)||typeof p.name!=='string'||!p.name.trim()||p.name.length>50||!Number.isInteger(p.max)||p.max<1||p.max>9999||!Number.isInteger(p.hp)||p.hp<0||p.hp>p.max||!Number.isInteger(p.ac)||p.ac<0||p.ac>99||!Number.isInteger(p.initMod)||p.initMod<-99||p.initMod>99||!Number.isInteger(p.level)||p.level<1||p.level>20)return false;for(const field of ['notes','conditions','characterClass'])if(typeof p[field]!=='string'||p[field].length>3000)return false;ids.add(p.id);}const encounters=new Set();for(const e of c.encounters){if(!validState(e)||typeof e.id!=='string'||encounters.has(e.id)||!Number.isFinite(e.createdAt)||!Number.isFinite(e.savedAt))return false;encounters.add(e.id);for(const p of e.people)if(p.characterId!==undefined&&typeof p.characterId!=='string')return false;}return encounters.has(c.activeId);}
+export function validCampaign(c){if(!c||c.version!==2||!Array.isArray(c.characters)||c.characters.length>500||!Array.isArray(c.encounters)||c.encounters.length>500)return false;if(c.enemies!==undefined&&(!Array.isArray(c.enemies)||c.enemies.length>500||new Set(c.enemies.map(e=>e?.id)).size!==c.enemies.length||!c.enemies.every(validEnemy)))return false;const ids=new Set();for(const p of c.characters){if(!p||typeof p.id!=='string'||ids.has(p.id)||typeof p.name!=='string'||!p.name.trim()||p.name.length>50||!Number.isInteger(p.max)||p.max<1||p.max>9999||!Number.isInteger(p.hp)||p.hp<0||p.hp>p.max||!Number.isInteger(p.ac)||p.ac<0||p.ac>99||!Number.isInteger(p.initMod)||p.initMod<-99||p.initMod>99||!Number.isInteger(p.level)||p.level<1||p.level>20)return false;for(const field of ['notes','conditions','characterClass'])if(typeof p[field]!=='string'||p[field].length>3000)return false;ids.add(p.id);}const encounters=new Set();for(const e of c.encounters){if(!validState(e)||typeof e.id!=='string'||encounters.has(e.id)||!Number.isFinite(e.createdAt)||!Number.isFinite(e.savedAt))return false;encounters.add(e.id);for(const p of e.people)if(p.characterId!==undefined&&typeof p.characterId!=='string')return false;}return encounters.has(c.activeId);}
 
 export function updateCharacter(campaign,state,id,values){
  const c=campaign.characters.find(x=>x.id===id);if(!c)throw Error('Character missing');
@@ -21,4 +21,23 @@ export function beginEncounter(campaign,title,characterIds,idFactory,now=Date.no
  for(const c of campaign.characters)if(characterIds.includes(c.id))addToEncounter(s,c,idFactory(),10+c.initMod);
  s.active=[...s.people].sort((a,b)=>b.init-a.init)[0]?.id??null;
  saveEncounter(campaign,s,now);return s;
+}
+
+export function validEnemy(e){return !!e&&typeof e.id==='string'&&typeof e.name==='string'&&!!e.name.trim()&&e.name.length<=50&&Number.isInteger(e.max)&&e.max>=1&&e.max<=9999&&Number.isInteger(e.init)&&e.init>=-99&&e.init<=999;}
+export function rememberEnemy(campaign,values,idFactory){
+ campaign.enemies??=[];const name=values.name.trim().slice(0,50),existing=campaign.enemies.find(e=>e.name===name&&e.max===values.max&&e.init===values.init);if(existing)return existing;
+ const enemy={id:idFactory(),name,max:values.max,init:values.init};
+ if(!validEnemy(enemy)||campaign.enemies.length>=500)return null;
+ campaign.enemies.push(enemy);return enemy;
+}
+export function ensureEnemies(campaign,idFactory){
+ if(campaign.enemies!==undefined)return;
+ campaign.enemies=[];
+ for(const battle of campaign.encounters)for(const p of battle.people)if(p.kind==='enemy')rememberEnemy(campaign,{name:p.name.replace(/ \d+$/,''),max:p.max,init:p.init},idFactory);
+}
+export function spawnEnemy(state,enemy,id,point=null){
+ if(!validEnemy(enemy))throw Error('Ungültiger Gegner');
+ if(state.people.length>=100)throw Error('Maximal 100 Beteiligte');
+ const n=state.people.length,p={id,enemyTemplateId:enemy.id,name:enemy.name,kind:'enemy',max:enemy.max,hp:enemy.max,init:enemy.init,x:clamp(point?.x??75+(n%18)*50,25,975),y:clamp(point?.y??75+(Math.floor(n/18)%12)*50,25,675)};
+ state.people.push(p);if(!state.active||state.started===false)state.active=[...state.people].sort((a,b)=>b.init-a.init)[0]?.id??null;state.demo=false;return p;
 }
