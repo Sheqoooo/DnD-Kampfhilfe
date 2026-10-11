@@ -98,3 +98,5 @@ main{padding-top:clamp(105px,14vh,155px)}
 .drawing-toolbar{z-index:3;background:#fafdebeF;border:1px solid #a5be86;box-shadow:0 4px 18px #38592d29}.drawing-toolbar button.selected{background:#608952}.map-corner,.map-key{z-index:2}.map-footer{background:#e5efcf;border-top:1px solid #b1c694;color:#718758}
 .page-footer{background:#eff7ddce;backdrop-filter:blur(3px);color:#4b7142;border:1px solid #e6f2d0}
 @media(max-width:720px){main{padding-top:110px}.party-panel{padding:0}.party-heading{padding:14px}.hero-card{min-width:238px}.encounter-heading{padding:16px}.party-heading h2{font-size:20px}}
+
+.brand{gap:11px;letter-spacing:0}.brand-name{font:600 21px/1 Georgia,serif;letter-spacing:-.3px;white-space:nowrap}.brand-name>span{display:block;font-size:14px;letter-spacing:2.5px;margin-top:5px;color:#628567}.brand-mark{flex-shrink:0}.topbar{gap:24px}@media(max-width:720px){.brand-name{font-size:18px}.brand-name>span{font-size:12px;letter-spacing:2px;margin-top:4px}.header-actions{gap:8px}.topbar{gap:10px}.brand{gap:8px}.topbar .secondary{font-size:10px;padding:9px 8px}}
