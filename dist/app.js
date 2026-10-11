@@ -82,7 +82,7 @@ function openNewEncounter(){
  $('#encounter-dialog').showModal();$('#battle-name').focus();
 }
 $('#encounter-form').onsubmit=e=>{
- e.preventDefault();const ids=[...$('#battle-heroes input:checked')].map(x=>x.value);
+ e.preventDefault();const ids=[...document.querySelectorAll('#battle-heroes input:checked')].map(x=>x.value);
  if(ids.length>100){toast('Wähle höchstens 100 Beteiligte.');return;}
  mutate(()=>{saveEncounter(campaign,state);state=beginEncounter(campaign,$('#battle-name').value,ids,uid);});
  $('#encounter-dialog').close();toast('Neuer Kampf gestartet. Der vorherige bleibt im Verlauf.');
