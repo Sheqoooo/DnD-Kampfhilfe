@@ -96,3 +96,4 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
 .initiative-number strong{display:grid;place-items:center;min-width:32px;height:32px;background:#dcc08b;border:1px solid #99733c;border-radius:5px;font:750 22px system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .combatant.active .initiative-number strong{background:#f5d78b;border-color:#aa772a}.initiative-number small{font-size:8px;margin-top:3px}.reorder-controls button{min-width:44px;min-height:44px}.combatant[draggable=true]{cursor:grab}.combatant input,.combatant button{cursor:auto}.combatant button{cursor:pointer}
 .turn-drag-handle{display:block;color:#735636;font-size:20px;line-height:18px;margin-top:3px;cursor:grab}
+.turn-drag-handle{touch-action:none;user-select:none}

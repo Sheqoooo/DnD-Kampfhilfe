@@ -26,7 +26,7 @@ export function beginEncounter(campaign,title,characterIds,idFactory,now=Date.no
 
 export function validEnemy(e){return !!e&&typeof e.id==='string'&&typeof e.name==='string'&&!!e.name.trim()&&e.name.length<=50&&Number.isInteger(e.max)&&e.max>=1&&e.max<=9999&&Number.isInteger(e.init)&&e.init>=-99&&e.init<=999;}
 export function rememberEnemy(campaign,values,idFactory){
- campaign.enemies??=[];const name=values.name.trim().slice(0,50),existing=campaign.enemies.find(e=>e.name===name&&e.max===values.max&&e.init===values.init);if(existing)return existing;
+ campaign.enemies??=[];const name=values.name.trim().slice(0,50),existing=campaign.enemies.find(e=>e.name===name&&e.max===values.max);if(existing)return existing;
  const enemy={id:idFactory(),name,max:values.max,init:values.init};
  if(!validEnemy(enemy)||campaign.enemies.length>=500)return null;
  campaign.enemies.push(enemy);return enemy;

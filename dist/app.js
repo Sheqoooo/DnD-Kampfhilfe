@@ -268,7 +268,31 @@ function movePerson(id,direction){
  mutate(()=>sortParticipants(id,target.id,direction>0));
  $('[data-person="'+id+'"]')?.focus();
 }
+// The visible handle uses pointer input, including touch; whole-card HTML drag remains available.
+let orderPointer=null;
+$('#combatant-list').addEventListener('pointerdown',e=>{
+ if(e.button!==0||!e.target.closest('.turn-drag-handle'))return;
+ e.preventDefault();const card=e.target.closest('[data-person]');orderPointer={id:card.dataset.person,startY:e.clientY,pointerId:e.pointerId,moved:false,target:null,after:false};
+ $('#combatant-list').setPointerCapture(e.pointerId);
+});
+$('#combatant-list').addEventListener('pointermove',e=>{
+ if(!orderPointer||orderPointer.pointerId!==e.pointerId)return;
+ if(Math.abs(e.clientY-orderPointer.startY)<5&&!orderPointer.moved)return;
+ orderPointer.moved=true;document.querySelector('[data-person="'+orderPointer.id+'"]').classList.add('dragging');
+ document.querySelectorAll('.drop-target').forEach(el=>el.classList.remove('drop-target'));
+ const card=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-person]');
+ orderPointer.target=card&&card.dataset.person!==orderPointer.id?card.dataset.person:null;
+ if(orderPointer.target){card.classList.add('drop-target');orderPointer.after=e.clientY>card.getBoundingClientRect().top+card.getBoundingClientRect().height/2;}
+});
+function finishOrderPointer(e,cancel=false){
+ if(!orderPointer||orderPointer.pointerId!==e.pointerId)return;const pending=orderPointer;orderPointer=null;
+ if(!cancel&&pending.moved&&pending.target){mutate(()=>sortParticipants(pending.id,pending.target,pending.after));toast('Kampfreihenfolge angepasst.');}
+ document.querySelectorAll('.drop-target,.dragging').forEach(el=>el.classList.remove('drop-target','dragging'));
+}
+$('#combatant-list').addEventListener('pointerup',e=>finishOrderPointer(e));
+$('#combatant-list').addEventListener('pointercancel',e=>finishOrderPointer(e,true));
 $('#combatant-list').ondragstart=e=>{
+ if(orderPointer){e.preventDefault();return;}
  const card=e.target.closest('[data-person]');if(!card){e.preventDefault();return;}
  draggedPerson=card.dataset.person;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',draggedPerson);card.classList.add('dragging');
 };
