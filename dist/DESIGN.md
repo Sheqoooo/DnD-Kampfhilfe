@@ -26,3 +26,13 @@ The previous local files are retained under `outputs/before-tabletop-redesign/`.
 Run `npm test` for all existing functional tests and `npm start` for the local app. The current review server uses port 4175; the normal script uses 4173.
 
 Screenshots and disposable fixture backups are in `outputs/design-review/`. The long-list fixture contains 30 characters, 36 enemy templates and 44 combatants, and was reviewed at 1440px, 390px and 320px widths. It is test data, not user campaign data.
+
+## Battlefield view
+
+The interface now uses one tabletop theme; the previous day/night switch and its runtime styles have been removed. Campaign data and storage keys remain unchanged.
+
+`viewport.js` defines a separate camera with a 100–400% zoom range. The SVG's `viewBox` displays that camera; the existing `getScreenCTM().inverse()` converts input back to map coordinates for drawing, doors and enemy drops. Camera changes do not enter encounter snapshots or undo history.
+
+Use the +/− controls and Reset above the field. The hand tool (P), middle mouse drag, or Space held over the focused map pans the view. Ctrl/Cmd + wheel zooms about the pointer; unmodified wheel input still scrolls the page. Mobile users can use the same zoom controls and hand tool.
+
+Verification includes 49 unit tests, actual token dragging, wall drawing and door placement at 156% zoom, camera panning at 400%, reset, and overflow checks at 320px width.
