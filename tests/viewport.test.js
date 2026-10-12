@@ -9,10 +9,21 @@ test('zoom keeps the chosen map point at its relative screen position',()=>{
  assert.ok(Math.abs((anchor.y-before.y)/before.height-(anchor.y-after.y)/after.height)<1e-9);
  assert.deepEqual(before,{x:200,y:140,width:500,height:350,zoom:2});
 });
-test('zoom is bounded from full field to 400 percent and stays inside the board',()=>{
+test('zoom is bounded from 25 to 400 percent and keeps the board visible',()=>{
  const max=zoomView(fullView(),20,{x:1000,y:700});
  assert.deepEqual(max,{zoom:4,width:250,height:175,x:750,y:525});
- assert.deepEqual(zoomView(max,.01),{zoom:1,width:1000,height:700,x:0,y:0});
+ const min=zoomView(max,.01);
+ assert.equal(min.zoom,.25);assert.equal(min.width,4000);assert.equal(min.height,2800);
+ assert.ok(min.x<=0&&min.x+min.width>=1000);assert.ok(min.y<=0&&min.y+min.height>=700);
+});
+test('zooming out from 100 percent centres the full field with surrounding space',()=>{
+ assert.deepEqual(zoomView(fullView(),.5),{zoom:.5,width:2000,height:1400,x:-500,y:-350});
+ assert.deepEqual(zoomView(fullView(),.1),{zoom:.25,width:4000,height:2800,x:-1500,y:-1050});
+});
+test('panning a zoomed-out field stays within its surrounding margins',()=>{
+ const view=zoomView(fullView(),.5);
+ assert.deepEqual(panView(view,10000,10000),{...view,x:-1000,y:-700});
+ assert.deepEqual(panView(view,-10000,-10000),{...view,x:0,y:0});
 });
 test('panning shifts the camera opposite the pointer without changing zoom or shapes',()=>{
  const before=zoomView(fullView(),2);

@@ -31,8 +31,10 @@ Screenshots and disposable fixture backups are in `outputs/design-review/`. The 
 
 The interface now uses one tabletop theme; the previous day/night switch and its runtime styles have been removed. Campaign data and storage keys remain unchanged.
 
-`viewport.js` defines a separate camera with a 100–400% zoom range. The SVG's `viewBox` displays that camera; the existing `getScreenCTM().inverse()` converts input back to map coordinates for drawing, doors and enemy drops. Camera changes do not enter encounter snapshots or undo history.
+`viewport.js` defines a separate camera with a 25–400% zoom range. The SVG's `viewBox` displays that camera; the existing `getScreenCTM().inverse()` converts input back to map coordinates for drawing, doors and enemy drops. Camera changes do not enter encounter snapshots or undo history.
 
 Use the +/− controls and Reset above the field. The hand tool (P), middle mouse drag, or Space held over the focused map pans the view. Ctrl/Cmd + wheel zooms about the pointer; unmodified wheel input still scrolls the page. Mobile users can use the same zoom controls and hand tool.
 
-Verification includes 49 unit tests, actual token dragging, wall drawing and door placement at 156% zoom, camera panning at 400%, reset, and overflow checks at 320px width.
+Verification includes 51 unit tests, actual token dragging, wall drawing and door placement at 156% zoom, camera panning at 400%, reset, and overflow checks at 320px width.
+
+Below 100%, the camera extends past the field edges to show the full map at reduced size. Camera limits keep the full field inside the viewport when zoomed out. Reset always returns to the original 100% view.
