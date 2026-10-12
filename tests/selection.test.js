@@ -13,8 +13,8 @@ test('group scaling preserves room placement, interiors and wall endpoints',()=>
  assert.equal(validState({version:1,title:'Group',round:1,active:null,people:[],shapes:result}),true);
 });
 test('whole group clamps together at board edge without distorting relative positions',()=>{
- const moved=moveSelection(items(),1000,1000);
- assert.deepEqual(selectionBounds(moved),{x:800,y:500,w:200,h:200});
+ const moved=moveSelection(items(),20000,20000);
+ assert.deepEqual(selectionBounds(moved),{x:10800,y:7500,w:200,h:200});
  assert.equal(moved[1].x-moved[0].x,50);assert.equal(moved[1].y-moved[0].y,50);
 });
 test('marquee selects only enclosed shapes and works in either drag direction',()=>{

@@ -1,5 +1,6 @@
+import{clampWorldPoint}from'./world.js?v=expanded-grid-1';
 
-import {clamp,validState} from './core.js?v=enemies-1';
+import {clamp,validState} from './core.js?v=expanded-grid-1';
 export const CAMPAIGN_KEY='initiative.campaign.v2';
 export const HERO_FIELDS=['name','hp','max','ac','initMod','characterClass','level','notes','conditions'];
 export function characterFrom(p,id){return{id,name:p.name,hp:p.hp,max:p.max,ac:p.ac??10,initMod:p.initMod??0,characterClass:p.characterClass??'',level:p.level??1,notes:p.notes??'',conditions:p.conditions??''};}
@@ -38,6 +39,6 @@ export function ensureEnemies(campaign,idFactory){
 export function spawnEnemy(state,enemy,id,point=null){
  if(!validEnemy(enemy))throw Error('Ungültiger Gegner');
  if(state.people.length>=100)throw Error('Maximal 100 Beteiligte');
- const n=state.people.length,p={id,enemyTemplateId:enemy.id,name:enemy.name,kind:'enemy',max:enemy.max,hp:enemy.max,init:enemy.init,x:clamp(point?.x??75+(n%18)*50,25,975),y:clamp(point?.y??75+(Math.floor(n/18)%12)*50,25,675)};
+ const n=state.people.length,p={id,enemyTemplateId:enemy.id,name:enemy.name,kind:'enemy',max:enemy.max,hp:enemy.max,init:enemy.init,...clampWorldPoint({x:point?.x??75+(n%18)*50,y:point?.y??75+(Math.floor(n/18)%12)*50},25)};
  state.people.push(p);if(!state.active||state.started===false)state.active=[...state.people].sort((a,b)=>b.init-a.init)[0]?.id??null;state.demo=false;return p;
 }

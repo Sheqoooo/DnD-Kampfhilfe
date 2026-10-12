@@ -1,3 +1,4 @@
+import{WORLD,clampWorldPoint,inWorld}from'./world.js?v=expanded-grid-1';
 
 const EPS=1e-6;
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -27,7 +28,7 @@ export function snapDrawingPoint(p,shapes,grid=true,connect=true,tolerance=22){
  let closest=null,d=tolerance;for(const q of vertices){const n=dist(p,q);if(n<=d){closest=q;d=n;}}if(closest)return{...closest,attached:true};
  d=tolerance;for(const e of segments){const q=project(p,e.a,e.b),n=dist(p,q);if(n<d){closest=q;d=n;}}if(closest)return{...closest,attached:true};
  }
- return{x:Math.max(0,Math.min(1000,grid?Math.round(p.x/50)*50:p.x)),y:Math.max(0,Math.min(700,grid?Math.round(p.y/50)*50:p.y)),attached:false};
+ return{...clampWorldPoint({x:grid?Math.round(p.x/50)*50:p.x,y:grid?Math.round(p.y/50)*50:p.y}),attached:false};
 }
 function overlap(a,b){
  const ap=a.flat(),bp=b.flat();if(Math.max(...ap.map(p=>p.x))<Math.min(...bp.map(p=>p.x))-EPS||Math.max(...bp.map(p=>p.x))<Math.min(...ap.map(p=>p.x))-EPS||Math.max(...ap.map(p=>p.y))<Math.min(...bp.map(p=>p.y))-EPS||Math.max(...bp.map(p=>p.y))<Math.min(...ap.map(p=>p.y))-EPS)return false;
@@ -94,7 +95,7 @@ export function integrateShape(shapes,shape,{connect=true,idFactory=()=>crypto.r
 export function translateShape(shape,dx,dy){
  const s=structuredClone(shape),points=roomRings(s)?.flat()??s.points;
  const minX=Math.min(...points.map(p=>p.x)),maxX=Math.max(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y));
- dx=Math.max(-minX,Math.min(1000-maxX,dx));dy=Math.max(-minY,Math.min(700-maxY,dy));
+ dx=Math.max(WORLD.left-minX,Math.min(WORLD.right-maxX,dx));dy=Math.max(WORLD.top-minY,Math.min(WORLD.bottom-maxY,dy));
  if(s.rings)s.rings=s.rings.map(r=>r.map(p=>({x:p.x+dx,y:p.y+dy})));
  else if(s.points)s.points=s.points.map(p=>({x:p.x+dx,y:p.y+dy}));
  else{s.x+=dx;s.y+=dy;}return s;
@@ -103,7 +104,7 @@ export function translateShape(shape,dx,dy){
 export function shapeBounds(shape){const points=roomRings(shape)?.flat()??shape.points;return{x:Math.min(...points.map(p=>p.x)),y:Math.min(...points.map(p=>p.y)),w:Math.max(...points.map(p=>p.x))-Math.min(...points.map(p=>p.x)),h:Math.max(...points.map(p=>p.y))-Math.min(...points.map(p=>p.y))};}
 export function shapeHandles(shape){if(shape.points)return shape.points;const b=shapeBounds(shape);return[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h}];}
 export function reshapeShape(shape,index,point){
- const s=structuredClone(shape),p={x:Math.max(0,Math.min(1000,point.x)),y:Math.max(0,Math.min(700,point.y))};
+ const s=structuredClone(shape),p=clampWorldPoint(point);
  if(s.points){if(!s.points[index])return s;if(s.points.length===2&&dist(p,s.points[1-index])<8)return s;s.points[index]=p;return s;}
  const b=shapeBounds(s),opposite=shapeHandles(s)[(index+2)%4];if(!opposite)return s;
  if(Math.abs(p.x-opposite.x)<10||Math.abs(p.y-opposite.y)<10)return s;
@@ -121,7 +122,7 @@ export function transformSelection(shapes,index,point){
  const b=selectionBounds(shapes);if(!b)return shapes;
  const corners=[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h}],anchor=corners[(index+2)%4];
  if(!anchor)return shapes;
- const p={x:Math.max(0,Math.min(1000,point.x)),y:Math.max(0,Math.min(700,point.y))};
+ const p=clampWorldPoint(point);
  const w=b.w?Math.abs(p.x-anchor.x):0,h=b.h?Math.abs(p.y-anchor.y):0;
  if(b.w&&w<10||b.h&&h<10)return shapes;
  const sx=b.w?w/b.w:1,sy=b.h?h/b.h:1,x=b.w?Math.min(p.x,anchor.x):b.x,y=b.h?Math.min(p.y,anchor.y):b.y;
@@ -132,7 +133,7 @@ export function transformSelection(shapes,index,point){
 }
 export function moveSelection(shapes,dx,dy){
  const b=selectionBounds(shapes);if(!b)return shapes;
- dx=Math.max(-b.x,Math.min(1000-b.x-b.w,dx));dy=Math.max(-b.y,Math.min(700-b.y-b.h,dy));
+ dx=Math.max(WORLD.left-b.x,Math.min(WORLD.right-b.x-b.w,dx));dy=Math.max(WORLD.top-b.y,Math.min(WORLD.bottom-b.y-b.h,dy));
  return shapes.map(s=>translateShape(s,dx,dy));
 }
 export function shapesInBox(shapes,a,b){
@@ -151,6 +152,6 @@ export function placeDoor(point,shapes,{length=50,tolerance=30,grid=true}={}){
  let offset=dist(edge.a,best.q);if(grid&&!curved)offset=Math.round(offset/25)*25;
  if(!curved)offset=Math.max(width/2,Math.min(size-width/2,offset));
  const center=lerp(edge.a,edge.b,offset/size),points=[{x:center.x-ux*width/2,y:center.y-uy*width/2},{x:center.x+ux*width/2,y:center.y+uy*width/2}];
- if(points.some(p=>p.x<0||p.x>1000||p.y<0||p.y>700))return null;
+ if(points.some(p=>!inWorld(p)))return null;
  return{type:'door',points,open:false};
 }

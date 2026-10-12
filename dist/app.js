@@ -1,8 +1,9 @@
-import{fullView,zoomView,panView}from'./viewport.js?v=zoom-out-1';
-import{recordChange,undoChange,redoChange}from'./history.js?v=enemies-2';
-import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=enemies-2';
-import{clamp,order,advance,recognize,validState,reorderCombatants,resetCombatantOrder}from'./core.js?v=enemies-2';
-import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=enemies-2';
+import{worldRect,clampWorldPoint}from'./world.js?v=expanded-grid-1';
+import{fullView,zoomView,panView}from'./viewport.js?v=expanded-grid-1';
+import{recordChange,undoChange,redoChange}from'./history.js?v=expanded-grid-1';
+import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=expanded-grid-1';
+import{clamp,order,advance,recognize,validState,reorderCombatants,resetCombatantOrder}from'./core.js?v=expanded-grid-1';
+import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=expanded-grid-1';
 const $=s=>document.querySelector(s),uid=()=>crypto.randomUUID(),KEY='initiative.encounter.v1',NS='http://www.w3.org/2000/svg';
 const demo=()=>({version:1,title:'Überfall am alten Wachturm',demo:true,started:true,round:1,active:'lyra',people:[{id:'lyra',name:'Lyra',kind:'ally',hp:32,max:38,init:19,x:375,y:475},{id:'g1',name:'Goblin-Späher 1',kind:'enemy',hp:7,max:12,init:16,x:575,y:325},{id:'g2',name:'Goblin-Späher 2',kind:'enemy',hp:12,max:12,init:16,x:625,y:375},{id:'thorin',name:'Thorin',kind:'ally',hp:45,max:45,init:12,x:475,y:525}],shapes:[{id:'room',type:'rect',x:250,y:200,w:500,h:350},{id:'tower',type:'ellipse',x:600,y:100,w:200,h:200},{id:'wall1',type:'wall',points:[{x:250,y:350},{x:350,y:350}]},{id:'wall2',type:'wall',points:[{x:500,y:200},{x:500,y:300}]},{id:'pillar',type:'rect',x:400,y:300,w:50,h:50}]});
 let view=fullView(),spaceHeld=false;
@@ -32,8 +33,8 @@ function makeDoor(sh,isDraft=false){
  return g;
 }
 function renderDoorMask(){
- let mask=$('#door-cutouts');if(!mask){mask=svgEl('mask',{id:'door-cutouts',maskUnits:'userSpaceOnUse',x:0,y:0,width:1000,height:700});$('#map defs').append(mask);}
- mask.replaceChildren(svgEl('rect',{x:0,y:0,width:1000,height:700,fill:'white'}),...state.shapes.filter(s=>s.type==='door').map(s=>svgEl('line',{x1:s.points[0].x,y1:s.points[0].y,x2:s.points[1].x,y2:s.points[1].y,stroke:'black','stroke-width':12,'stroke-linecap':'butt'})));
+ let mask=$('#door-cutouts');if(!mask){mask=svgEl('mask',{id:'door-cutouts',maskUnits:'userSpaceOnUse',...worldRect});$('#map defs').append(mask);}
+ mask.replaceChildren(svgEl('rect',{...worldRect,fill:'white'}),...state.shapes.filter(s=>s.type==='door').map(s=>svgEl('line',{x1:s.points[0].x,y1:s.points[0].y,x2:s.points[1].x,y2:s.points[1].y,stroke:'black','stroke-width':12,'stroke-linecap':'butt'})));
 }
 
 function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDraft?'#8d9e70':'#7b806a','stroke-width':isDraft?3:5,'stroke-linecap':'round','stroke-linejoin':'round'};if(sh.type==='door'){el=makeDoor(sh,isDraft);}else if(sh.type==='room'){el=svgEl('path',{d:sh.rings.map(r=>'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join(' '),...attrs,fill:isDraft?'#b9c79d33':'url(#floor)','fill-rule':'evenodd'});}else if(sh.type==='rect'){el=svgEl('rect',{x:sh.x,y:sh.y,width:sh.w,height:sh.h,rx:3,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else if(sh.type==='ellipse'){el=svgEl('ellipse',{cx:sh.x+sh.w/2,cy:sh.y+sh.h/2,rx:sh.w/2,ry:sh.h/2,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else{el=svgEl('polyline',{points:sh.points.map(p=>`${p.x},${p.y}`).join(' '),...attrs});}if(sh.interior){el.setAttribute('fill','none');el.setAttribute('stroke-width',isDraft?3:4);}
@@ -48,12 +49,13 @@ $('#undo').onclick=$('#map-undo').onclick=undoAction;$('#map-redo').onclick=redo
 const descriptions={pan:'Die Ansicht ziehen, ohne Figuren oder Formen zu bewegen.',select:'Form anklicken; mit Shift weitere wählen oder auf leerer Fläche einen Auswahlrahmen ziehen. Goldene Ecken skalieren die Auswahl.',smart:'Frei zeichnen: Linien werden glatt, geschlossene Formen werden Räume.',wall:'Wand ziehen oder Anfang und Ende nacheinander anklicken.',rect:'Ziehen, um einen rechteckigen Raum aufzuspannen.',ellipse:'Ziehen, um einen runden Raum aufzuspannen.',door:'Auf eine Wand klicken, um eine Tür einzusetzen. Tür anklicken, um sie zu öffnen oder zu schließen.',erase:'Eine Wand oder einen Raum anklicken, um die Form zu entfernen.'};const names={pan:'Ansicht verschieben',select:'Verschieben',smart:'Freihand schönziehen',wall:'Wand',rect:'Rechteckiger Raum',ellipse:'Runder Raum',door:'Tür einsetzen',erase:'Form entfernen'};
 function setTool(t){if(t!=='select')clearSelection();wallAnchor=null;$('#draft').replaceChildren();tool=t;document.querySelectorAll('[data-tool]').forEach(b=>{b.classList.toggle('selected',b.dataset.tool===t);b.setAttribute('aria-pressed',String(b.dataset.tool===t));});$('#tool-description').textContent=descriptions[t];$('#map-hint').textContent=names[t]+' · '+(t==='smart'?'Kreis oder Rechteck schließen, um einen Raum zu erstellen.':t==='select'?'Form anklicken und goldene Ziehpunkte bewegen.':'Maus oder Finger verwenden.');$('#map').style.cursor=t==='pan'?'grab':t==='select'?'default':'crosshair';renderMap();}
 document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));$('#snap').onchange=e=>snap=e.target.checked;$('#connect').onchange=e=>{connect=e.target.checked;setTool(tool);};$('#room-mode').onchange=()=>{setTool(tool);toast($('#room-mode').value==='interior'?'Innenräume zeichnen · Wände bleiben erhalten.':'Gebäude und Anbauten zeichnen · verbundene Flächen verschmelzen.');};
-function position(e){const pt=$('#map').createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform($('#map').getScreenCTM().inverse());return{x:clamp(p.x,0,1000),y:clamp(p.y,0,700)};}
+function position(e){const pt=$('#map').createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform($('#map').getScreenCTM().inverse());return clampWorldPoint(p);}
 function renderView(){
  $('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.width} ${view.height}`);
+ for(const rect of $('#map').querySelectorAll(':scope > rect'))for(const key of ['x','y','width','height'])rect.setAttribute(key,view[key]);
  $('#zoom-level').textContent=Math.round(view.zoom*100)+'%';
  $('#zoom-out').disabled=view.zoom<=.25;$('#zoom-in').disabled=view.zoom>=4;
- $('#zoom-reset').disabled=view.zoom===1;$('#map').setAttribute('aria-label','Interaktives Kampffeld · Zoom '+Math.round(view.zoom*100)+' Prozent.');
+ $('#zoom-reset').disabled=view.zoom===1&&view.x===0&&view.y===0;$('#map').setAttribute('aria-label','Interaktives Kampffeld · Zoom '+Math.round(view.zoom*100)+' Prozent.');
 }
 function changeZoom(factor,anchor){if(gesture)return;view=zoomView(view,factor,anchor);renderView();}
 $('#zoom-in').onclick=()=>changeZoom(1.25);$('#zoom-out').onclick=()=>changeZoom(1/1.25);
@@ -64,7 +66,7 @@ document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.closest?.(
 document.addEventListener('keyup',e=>{if(e.code==='Space'){spaceHeld=false;$('#map').style.cursor=tool==='pan'?'grab':tool==='select'?'default':'crosshair';}});
 window.addEventListener('blur',()=>{spaceHeld=false;});
 
-const gridPoint=p=>({x:clamp(snap?Math.round(p.x/50)*50:p.x,0,1000),y:clamp(snap?Math.round(p.y/50)*50:p.y,0,700)});
+const gridPoint=p=>clampWorldPoint({x:snap?Math.round(p.x/50)*50:p.x,y:snap?Math.round(p.y/50)*50:p.y});
 
 function drawingPoint(p){return snapDrawingPoint(p,state.shapes,snap,connect);}
 function guide(p){if(!p.attached)return;$('#draft').append(svgEl('circle',{cx:p.x,cy:p.y,r:9,fill:'#d3ac5b33',stroke:'#b9954c','stroke-width':2,'pointer-events':'none'}));}
@@ -107,7 +109,7 @@ $('#map').onpointermove=e=>{
  if(gesture.type==='marquee'){gesture.end=pos;$('#draft').replaceChildren(svgEl('rect',{x:Math.min(pos.x,gesture.start.x),y:Math.min(pos.y,gesture.start.y),width:Math.abs(pos.x-gesture.start.x),height:Math.abs(pos.y-gesture.start.y),fill:'#bd9d5822',stroke:'#bd9d58','stroke-width':2,'stroke-dasharray':'6 4','pointer-events':'none'}));return;}
  if(gesture.type==='group-resize'){const p=gridPoint(pos);replaceSelection(transformSelection(gesture.origin,gesture.index,p));renderMap();return;}
  if(gesture.type==='group-move'){let dx=pos.x-gesture.start.x,dy=pos.y-gesture.start.y;if(snap){dx=Math.round(dx/50)*50;dy=Math.round(dy/50)*50;}replaceSelection(moveSelection(gesture.origin,dx,dy));renderMap();return;}
- if(gesture.type==='token'){const p=state.people.find(p=>p.id===gesture.id);let x=gesture.origin.x+pos.x-gesture.start.x,y=gesture.origin.y+pos.y-gesture.start.y;if(snap){x=Math.round((x-25)/50)*50+25;y=Math.round((y-25)/50)*50+25;}p.x=clamp(x,25,975);p.y=clamp(y,25,675);renderMap();}
+ if(gesture.type==='token'){const p=state.people.find(p=>p.id===gesture.id);let x=gesture.origin.x+pos.x-gesture.start.x,y=gesture.origin.y+pos.y-gesture.start.y;if(snap){x=Math.round((x-25)/50)*50+25;y=Math.round((y-25)/50)*50+25;}Object.assign(p,clampWorldPoint({x,y},25));renderMap();}
  else if(gesture.type==='resize'){const p=snapDrawingPoint(pos,state.shapes.filter(s=>s.id!==gesture.id),snap,connect);state.shapes[state.shapes.findIndex(s=>s.id===gesture.id)]=reshapeShape(gesture.origin,gesture.index,p);renderMap();}
  else if(gesture.type==='shape'){let dx=pos.x-gesture.start.x,dy=pos.y-gesture.start.y;if(snap){dx=Math.round(dx/50)*50;dy=Math.round(dy/50)*50;}state.shapes[state.shapes.findIndex(s=>s.id===gesture.id)]=translateShape(gesture.origin,dx,dy);renderMap();}
  else{if(Math.hypot(pos.x-gesture.points.at(-1).x,pos.y-gesture.points.at(-1).y)>2&&gesture.points.length<2000)gesture.points.push(pos);previewDraw(pos);}
@@ -142,7 +144,7 @@ $('#map').onkeydown=e=>{
  if(handle&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();const id=selectedShapeId,index=+handle.dataset.handle,sh=state.shapes.find(s=>s.id===id),p=shapeHandles(sh)[index],step=snap?50:10;mutate(()=>{state.shapes=state.shapes.map(s=>s.id===id?reshapeShape(s,index,{x:p.x+(e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0),y:p.y+(e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0)}):s);});$('#handles [data-handle="'+index+'"]')?.focus();return;}
  const token=e.target.closest('[data-token]'),shape=e.target.closest('[data-shape]');
  if((!token&&!shape)||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const step=snap?50:10,dx=e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0,dy=e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0;
- if(token){const id=token.dataset.token;mutate(()=>{const p=state.people.find(p=>p.id===id);p.x=clamp(p.x+dx,25,975);p.y=clamp(p.y+dy,25,675);});[...$('#tokens').children].find(el=>el.dataset.token===id)?.focus();}
+ if(token){const id=token.dataset.token;mutate(()=>{const p=state.people.find(p=>p.id===id);Object.assign(p,clampWorldPoint({x:p.x+dx,y:p.y+dy},25));});[...$('#tokens').children].find(el=>el.dataset.token===id)?.focus();}
  else{const id=shape.dataset.shape;mutate(()=>{if(selectedIds.size>1&&selectedIds.has(id))replaceSelection(moveSelection(selectedShapes(),dx,dy));else state.shapes=state.shapes.map(s=>s.id===id?translateShape(s,dx,dy):s);});[...$('#shapes').children].find(el=>el.dataset.shape===id)?.focus();}
 };
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&selectedIds.size&&!gesture){clearSelection();renderMap();}if(e.key==='Escape'&&wallAnchor){wallAnchor=null;$('#draft').replaceChildren();setTool(tool);}});

@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validState} from '../dist/core.js';
+import {makeCampaign,saveEncounter,validCampaign,spawnEnemy} from '../dist/campaign.js';
+import {snapDrawingPoint,integrateShape,reshapeShape,placeDoor,translateShape} from '../dist/drawing.js';
+const encounter=()=>({version:1,id:'fight',title:'Expanded map',round:1,active:null,people:[],shapes:[]});
+test('drawing, joining rooms and adding doors works outside the original field',()=>{
+ const first={id:'a',type:'rect',x:-400,y:-300,w:200,h:200};
+ assert.deepEqual(snapDrawingPoint({x:-251,y:-399},[],{grid:true}),{x:-250,y:-400,attached:false});
+ const joined=integrateShape([first],{id:'b',type:'rect',x:-250,y:-250,w:200,h:200}).shapes;
+ assert.equal(joined.length,1);
+ const door=placeDoor({x:-350,y:-300},joined);assert.ok(door);
+ assert.ok(door.points.every(p=>p.x<0));
+ const state=encounter();state.shapes=[...joined,{...door,id:'door'}];
+ assert.equal(validState(JSON.parse(JSON.stringify(state))),true);
+ const resized=reshapeShape(first,2,{x:1200,y:900});
+ assert.equal(resized.w,1600);assert.equal(resized.h,1200);
+ assert.equal(translateShape(first,-100,-100).x,-500);
+});
+test('enemy positions and extended shapes survive full campaign save and reload',()=>{
+ const state=encounter(),campaign=makeCampaign(state,()=> 'fight');
+ const enemy={id:'goblin',name:'Goblin',max:12,init:10};
+ spawnEnemy(state,enemy,'outside',{x:-525,y:1125});
+ state.shapes=[{id:'far',type:'rect',x:1300,y:900,w:200,h:200}];
+ saveEncounter(campaign,state);
+ const restored=JSON.parse(JSON.stringify(campaign));
+ assert.equal(validCampaign(restored),true);
+ assert.equal(restored.encounters[0].people[0].x,-525);
+ assert.equal(restored.encounters[0].shapes[0].x,1300);
+ assert.equal(validState({...state,people:[{...state.people[0],x:Infinity}]}),false);
+ assert.equal(validState({...state,shapes:[{...state.shapes[0],x:11001}]}),false);
+});

@@ -37,4 +37,6 @@ Use the +/− controls and Reset above the field. The hand tool (P), middle mous
 
 Verification includes 51 unit tests, actual token dragging, wall drawing and door placement at 156% zoom, camera panning at 400%, reset, and overflow checks at 320px width.
 
-Below 100%, the camera extends past the field edges to show the full map at reduced size. Camera limits keep the full field inside the viewport when zoomed out. Reset always returns to the original 100% view.
+The background and grid rectangles track the camera, so the grid fills the visible viewport at every zoom level and pan position. The grid remains anchored to world coordinates. `world.js` shares generous finite drawing bounds (x −10000…11000, y −7000…7700) across camera, input, editing, enemy placement, door masks and import validation. Additional visible space is fully editable; existing coordinates and saved data retain their meaning. Reset always returns to the original 100% view, including after panning at 100%.
+
+Expanded-grid verification: 53 passing tests, actual room drawing and token movement outside the old map, Undo/Redo and reload persistence, panning at 25%, and a 390px mobile view without horizontal overflow.
