@@ -1,6 +1,14 @@
 import{WORLD,worldRect,inWorld}from'./world.js?v=expanded-grid-1';
 export const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-export const order=people=>[...people].sort((a,b)=>{if(people.some(p=>Number.isInteger(p.turnPosition))){const rank=(a.turnPosition??1000)-(b.turnPosition??1000);if(rank)return rank;}return b.init-a.init;});
+export const order=people=>[...people].sort((a,b)=>(a.turnPosition??1000)-(b.turnPosition??1000));
+// Retain the displayed order of old saves once; later additions always append.
+export function prepareManualOrder(state){
+ const sorted=state.manualOrder?order(state.people):[...state.people].sort((a,b)=>{
+  const rank=(a.turnPosition??1000)-(b.turnPosition??1000);return rank||((b.init??0)-(a.init??0));
+ });
+ sorted.forEach((p,i)=>p.turnPosition=i);state.manualOrder=true;
+}
+
 export function reorderCombatants(people,sourceId,targetId,after=false){const sorted=order(people),from=sorted.findIndex(p=>p.id===sourceId);if(from<0||sourceId===targetId||!sorted.some(p=>p.id===targetId))return false;const [moved]=sorted.splice(from,1),to=sorted.findIndex(p=>p.id===targetId)+(after?1:0);sorted.splice(to,0,moved);sorted.forEach((p,i)=>p.turnPosition=i);return true;}
 export function resetCombatantOrder(people){for(const p of people)delete p.turnPosition;}
 export function advance(state){const list=order(state.people);if(!list.length)return;let i=list.findIndex(p=>p.id===state.active);if(i<0){state.active=list[0].id;return;}i++;if(i===list.length){i=0;state.round++;}state.active=list[i].id;}

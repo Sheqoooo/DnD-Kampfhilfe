@@ -61,3 +61,38 @@ input,textarea,select{border:1px solid #957349;background:#fff1d5c9;color:var(--
 @media(max-width:600px){.room-mode-label{flex-wrap:wrap;max-width:100%}.room-mode-label select{max-width:100%}}
 
 .map-view-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:4px 0 12px}.map-zoom-actions{display:flex;align-items:center;gap:5px}.map-zoom-actions button{background:#d8bd88;border:1px solid #927042;border-radius:5px;color:var(--ink);padding:6px 10px;min-height:34px;font-size:14px}.map-zoom-actions output{min-width:45px;text-align:center;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}.map-zoom-actions #zoom-reset{font-size:11px}.map-view-controls>small{font-size:10px;color:var(--muted)}@media(max-width:600px){.map-view-controls>small{flex-basis:100%;font-size:9px}}
+
+/* Controls package: real controls with decorative inline SVG and neutral medals. */
+.ui-icon{width:22px;height:22px;flex:none;display:inline-block;vertical-align:middle;pointer-events:none;color:inherit}
+button:has(>.ui-icon){display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+button:has(>.ui-icon):not(:has(>span)){min-width:44px}
+button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align-items:center;gap:4px}.snap-control .ui-icon{width:18px;height:18px}
+.enemy-search{position:relative;flex:1;min-width:100px}.enemy-search>.ui-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:18px;height:18px}.enemy-search #enemy-search{width:100%;padding-left:34px}
+.fantasy-token{--token-size:48px;--token-glow:#417583;isolation:isolate;display:block;position:relative;width:var(--token-size);height:var(--token-size);flex:none;color:#ffe6ad;pointer-events:none;font-family:system-ui,sans-serif;text-shadow:0 1px 2px #080503}
+.token-base{z-index:1;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 2px 2px #24140888)}
+/* Team light sits behind the original bronze asset and only peeks around its edge. */
+.fantasy-token:after{content:"";position:absolute;inset:6%;z-index:0;border:0;border-radius:50%;background:var(--token-glow);box-shadow:0 0 5px 2px var(--token-glow);opacity:.7;pointer-events:none}
+.fantasy-token.enemy{--token-glow:#a63c30}.fantasy-token.is-active{--token-glow:#edbc48}
+.token-symbol{z-index:2;position:absolute;inset:23% 0 auto;display:flex;justify-content:center}.token-symbol .ui-icon{width:19px;height:19px}
+.token-code{z-index:2;position:absolute;left:10%;right:10%;top:57%;text-align:center;font-size:12px;line-height:1.1;font-weight:750;letter-spacing:.2px;font-variant-numeric:tabular-nums}
+.token-active{z-index:2;position:absolute;right:0;top:0;color:#ffd36c;font-size:13px;text-shadow:0 1px 2px #261306,0 0 3px #261306}
+.token-edit{border:0;background:none;border-radius:50%;padding:0;flex:none;width:48px;height:48px;cursor:pointer;min-height:48px;color:inherit}
+.hero-token,.hero-token .fantasy-token{--token-size:72px;width:72px;height:72px}.hero-token .token-symbol{top:25%}.hero-token .token-symbol .ui-icon{width:22px;height:22px}.hero-token .token-code{font-size:15px}.hero-token .token-active{font-size:16px;right:2px;top:2px}
+.map-token-content,.map-token-content .fantasy-token{--token-size:56px;width:56px;height:56px}.map-token-content{pointer-events:none}.map-token-content .token-symbol{display:none}.map-token-content .token-code{top:50%;transform:translateY(-50%);font-size:14px}.map-token-content .token-active{font-size:15px}
+#map-redo .ui-icon{transform:scaleX(-1)}
+.drawing-toolbar button:has(>.ui-icon){width:44px;min-width:44px;min-height:44px;height:44px;padding:0;gap:0}.drawing-toolbar{flex-wrap:wrap;gap:3px}.map-history-actions button:has(>.ui-icon){width:44px;height:44px;min-width:44px;min-height:44px;padding:0}
+.hero-edit,.edit-person{min-width:44px;min-height:44px}.combatant-top{gap:7px}.enemy-template button{min-width:44px;min-height:44px;padding:3px}
+@media(max-width:1100px){.drawing-toolbar{bottom:12px}.map-key{bottom:128px}}
+@media(max-width:600px){.drawing-toolbar{width:max-content;max-width:calc(100% - 12px);gap:2px}.drawing-toolbar button:has(>.ui-icon){width:44px;min-width:44px;min-height:44px;height:44px}.drawing-toolbar .toolbar-divider{display:none}.map-key{bottom:124px}.enemy-template{flex-wrap:wrap}.enemy-template>div{flex-basis:calc(100% - 110px)}.enemy-template button{flex:none}.party-heading .primary{max-width:140px}}
+.drawing-toolbar{width:max-content;max-width:calc(100% - 14px)}
+
+.map-token-content .token-code{font-size:var(--map-code-size,20px)}
+/* Give full names their own line rather than squeezing them beside two controls. */
+.combatant-top{display:grid;grid-template-columns:28px 48px minmax(0,1fr);gap:6px 8px;align-items:center}
+.combatant-top .initiative-number{grid-column:1;grid-row:1}.combatant-top .token-edit{grid-column:2;grid-row:1}.combatant-top .edit-person{grid-column:3;grid-row:1;justify-self:end}.combatant-top .person-details{grid-column:1/-1;grid-row:2}
+/* Keyboard focus is distinct from the team glow and the active-turn marker. */
+.token-edit:focus-visible{outline:2px dashed #75502c;outline-offset:4px}
+.fantasy-token:after{inset:5%;box-shadow:0 0 7px 3px var(--token-glow);opacity:.85}
+.initiative-number strong{display:grid;place-items:center;min-width:32px;height:32px;background:#dcc08b;border:1px solid #99733c;border-radius:5px;font:750 22px system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.combatant.active .initiative-number strong{background:#f5d78b;border-color:#aa772a}.initiative-number small{font-size:8px;margin-top:3px}.reorder-controls button{min-width:44px;min-height:44px}.combatant[draggable=true]{cursor:grab}.combatant input,.combatant button{cursor:auto}.combatant button{cursor:pointer}
+.turn-drag-handle{display:block;color:#735636;font-size:20px;line-height:18px;margin-top:3px;cursor:grab}
