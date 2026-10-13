@@ -98,40 +98,48 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
 .turn-drag-handle{display:block;color:#735636;font-size:20px;line-height:18px;margin-top:3px;cursor:grab}
 .turn-drag-handle{touch-action:none;user-select:none}
 
-/* Small tabletop props: fixed compositions in reserved desktop edge lanes. */
+/* Three curated tabletop still lifes rather than evenly spaced individual props. */
+.decor-cluster{position:absolute;pointer-events:none;user-select:none}
 .desk-addon{transform-origin:center;pointer-events:none}
 @media(min-width:1201px){
- .fantasy-desk{--desk-rail:clamp(132px,11vw,185px);padding-inline:var(--desk-rail);padding-top:clamp(132px,11vw,175px)}
- .decor-orb{--motif-width:calc(var(--desk-rail) - 28px);left:14px;top:14px}
- .decor-lantern{--motif-width:calc(var(--desk-rail) - 32px);right:16px;top:14px}
- .decor-candles{--motif-width:calc(var(--desk-rail) - 36px);left:18px;top:clamp(355px,30vw,470px)}
- .decor-books{--motif-width:calc(var(--desk-rail) - 32px);right:16px;top:clamp(490px,38vw,660px)}
- .addon-orb-shards{--motif-width:76px;left:25px;top:calc(var(--desk-rail) + 5px);transform:rotate(-12deg)}
- .addon-orb-coins{--motif-width:86px;left:19px;top:calc(var(--desk-rail) + 76px);transform:rotate(-8deg)}
- .addon-orb-coin{--motif-width:24px;left:77px;top:calc(var(--desk-rail) + 145px);transform:rotate(27deg)}
- .addon-orb-dust{--motif-width:80px;left:23px;top:clamp(580px,48vw,840px);opacity:.4;transform:rotate(-12deg)}
- .addon-lamp-shards{--motif-width:82px;right:24px;top:calc(var(--desk-rail) + 6px);transform:rotate(12deg)}
- .addon-satchel{--motif-width:calc(var(--desk-rail) - 48px);right:24px;top:calc(var(--desk-rail) + 118px);transform:rotate(65deg)}
- .addon-book-shard{--motif-width:37px;right:51px;top:clamp(654px,52vw,850px);transform:rotate(15deg)}
- .addon-book-coin{--motif-width:27px;right:30px;top:clamp(715px,57vw,923px);transform:rotate(-25deg)}
- .addon-book-dust{--motif-width:85px;right:24px;top:clamp(776px,62vw,1000px);opacity:.35;transform:rotate(12deg)}
- .addon-scroll{--motif-width:calc(var(--desk-rail) - 72px);left:28px;bottom:270px;transform:rotate(15deg)}
- .addon-letter{--motif-width:calc(var(--desk-rail) - 42px);right:21px;bottom:236px;transform:rotate(-12deg)}
- .addon-compass{--motif-width:calc(var(--desk-rail) - 45px);right:22px;bottom:77px;transform:rotate(8deg)}
+ .fantasy-desk{--desk-rail:clamp(150px,12vw,190px);padding-inline:var(--desk-rail);padding-top:270px}
+ .decor-cluster-magic{left:16px;top:16px;width:270px;height:310px}
+ .decor-cluster-travel{right:16px;top:16px;width:340px;height:280px}
+ .decor-cluster-notes{left:16px;bottom:80px;width:150px;height:235px}
+ .decor-cluster-magic .decor-orb{--motif-width:136px;left:0;top:0}
+ .decor-cluster-magic .decor-books{--motif-width:110px;left:142px;right:auto;top:12px;transform:rotate(-8deg)}
+ .decor-cluster-magic .decor-candles{--motif-width:110px;left:2px;top:145px}
+ .decor-cluster-magic .addon-orb-shards{--motif-width:72px;left:103px;top:137px;transform:rotate(-12deg)}
+ .decor-cluster-magic .addon-orb-coins{--motif-width:75px;left:147px;top:182px;transform:rotate(-8deg)}
+ .decor-cluster-magic .addon-orb-coin{--motif-width:24px;left:108px;top:234px;transform:rotate(27deg)}
+ .decor-cluster-magic .addon-book-shard{--motif-width:33px;left:197px;right:auto;top:145px;transform:rotate(15deg)}
+ .decor-cluster-magic .addon-orb-dust{--motif-width:80px;left:9px;top:272px;opacity:.35;transform:rotate(-12deg)}
+ .decor-cluster-travel .decor-lantern{--motif-width:130px;left:12px;right:auto;top:12px}
+ .decor-cluster-travel .addon-satchel{--motif-width:190px;left:130px;right:auto;top:65px;transform:rotate(65deg)}
+ .decor-cluster-travel .addon-lamp-shards{--motif-width:80px;left:102px;right:auto;top:149px;transform:rotate(12deg)}
+ .decor-cluster-travel .addon-book-coin{--motif-width:24px;left:137px;right:auto;top:216px;transform:rotate(-25deg)}
+ .decor-cluster-travel .addon-book-dust{--motif-width:70px;left:265px;right:auto;top:245px;opacity:.35;transform:rotate(12deg)}
+ .decor-cluster-notes .addon-scroll{--motif-width:64px;left:10px;top:0;bottom:auto;transform:rotate(15deg)}
+ .decor-cluster-notes .addon-letter{--motif-width:108px;left:24px;right:auto;top:82px;bottom:auto;transform:rotate(-12deg)}
+ .decor-cluster-notes .addon-compass{--motif-width:88px;left:34px;right:auto;top:138px;bottom:auto;transform:rotate(8deg)}
 }
-/* Distinct contact + cast shadows stay behind each asset's alpha silhouette. */
+/* Match contact/cast shadows across old and new assets. */
 .desk-motif{filter:drop-shadow(2px 5px 2px #0b0604b3) drop-shadow(4px 11px 7px #100805a6)}
 .desk-addon{filter:drop-shadow(1px 3px 1px #0b0604b8) drop-shadow(3px 7px 4px #10080599)}
 .addon-orb-dust,.addon-book-dust{filter:none}
 @media(max-width:1200px){
- .desk-addon,.decor-candles,.decor-books{display:none}
+ .desk-addon,.decor-candles,.decor-books,.decor-cluster-notes{display:none}
  .fantasy-desk{padding-top:100px}
- .decor-orb{--motif-width:76px;left:16px;top:10px}
- .decor-lantern{--motif-width:70px;right:16px;top:10px}
+ .decor-cluster-magic{left:16px;top:10px;width:76px;height:76px}
+ .decor-cluster-travel{right:16px;top:10px;width:70px;height:76px}
+ .decor-cluster-magic .decor-orb{--motif-width:76px;left:0;top:0}
+ .decor-cluster-travel .decor-lantern{--motif-width:70px;right:0;top:0}
 }
 @media(max-width:600px){
  .fantasy-desk{padding-top:82px}
- .decor-orb{--motif-width:60px;left:12px;top:8px}
- .decor-lantern{--motif-width:56px;right:12px;top:8px}
+ .decor-cluster-magic{left:12px;top:8px;width:60px;height:60px}
+ .decor-cluster-travel{right:12px;top:8px;width:56px;height:60px}
+ .decor-cluster-magic .decor-orb{--motif-width:60px}
+ .decor-cluster-travel .decor-lantern{--motif-width:56px}
  .desk-motif{filter:drop-shadow(1px 3px 1px #0b0604b3) drop-shadow(2px 6px 4px #10080599)}
 }

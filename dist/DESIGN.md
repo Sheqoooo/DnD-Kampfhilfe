@@ -68,3 +68,7 @@ Addon verification: visual comparison at 1265px and 1440px; no horizontal overfl
 ## Decoration spacing correction
 
 Desktop widths above 1200px reserve 132–185px side lanes and a clear top margin. Large motifs and addon props are placed fully inside these lanes, with separate vertical slots for orb/shards/coins, lantern/amber/satchel, books/shard/coin, and lower scroll/letter/compass. Contact and cast shadows are strengthened without adding glow. At ≤1200px only the orb and lantern remain, entirely inside a reserved header band. The ink PNG was inspected at reduced size and has an internally cut-off base; its runtime image is removed until a complete replacement is supplied. The source asset is retained.
+
+## Curated decorative groups
+
+The evenly spaced edge-lane layout is superseded by three explicit aria-hidden subgroups in the decorative layer: upper-left magic (orb, books, candles, violet crystals and coins), upper-right travel (lantern, 190px satchel, amber crystals and coin), and lower-left notes (scroll, letter, compass). Desktop uses a reserved top band for the two wider still lifes while side insets keep lower props clear of panels. Existing shadows are retained. Transparent image bounds may come close within groups, but important visible silhouettes remain readable. At ≤1200px only the orb and lantern remain in the header band. All positions are deterministic; no interactions or stored data change.
