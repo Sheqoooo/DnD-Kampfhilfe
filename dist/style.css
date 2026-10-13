@@ -98,18 +98,40 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
 .turn-drag-handle{display:block;color:#735636;font-size:20px;line-height:18px;margin-top:3px;cursor:grab}
 .turn-drag-handle{touch-action:none;user-select:none}
 
-/* Small tabletop props: fixed compositions in document coordinates, below the UI. */
-.desk-addon{filter:drop-shadow(0 3px 3px #140b0570);transform-origin:center;pointer-events:none}
-.addon-orb-coins{--motif-width:90px;left:1px;top:166px;transform:rotate(-12deg)}
-.addon-orb-coin{--motif-width:30px;left:58px;top:213px;transform:rotate(27deg)}
-.addon-orb-shards{--motif-width:76px;left:23px;top:126px;transform:rotate(-18deg)}
-.addon-book-shard{--motif-width:37px;right:48px;top:clamp(583px,49vw,735px);transform:rotate(23deg)}
-.addon-book-coin{--motif-width:27px;right:21px;top:clamp(636px,53vw,790px);transform:rotate(-25deg)}
-.addon-lamp-shards{--motif-width:86px;right:5px;top:155px;transform:rotate(18deg)}
-.addon-satchel{--motif-width:225px;right:-105px;top:220px;transform:rotate(65deg)}
-.addon-scroll{--motif-width:110px;left:-38px;bottom:180px;transform:rotate(20deg)}
-.addon-letter{--motif-width:155px;right:-45px;bottom:160px;transform:rotate(-20deg)}
-.addon-compass{--motif-width:105px;right:-30px;bottom:23px;transform:rotate(12deg)}
-.addon-orb-dust{--motif-width:80px;left:-12px;top:245px;opacity:.4;transform:rotate(-30deg);filter:none}
-.addon-book-dust{--motif-width:110px;right:-20px;top:clamp(706px,59vw,860px);opacity:.35;transform:rotate(20deg);filter:none}
-@media(max-width:1100px){.desk-addon{display:none}}
+/* Small tabletop props: fixed compositions in reserved desktop edge lanes. */
+.desk-addon{transform-origin:center;pointer-events:none}
+@media(min-width:1201px){
+ .fantasy-desk{--desk-rail:clamp(132px,11vw,185px);padding-inline:var(--desk-rail);padding-top:clamp(132px,11vw,175px)}
+ .decor-orb{--motif-width:calc(var(--desk-rail) - 28px);left:14px;top:14px}
+ .decor-lantern{--motif-width:calc(var(--desk-rail) - 32px);right:16px;top:14px}
+ .decor-candles{--motif-width:calc(var(--desk-rail) - 36px);left:18px;top:clamp(355px,30vw,470px)}
+ .decor-books{--motif-width:calc(var(--desk-rail) - 32px);right:16px;top:clamp(490px,38vw,660px)}
+ .addon-orb-shards{--motif-width:76px;left:25px;top:calc(var(--desk-rail) + 5px);transform:rotate(-12deg)}
+ .addon-orb-coins{--motif-width:86px;left:19px;top:calc(var(--desk-rail) + 76px);transform:rotate(-8deg)}
+ .addon-orb-coin{--motif-width:24px;left:77px;top:calc(var(--desk-rail) + 145px);transform:rotate(27deg)}
+ .addon-orb-dust{--motif-width:80px;left:23px;top:clamp(580px,48vw,840px);opacity:.4;transform:rotate(-12deg)}
+ .addon-lamp-shards{--motif-width:82px;right:24px;top:calc(var(--desk-rail) + 6px);transform:rotate(12deg)}
+ .addon-satchel{--motif-width:calc(var(--desk-rail) - 48px);right:24px;top:calc(var(--desk-rail) + 118px);transform:rotate(65deg)}
+ .addon-book-shard{--motif-width:37px;right:51px;top:clamp(654px,52vw,850px);transform:rotate(15deg)}
+ .addon-book-coin{--motif-width:27px;right:30px;top:clamp(715px,57vw,923px);transform:rotate(-25deg)}
+ .addon-book-dust{--motif-width:85px;right:24px;top:clamp(776px,62vw,1000px);opacity:.35;transform:rotate(12deg)}
+ .addon-scroll{--motif-width:calc(var(--desk-rail) - 72px);left:28px;bottom:270px;transform:rotate(15deg)}
+ .addon-letter{--motif-width:calc(var(--desk-rail) - 42px);right:21px;bottom:236px;transform:rotate(-12deg)}
+ .addon-compass{--motif-width:calc(var(--desk-rail) - 45px);right:22px;bottom:77px;transform:rotate(8deg)}
+}
+/* Distinct contact + cast shadows stay behind each asset's alpha silhouette. */
+.desk-motif{filter:drop-shadow(2px 5px 2px #0b0604b3) drop-shadow(4px 11px 7px #100805a6)}
+.desk-addon{filter:drop-shadow(1px 3px 1px #0b0604b8) drop-shadow(3px 7px 4px #10080599)}
+.addon-orb-dust,.addon-book-dust{filter:none}
+@media(max-width:1200px){
+ .desk-addon,.decor-candles,.decor-books{display:none}
+ .fantasy-desk{padding-top:100px}
+ .decor-orb{--motif-width:76px;left:16px;top:10px}
+ .decor-lantern{--motif-width:70px;right:16px;top:10px}
+}
+@media(max-width:600px){
+ .fantasy-desk{padding-top:82px}
+ .decor-orb{--motif-width:60px;left:12px;top:8px}
+ .decor-lantern{--motif-width:56px;right:12px;top:8px}
+ .desk-motif{filter:drop-shadow(1px 3px 1px #0b0604b3) drop-shadow(2px 6px 4px #10080599)}
+}
