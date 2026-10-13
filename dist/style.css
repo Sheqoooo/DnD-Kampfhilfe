@@ -276,3 +276,9 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
  .workspace .combatant-list{grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));max-height:350px}
 }
 @media(max-width:600px){.workspace.parchment{border-width:18px;border-image-width:18px}.workspace>.initiative-panel,.workspace>.map-panel{padding:12px 8px}}
+
+/* Reserve the longest help text at the current width so tool switches cannot
+   shift the canvas or toolbar. Readable text remains responsive and unclipped. */
+.map-header #tool-description,.map-footer #map-hint{display:grid}
+#tool-description>span,#map-hint>span{grid-area:1/1;min-width:0}
+.map-help-sizing{visibility:hidden;pointer-events:none;user-select:none}
