@@ -210,7 +210,6 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 @media(min-width:1201px){
  .decor-cluster{isolation:isolate}
  .decor-cluster>.desk-motif{z-index:1}
- .refined-group{filter:drop-shadow(0 2px 2px #090402d9) drop-shadow(1px 4px 6px #0d0603b3) drop-shadow(0 0 13px #10070499)}
  .decor-cluster::before{content:none}
 }
 
@@ -235,3 +234,45 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
  :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list){scrollbar-width:auto;scrollbar-color:auto}
  :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-track,:is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-thumb{background:revert;border:revert;border-image:none}
 }
+
+/* The outer anchor retains the old object bounds. The inner shared canvas
+   compensates registration.json's 48 source pixels of shadow padding. */
+.decor-shadow-anchor{aspect-ratio:var(--original-aspect);filter:none}
+.decor-shadow-pair{position:absolute;left:calc(var(--motif-width) * var(--source-padding) * -1);top:calc(var(--motif-width) * var(--source-padding) * -1);width:calc(var(--motif-width) * var(--canvas-scale));aspect-ratio:var(--canvas-aspect);isolation:isolate;pointer-events:none}
+.decor-shadow-pair>img{display:block;width:100%;height:100%;object-fit:contain;filter:none;pointer-events:none;user-select:none}
+.decor-shadow-pair>.shadow{position:absolute;inset:0;opacity:.9;z-index:0}
+.decor-shadow-pair>.object{position:relative;z-index:1}
+
+/* Combat order and map share one surface, with a slimmer utility rail. */
+.workspace.parchment{grid-template-columns:230px minmax(0,1fr);gap:0;align-items:stretch;padding:0;border-width:22px;border-image-width:22px}
+.workspace>.initiative-panel,.workspace>.map-panel{border:0;border-image:none;padding:14px 12px;filter:none}
+.workspace>.initiative-panel::before,.workspace>.map-panel::before{content:none}
+.workspace>.initiative-panel{border-right:1px solid #94704455}
+.workspace .panel-heading h2{font-size:21px}
+.workspace .panel-heading .eyebrow{font-size:9px;letter-spacing:1.5px}
+.workspace .round-bar{margin:8px 0 6px;padding:5px 0;font-size:11px}
+.workspace .order-status{margin-bottom:8px;font-size:9px}
+.workspace .combatant-list{gap:7px;align-content:start;padding:3px 5px 3px 3px}
+.workspace .combatant{padding:8px}
+.workspace .combatant.active{padding:7px}
+.workspace .active-label{margin:-7px -7px 7px;padding:4px 7px;letter-spacing:1px}
+.workspace .combatant-top{grid-template-columns:32px 44px minmax(0,1fr);gap:4px 6px}
+.workspace .token-edit{width:44px;height:44px;min-height:44px}
+.workspace .token-edit .fantasy-token{--token-size:40px}
+.workspace .initiative-number small{display:none}
+.workspace .person-name{font-size:14px;line-height:1.25}
+.workspace .person-kind{font-size:9px;margin-top:1px}
+.workspace .hp-row{margin-top:6px;gap:5px}
+.workspace .hp-number{font-size:10px}
+.workspace .hp-number small{font-size:9px}
+.workspace .hp-controls,.workspace .reorder-controls{margin-top:6px;gap:4px}
+.workspace .hp-controls input{max-width:52px}
+.workspace .turn-footer{margin-top:10px;padding-top:10px}
+.workspace .turn-footer>div{font-size:12px}
+.workspace .turn-footer .primary{font-size:14px;padding-inline:1px;gap:4px}
+@media(max-width:900px){
+ .workspace.parchment{grid-template-columns:minmax(0,1fr)}
+ .workspace>.initiative-panel{border-right:0;border-bottom:1px solid #94704455}
+ .workspace .combatant-list{grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));max-height:350px}
+}
+@media(max-width:600px){.workspace.parchment{border-width:18px;border-image-width:18px}.workspace>.initiative-panel,.workspace>.map-panel{padding:12px 8px}}
