@@ -317,3 +317,6 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 /* Selection follows the card you used; the red turn banner is independent. */
 .workspace .combatant.selected-combatant{background:#f3d590;border-color:#bd8821;outline:2px solid #d3a13b;outline-offset:-2px;box-shadow:inset 0 0 0 1px #ffedb7,0 0 8px #c3912926}
 .workspace .combatant.selected-combatant .person-name::after{content:'◆';display:inline-block;margin-left:6px;font:700 11px system-ui,sans-serif;color:#a96d0f;vertical-align:middle}
+
+/* This version has painted mutual/contact shadows already in the artwork. */
+.decor-cluster-magic .refined-magic{filter:none;opacity:1;height:auto;object-fit:contain}
