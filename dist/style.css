@@ -199,8 +199,20 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .parchment,.party-panel,.enemy-library,.initiative-panel,.map-panel,dialog,.topbar,.chronicle{border-image-repeat:round}
 @media(min-width:1201px){
  .decor-cluster-notes{left:0;bottom:0}
- .decor-cluster-notes .refined-notes{left:-135px;bottom:-24px}
+ .decor-cluster-notes .refined-notes{--motif-width:clamp(450px,38vw,560px);left:-120px;bottom:-34px}
+ .page-footer{padding-left:200px}
  .decor-cluster-magic{left:-50px;top:-16px;transform:none}
  .decor-cluster-magic>.desk-motif:not(.refined-group){display:none}
  .decor-cluster-magic .refined-magic{display:block;--motif-width:clamp(320px,27vw,390px);left:0;top:0}
+}
+
+/* Broad table shadows plus a tight contact edge ground the raised props. */
+@media(min-width:1201px){
+ .decor-cluster{isolation:isolate}
+ .decor-cluster>.desk-motif{z-index:1}
+ .refined-group{filter:drop-shadow(2px 4px 2px #090402cc) drop-shadow(9px 18px 12px #0d0603ad) drop-shadow(16px 24px 24px #10070480)}
+ .decor-cluster::before{content:"";position:absolute;z-index:0;pointer-events:none;background:radial-gradient(ellipse,#080302b3 0%,#0d060380 35%,#0d060335 60%,transparent 76%)}
+ .decor-cluster-magic::before{left:-12px;top:55px;width:clamp(340px,29vw,420px);height:290px;transform:rotate(-8deg)}
+ .decor-cluster-travel::before{right:-85px;top:45px;width:clamp(370px,31vw,460px);height:290px}
+ .decor-cluster-notes::before{left:-140px;bottom:-12px;width:clamp(490px,41vw,600px);height:260px;transform:rotate(-10deg)}
 }
