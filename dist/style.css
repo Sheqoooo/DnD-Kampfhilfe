@@ -240,7 +240,7 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .decor-shadow-anchor{aspect-ratio:var(--original-aspect);filter:none}
 .decor-shadow-pair{position:absolute;left:calc(var(--motif-width) * var(--source-padding) * -1);top:calc(var(--motif-width) * var(--source-padding) * -1);width:calc(var(--motif-width) * var(--canvas-scale));aspect-ratio:var(--canvas-aspect);isolation:isolate;pointer-events:none}
 .decor-shadow-pair>img{display:block;width:100%;height:100%;object-fit:contain;filter:none;pointer-events:none;user-select:none}
-.decor-shadow-pair>.shadow{position:absolute;inset:0;opacity:.9;z-index:0}
+.decor-shadow-pair>.shadow{position:absolute;inset:0;opacity:1;z-index:0}
 .decor-shadow-pair>.object{position:relative;z-index:1}
 
 /* Combat order and map share one surface, with a slimmer utility rail. */
