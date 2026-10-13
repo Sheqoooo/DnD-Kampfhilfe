@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ensureTokenCodes,tokenCode,tokenSymbol} from '../dist/tokens.js';
+import {ensureTokenCodes,tokenCode,tokenSymbol,ensureEnemyNumbers,participantName} from '../dist/tokens.js';
 import {makeCampaign,saveEncounter,validCampaign} from '../dist/campaign.js';
 const person=(id,name,kind='enemy')=>({id,name,kind,x:25,y:25,hp:12,max:12,init:10});
 const encounter=people=>({version:1,id:'fight',title:'Tokens',round:1,active:null,people,shapes:[]});
@@ -39,4 +39,26 @@ test('invalid or duplicate imported codes are repaired without changing combat d
  assert.notEqual(state.people[0].tokenCode,state.people[1].tokenCode);
  for(let i=0;i<2;i++){const {tokenCode:ignored,...actual}=state.people[i];const {tokenCode:old,...expected}=before.people[i];assert.deepEqual(actual,expected);}
  state.people[0].tokenCode='<script>';ensureTokenCodes({characters:[],encounters:[]},state);assert.equal(tokenCode(state.people[0]),'G');
+});
+
+test('enemy display numbers survive sorting, removal, insertion and reload without renaming data',()=>{
+ const state=encounter([person('a','Kultist'),person('b','Kultist'),person('c','Kultist')]);
+ state.people[0].tokenCode='K';state.people[1].tokenCode='K6';state.people[2].tokenCode='K7';
+ ensureEnemyNumbers(state);assert.deepEqual(state.people.map(participantName),['Kultist 1','Kultist 6','Kultist 7']);
+ state.people.reverse();ensureEnemyNumbers(state);assert.deepEqual(state.people.map(participantName),['Kultist 7','Kultist 6','Kultist 1']);
+ state.people.pop();state.people.push({...person('d','Kultist'),tokenCode:'K8'});ensureEnemyNumbers(state);
+ assert.deepEqual(state.people.map(participantName),['Kultist 7','Kultist 6','Kultist 8']);
+ const restored=JSON.parse(JSON.stringify(state));ensureEnemyNumbers(restored);assert.deepEqual(restored,state);
+ assert.ok(state.people.every(p=>p.name==='Kultist'&&p.hp===12&&p.x===25&&p.y===25));
+});
+test('legacy explicit numbers and unnumbered enemies receive distinct numbers',()=>{
+ const state=encounter([person('a','Goblin'),person('b','Goblin 1'),person('c','Goblin')]);
+ ensureEnemyNumbers(state);assert.equal(new Set(state.people.map(participantName)).size,3);
+ assert.equal(participantName(state.people[1]),'Goblin 1');assert.equal(participantName(person('hero','Lyra','ally')),'Lyra');
+});
+
+test('new duplicate enemies get matching numbered names and map codes',()=>{
+ const state=encounter([person('a','Goblin 1'),person('b','Goblin 2')]),campaign={characters:[],encounters:[]};
+ ensureEnemyNumbers(state);ensureTokenCodes(campaign,state);
+ for(let i=3;i<=4;i++){state.people.push(person('new'+i,'Goblin'));ensureEnemyNumbers(state);ensureTokenCodes(campaign,state);const p=state.people.at(-1);assert.equal(participantName(p),'Goblin '+i);assert.equal(tokenCode(p),'G'+i);}
 });

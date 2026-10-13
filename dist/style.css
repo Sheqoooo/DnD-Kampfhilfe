@@ -308,3 +308,8 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .workspace.order-drag-overlay{position:fixed;display:block;z-index:100;pointer-events:none;user-select:none;margin:0;padding:0;border:0;filter:none;transform:rotate(-1deg);opacity:.96}
 .order-drag-overlay .combatant{margin:0;box-shadow:0 8px 18px #1b0d0870;cursor:grabbing}
 .order-drag-overlay *{pointer-events:none!important}
+
+/* Separate the icon and code within the compact 40px combat medal. */
+.workspace .combatant .token-symbol{top:17%;left:0;right:0}
+.workspace .combatant .token-symbol .ui-icon{width:13px;height:13px;stroke-width:2.2}
+.workspace .combatant .token-code{top:59%;font-size:var(--list-code-size,11px);line-height:1;letter-spacing:0}

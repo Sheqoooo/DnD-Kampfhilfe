@@ -22,7 +22,7 @@ export function ensureTokenCodes(campaign,state){
  for(const [key,people] of groups){
   let code=assigned.get(key);
   if(!code){
-   const name=people[0].name,base=firstLetter(name),number=String(name).match(/\s+(\d{1,5})\s*$/)?.[1];
+   const name=people[0].name,base=firstLetter(name),number=String(name).match(/\s+(\d{1,5})\s*$/)?.[1]||(people[0].kind==='enemy'&&validEnemyNumber(people[0].enemyNumber)?String(people[0].enemyNumber):null);
    code=base+(number||'');let n=number?Number(number)+1:2;
    while(used.has(code))code=base+n++;
    used.set(code,key);
@@ -30,3 +30,16 @@ export function ensureTokenCodes(campaign,state){
   for(const p of people)p.tokenCode=code;
  }
 }
+
+// Encounter-local display numbers are stable across sorting, removal and reload.
+const enemyBase=p=>String(p.name).trim().replace(/\s+\d+$/, '');
+const validEnemyNumber=n=>Number.isInteger(n)&&n>0&&n<1000000;
+export function ensureEnemyNumbers(state){
+ const groups=new Map();for(const p of state.people){if(p.kind!=='enemy')continue;const key=enemyBase(p).toLocaleLowerCase('de');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);}
+ for(const people of groups.values()){
+  const used=new Set(),pending=[];
+  for(const p of people){const explicit=String(p.name).match(/\s+(\d+)$/)?.[1],code=tokenCode(p).match(/(\d+)$/)?.[1],n=validEnemyNumber(p.enemyNumber)?p.enemyNumber:Number(explicit||code);if(validEnemyNumber(n)&&!used.has(n)){p.enemyNumber=n;used.add(n);}else pending.push(p);}
+  let next=1;for(const p of pending){while(used.has(next))next++;p.enemyNumber=next;used.add(next++);}
+ }
+}
+export function participantName(p){return p.kind==='enemy'&&validEnemyNumber(p.enemyNumber)?enemyBase(p)+' '+p.enemyNumber:p.name;}
