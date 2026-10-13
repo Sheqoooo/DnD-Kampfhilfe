@@ -72,3 +72,7 @@ Desktop widths above 1200px reserve 132–185px side lanes and a clear top margi
 ## Curated decorative groups
 
 The evenly spaced edge-lane layout is superseded by three explicit aria-hidden subgroups in the decorative layer: upper-left magic (orb, books, candles, violet crystals and coins), upper-right travel (lantern, 190px satchel, amber crystals and coin), and lower-left notes (scroll, letter, compass). Desktop uses a reserved top band for the two wider still lifes while side insets keep lower props clear of panels. Existing shadows are retained. Transparent image bounds may come close within groups, but important visible silhouettes remain readable. At ≤1200px only the orb and lantern remain in the header band. All positions are deterministic; no interactions or stored data change.
+
+Compact header correction: the desktop header occupies the clear central space between the corner groups at 32px from the top, with the full-width content following below their inner silhouettes. Coins/crystals at lower corners stay within the edge lanes. Map token foreignObject and HTML wrapper now have a 12px transparent margin on every side; the medal keeps its original 56px size and exact center, while the soft halo can fade without a square clip.
+
+The combat-history details element uses the shared parchment 9-slice border, a 44px accessible summary hit area, and native keyboard/collapse behavior. The flat beige background is removed.

@@ -52,7 +52,7 @@ function renderMap(){
   const active=p.id===state.active,g=svgEl('g',{'data-token':p.id,transform:`translate(${p.x} ${p.y})`,tabindex:0,role:'button','aria-label':`${p.name}, Kürzel ${tokenCode(p)}, ${p.hp} von ${p.max} HP${active?', am Zug':''}. Pfeiltasten zum Verschieben.`,opacity:p.hp===0?.5:1});
   const visual=svgEl('g',{class:'map-token-visual',transform:`scale(${markerScale})`});
   visual.append(svgEl('circle',{r:27,fill:'transparent'}));
-  const content=svgEl('foreignObject',{x:-28,y:-28,width:56,height:56,'pointer-events':'none','aria-hidden':'true'});
+  const content=svgEl('foreignObject',{x:-40,y:-40,width:80,height:80,'pointer-events':'none','aria-hidden':'true'});
   const wrapper=document.createElement('div');wrapper.setAttribute('xmlns','http://www.w3.org/1999/xhtml');wrapper.className='map-token-content';wrapper.innerHTML=tokenMarkup(p,{active,decorative:true});content.append(wrapper);visual.append(content);g.append(visual);
   if(view.zoom>=.6){const name=svgEl('text',{y:38*markerScale,'text-anchor':'middle',fill:'#49301a','font-size':10*markerScale,'font-weight':600,'paint-order':'stroke',stroke:'#e8d7ad','stroke-width':3,'pointer-events':'none','aria-hidden':'true'});name.textContent=p.name;g.append(name);}
   tokens.append(g);

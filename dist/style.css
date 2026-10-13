@@ -102,7 +102,7 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
 .decor-cluster{position:absolute;pointer-events:none;user-select:none}
 .desk-addon{transform-origin:center;pointer-events:none}
 @media(min-width:1201px){
- .fantasy-desk{--desk-rail:clamp(150px,12vw,190px);padding-inline:var(--desk-rail);padding-top:270px}
+ .fantasy-desk{--desk-rail:clamp(150px,12vw,190px);padding-inline:var(--desk-rail);padding-top:32px}
  .decor-cluster-magic{left:16px;top:16px;width:270px;height:310px}
  .decor-cluster-travel{right:16px;top:16px;width:340px;height:280px}
  .decor-cluster-notes{left:16px;bottom:80px;width:150px;height:235px}
@@ -110,14 +110,14 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
  .decor-cluster-magic .decor-books{--motif-width:110px;left:142px;right:auto;top:12px;transform:rotate(-8deg)}
  .decor-cluster-magic .decor-candles{--motif-width:110px;left:2px;top:145px}
  .decor-cluster-magic .addon-orb-shards{--motif-width:72px;left:103px;top:137px;transform:rotate(-12deg)}
- .decor-cluster-magic .addon-orb-coins{--motif-width:75px;left:147px;top:182px;transform:rotate(-8deg)}
- .decor-cluster-magic .addon-orb-coin{--motif-width:24px;left:108px;top:234px;transform:rotate(27deg)}
+ .decor-cluster-magic .addon-orb-coins{--motif-width:75px;left:54px;top:245px;transform:rotate(-8deg)}
+ .decor-cluster-magic .addon-orb-coin{--motif-width:24px;left:100px;top:314px;transform:rotate(27deg)}
  .decor-cluster-magic .addon-book-shard{--motif-width:33px;left:197px;right:auto;top:145px;transform:rotate(15deg)}
- .decor-cluster-magic .addon-orb-dust{--motif-width:80px;left:9px;top:272px;opacity:.35;transform:rotate(-12deg)}
+ .decor-cluster-magic .addon-orb-dust{--motif-width:80px;left:9px;top:355px;opacity:.35;transform:rotate(-12deg)}
  .decor-cluster-travel .decor-lantern{--motif-width:130px;left:12px;right:auto;top:12px}
  .decor-cluster-travel .addon-satchel{--motif-width:190px;left:130px;right:auto;top:65px;transform:rotate(65deg)}
- .decor-cluster-travel .addon-lamp-shards{--motif-width:80px;left:102px;right:auto;top:149px;transform:rotate(12deg)}
- .decor-cluster-travel .addon-book-coin{--motif-width:24px;left:137px;right:auto;top:216px;transform:rotate(-25deg)}
+ .decor-cluster-travel .addon-lamp-shards{--motif-width:80px;left:210px;right:auto;top:200px;transform:rotate(12deg)}
+ .decor-cluster-travel .addon-book-coin{--motif-width:24px;left:220px;right:auto;top:252px;transform:rotate(-25deg)}
  .decor-cluster-travel .addon-book-dust{--motif-width:70px;left:265px;right:auto;top:245px;opacity:.35;transform:rotate(12deg)}
  .decor-cluster-notes .addon-scroll{--motif-width:64px;left:10px;top:0;bottom:auto;transform:rotate(15deg)}
  .decor-cluster-notes .addon-letter{--motif-width:108px;left:24px;right:auto;top:82px;bottom:auto;transform:rotate(-12deg)}
@@ -143,3 +143,17 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
  .decor-cluster-travel .decor-lantern{--motif-width:56px}
  .desk-motif{filter:drop-shadow(1px 3px 1px #0b0604b3) drop-shadow(2px 6px 4px #10080599)}
 }
+
+@media(min-width:1201px){
+ .topbar{margin-left:140px;margin-right:200px;flex-wrap:wrap;gap:10px}
+ .topbar .tagline{display:none}
+ main{padding-top:72px}
+}
+/* Padded SVG/HTML viewport lets the circular glow fade beyond the medal. */
+.map-token-content{width:80px;height:80px;padding:12px;overflow:visible}
+.map-token-content .fantasy-token{width:56px;height:56px}
+/* History uses the same parchment asset and preserved corners as the other panels. */
+.chronicle{border:12px solid transparent;border-image:var(--paper-image) 110 fill / 12px / 0 stretch;background:transparent;border-radius:0;padding:2px 12px;box-shadow:0 5px 12px #160c0540}
+.chronicle summary{min-height:44px;display:list-item;padding:11px 0;font:600 17px Georgia,serif;color:var(--ink)}
+.chronicle summary::marker{color:#79572e;font-size:13px}.chronicle[open] summary{border-bottom:1px solid var(--line)}
+@media(max-width:600px){.chronicle{border-width:10px;border-image-width:10px;padding-inline:8px}.chronicle summary{font-size:15px}}
