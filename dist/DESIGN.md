@@ -94,3 +94,5 @@ Corner and frame corrections: the lower writing group is anchored at the physica
 Lower-left writing group enlarged to 450–560px source width with a -120px outer offset, extending farther upward and inward from the physical bottom corner. Desktop footer text moves inward to avoid the larger compass. Narrow-screen hiding is unchanged.
 
 Composite decorations combine a tight contact shadow with two diffuse offset cast shadows and a soft elliptical table shadow below each cluster. Shadows share the clipped inert decoration layer and are disabled with their desktop clusters on narrow screens.
+
+Shadow correction: remove the elliptical cluster shadows and large cast offsets that made props appear suspended. Three silhouette-following layers now use 0–4px offsets: tight contact, soft near-contact, and a centred 13px ambient shadow. Decoration sizes and positions stay unchanged.
