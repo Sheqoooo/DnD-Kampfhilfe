@@ -96,3 +96,5 @@ Lower-left writing group enlarged to 450–560px source width with a -120px oute
 Composite decorations combine a tight contact shadow with two diffuse offset cast shadows and a soft elliptical table shadow below each cluster. Shadows share the clipped inert decoration layer and are disabled with their desktop clusters on narrow screens.
 
 Shadow correction: remove the elliptical cluster shadows and large cast offsets that made props appear suspended. Three silhouette-following layers now use 0–4px offsets: tight contact, soft near-contact, and a centred 13px ambient shadow. Decoration sizes and positions stay unchanged.
+
+Scrollbars: four supplied WebPs skin native scrollbars only in combatant, character, enemy-template and history lists. Bronze/dark CSS fallback, forced-colors reset, no custom scrolling handlers. Combatant grid now has a zero-minimum track; HP label wraps onto its own row and HP controls fit instead of forcing horizontal overflow. Thumb end caps use border-image; track grain repeats. Persistent publication authorization applies.

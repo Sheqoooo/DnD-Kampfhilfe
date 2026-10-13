@@ -213,3 +213,25 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
  .refined-group{filter:drop-shadow(0 2px 2px #090402d9) drop-shadow(1px 4px 6px #0d0603b3) drop-shadow(0 0 13px #10070499)}
  .decor-cluster::before{content:none}
 }
+
+/* Native list scrollbars, with a coloured fallback outside Blink/WebKit. */
+.combatant-list{grid-template-columns:minmax(0,1fr)}
+.combatant,.combatant-top,.hp-row,.hp-track,.reorder-controls{min-width:0}
+.hp-controls{flex-wrap:wrap}
+.hp-controls>span{flex-basis:100%;letter-spacing:.7px}
+.hp-controls input{min-width:0;max-width:60px;flex:1}
+:is(.combatant-list,.character-list,.enemy-library-list,.encounter-list){scrollbar-width:thin;scrollbar-color:#b88a40 #39271b;scrollbar-gutter:stable}
+@supports selector(::-webkit-scrollbar){
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list){scrollbar-width:auto;scrollbar-color:auto}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar{width:14px;height:14px}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-track{background:#39271b url('./assets/scroll-track-vertical.webp') center / 100% auto repeat-y;border-radius:3px}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-thumb{background:#b88a40;border:1px solid #5b391b;border-image:url('./assets/scroll-thumb-vertical.webp') 55 0 fill / 10px 0 / 0 stretch;min-height:36px;border-radius:3px}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-track:horizontal{background-image:url('./assets/scroll-track-horizontal.webp');background-size:auto 100%;background-repeat:repeat-x}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-thumb:horizontal{border-image-source:url('./assets/scroll-thumb-horizontal.webp');border-image-slice:0 55 fill;border-image-width:0 10px}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-thumb:hover{background-color:#dab161}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-corner{background:#39271b}
+}
+@media(forced-colors:active){
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list){scrollbar-width:auto;scrollbar-color:auto}
+ :is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-track,:is(.combatant-list,.character-list,.enemy-library-list,.encounter-list)::-webkit-scrollbar-thumb{background:revert;border:revert;border-image:none}
+}
