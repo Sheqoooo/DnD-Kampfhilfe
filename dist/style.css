@@ -299,3 +299,12 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .workspace .order-status{font-size:12px;font-weight:500;line-height:1.4}
 .workspace .round-bar{font-size:13px;font-weight:550}
 .workspace .turn-footer>div{font-size:14px;font-weight:600}
+
+/* One moving card, an insertion slot, and live movement of the other entries. */
+.combatant-list{position:relative}
+.combatant.order-placeholder{border:2px dashed #a47b3f!important;background:#d6bb8759!important;box-shadow:inset 0 0 0 1px #e8d4ae!important}
+.combatant.order-placeholder>*{visibility:hidden}
+.combatant.native-order-placeholder{opacity:.35}
+.workspace.order-drag-overlay{position:fixed;display:block;z-index:100;pointer-events:none;user-select:none;margin:0;padding:0;border:0;filter:none;transform:rotate(-1deg);opacity:.96}
+.order-drag-overlay .combatant{margin:0;box-shadow:0 8px 18px #1b0d0870;cursor:grabbing}
+.order-drag-overlay *{pointer-events:none!important}
