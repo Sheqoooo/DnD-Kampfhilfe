@@ -193,3 +193,14 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 }
 @media(max-width:1200px){.fantasy-desk::after{opacity:.65}}
 @media(max-width:600px){.fantasy-desk::after{opacity:.45}}
+
+/* Keep the physical corner props at the desk edge; repeat paper grain at its
+   border scale instead of stretching it along a tall panel. */
+.parchment,.party-panel,.enemy-library,.initiative-panel,.map-panel,dialog,.topbar,.chronicle{border-image-repeat:round}
+@media(min-width:1201px){
+ .decor-cluster-notes{left:0;bottom:0}
+ .decor-cluster-notes .refined-notes{left:-135px;bottom:-24px}
+ .decor-cluster-magic{left:-50px;top:-16px;transform:none}
+ .decor-cluster-magic>.desk-motif:not(.refined-group){display:none}
+ .decor-cluster-magic .refined-magic{display:block;--motif-width:clamp(320px,27vw,390px);left:0;top:0}
+}
