@@ -76,3 +76,13 @@ The evenly spaced edge-lane layout is superseded by three explicit aria-hidden s
 Compact header correction: the desktop header occupies the clear central space between the corner groups at 32px from the top, with the full-width content following below their inner silhouettes. Coins/crystals at lower corners stay within the edge lanes. Map token foreignObject and HTML wrapper now have a 12px transparent margin on every side; the medal keeps its original 56px size and exact center, while the soft halo can fade without a square clip.
 
 The combat-history details element uses the shared parchment 9-slice border, a 44px accessible summary hit area, and native keyboard/collapse behavior. The flat beige background is removed.
+
+## Refinement package
+
+Read both dnd-refinement instructions; the user's persistent direct-publication authorization supersedes their default staging instruction. Adopt two composite illustrations only: upper-right travel and lower-left writing. Keep the upper-left singles, and keep all original singles as the mobile alternatives. Never show a composite with its corresponding singles. No new decoration space is reserved; desk-clean.webp and the existing compact layout remain.
+
+Refined WebP skins are self-contained SVG wrappers containing the supplied pixels. Header transparent margins are excluded with its SVG viewBox; mid-edge diamonds are replaced with neighboring straight edge pixels via clipped image reuse, then rendered as fixed 14px SVG overlays in CSS. Panel 9-slice source cuts are 150px; cropped header cuts are 72px vertically and 102px horizontally. All supplied originals are preserved. The texture centre still scales, and this is an app-specific skin rather than a general arbitrary-size frame library.
+
+The reported large wooden rectangle was not reproducible at 1440px while scrolling the current application. DOM hit testing returned map geometry, and the only wooden rectangle was the intended toolbar. Map-stage stacking is isolated and the toolbar border/overflow explicitly bounded; coordinates and transformations are unchanged.
+
+Verified 1440px, 1024px and 390px, scroll-to-map/end, 30 heroes/36 templates/44 participants with unique codes, popup fields and no horizontal dialog overflow, drawing, selection mode, figure movement, camera pan, zoom, undo and redo. Asset paths are relative to dist/assets and work under /DnD-Kampfhilfe/dist/. Remaining visual difference: the upper-left cluster intentionally keeps older separate art, the unused two corner composites are alternatives, and scarce edge space makes the lower writing illustration smaller than the full concept sheet.

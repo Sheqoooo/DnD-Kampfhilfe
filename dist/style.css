@@ -1,7 +1,7 @@
 /* Tabletop theme. Asset URLs are relative so the app also works under a repository path.
    Replace --desk-image to swap the table. Future decoration belongs in a separate,
    pointer-events:none layer; layout never depends on positions inside the artwork. */
-:root{color-scheme:light;--desk-image:url('./assets/desk-clean.webp');--paper-image:url('./assets/parchment-panel.png');--button-image:url('./assets/button-default.png');--ink:#352313;--muted:#735636;--line:#94704455;--accent:#8e2c27;--card:#e9cc9e;--map:#e8d7ad;--radius:7px;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);font-size:14px}
+:root{color-scheme:light;--desk-image:url('./assets/desk-clean.webp');--paper-image:url('./assets/parchment-refined-skin.svg');--button-image:url('./assets/button-default.png');--ink:#352313;--muted:#735636;--line:#94704455;--accent:#8e2c27;--card:#e9cc9e;--map:#e8d7ad;--radius:7px;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);font-size:14px}
 *{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.48}button,input,select,textarea,a,summary{touch-action:manipulation}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #9b72cf;outline-offset:3px}[hidden]{display:none!important}h1,h2,h3,p{margin:0}h2,h3{font-family:Georgia,'Times New Roman',serif}h2{font-size:23px;font-weight:600}h3{font-size:18px}button{transition:filter .15s,opacity .15s}button:hover:not(:disabled){filter:brightness(1.12)}button:active:not(:disabled){filter:brightness(.9)}
 .fantasy-desk{min-height:100vh;padding:clamp(42px,6vw,94px) clamp(14px,7vw,110px) 45px;background:#28180f var(--desk-image) center/cover fixed;color:var(--ink);isolation:isolate}
 
@@ -157,3 +157,30 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
 .chronicle summary{min-height:44px;display:list-item;padding:11px 0;font:600 17px Georgia,serif;color:var(--ink)}
 .chronicle summary::marker{color:#79572e;font-size:13px}.chronicle[open] summary{border-bottom:1px solid var(--line)}
 @media(max-width:600px){.chronicle{border-width:10px;border-image-width:10px;padding-inline:8px}.chronicle summary{font-size:15px}}
+
+/* Refined papers use source-specific slices; edge diamonds stay at a fixed size. */
+.parchment,.party-panel,.enemy-library,.initiative-panel,.map-panel,dialog{position:relative;border-image-slice:150 fill;border-width:26px;border-image-width:26px;padding:12px}
+.topbar{position:relative;border-image-source:url('./assets/header-refined-skin.svg');border-image-slice:72 102 fill;border-width:24px;border-image-width:24px;padding:8px 12px}
+.chronicle{position:relative;border-image-slice:150 fill;border-width:18px;border-image-width:18px}
+.parchment::before,.party-panel::before,.enemy-library::before,.initiative-panel::before,.map-panel::before,dialog::before,.topbar::before,.chronicle::before{content:"";position:absolute;inset:-15px;pointer-events:none;background-image:url('./assets/frame-diamond.svg'),url('./assets/frame-diamond.svg'),url('./assets/frame-diamond.svg'),url('./assets/frame-diamond.svg');background-repeat:no-repeat;background-size:14px 14px;background-position:50% 0,50% 100%,0 50%,100% 50%}
+.topbar::before{inset:-13px}.chronicle::before{inset:-10px;background-size:12px 12px}
+.refined-group{display:none}
+@media(min-width:1201px){
+ .decor-cluster-travel>.desk-motif:not(.refined-group),.decor-cluster-notes>.desk-motif:not(.refined-group){display:none}
+ .decor-cluster-travel .refined-travel{display:block;--motif-width:clamp(265px,22vw,310px);left:auto;right:-6px;top:-8px}
+ .decor-cluster-notes .refined-notes{display:block;--motif-width:180px;left:-8px;top:auto;bottom:0}
+}
+/* Dark leather edges surround light, readable fields rather than recoloring their text. */
+#enemy-search,select,input:not([type=checkbox]):not([type=radio]):not(.encounter-title),textarea{border:5px solid transparent;border-image:var(--button-image) 120 / 5px / 0 stretch;background:#f2dfb7;background-clip:padding-box;border-radius:0;color:#352313}
+#enemy-search{padding-left:30px}.enemy-search>.ui-icon{left:11px;z-index:1}
+.map-zoom-actions button,.add-button,.hp-controls button,.reorder-controls button,.input-action button,.enemy-template button{border:7px solid transparent;border-image:var(--button-image) 120 fill / 7px / 0 stretch;background:transparent;border-radius:0;color:#ffe6ad;min-width:44px;min-height:44px;padding:2px 5px}
+.map-zoom-actions #zoom-reset{padding-inline:8px}.map-zoom-actions output{color:var(--ink)}
+.drawing-toolbar button.selected{outline:2px solid #ffcc5b;outline-offset:-2px;box-shadow:inset 0 0 0 2px #704011;filter:brightness(1.25)}
+.map-stage{isolation:isolate}.drawing-toolbar{overflow:hidden;border-image-outset:0}
+@media(max-width:1100px){.parchment,.party-panel,.enemy-library,.initiative-panel,.map-panel,dialog{border-width:22px;border-image-width:22px;padding:10px}}
+@media(max-width:600px){.parchment,.party-panel,.enemy-library,.initiative-panel,.map-panel,dialog{border-width:20px;border-image-width:20px;padding:8px}.topbar{border-width:20px;border-image-width:20px;padding:8px}.chronicle{border-width:16px;border-image-width:16px}.parchment::before,.party-panel::before,.enemy-library::before,.initiative-panel::before,.map-panel::before,dialog::before{inset:-11px;background-size:12px 12px}}
+
+.hp-controls button.damage{color:#ffe6ad}
+.hp-controls button{font-size:20px;font-weight:650}
+/* A scrollable dialog must not count its decorative frame as overflowing content. */
+dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
