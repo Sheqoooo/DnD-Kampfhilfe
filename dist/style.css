@@ -282,3 +282,20 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .map-header #tool-description,.map-footer #map-hint{display:grid}
 #tool-description>span,#map-hint>span{grid-area:1/1;min-width:0}
 .map-help-sizing{visibility:hidden;pointer-events:none;user-select:none}
+
+/* Focus on identity and HP; one accessible grip replaces the reorder row. */
+.workspace .combatant-top .turn-drag-handle{grid-column:3;grid-row:1;justify-self:end;margin:0;padding:0;width:44px;height:44px;min-height:44px;border:0;background:transparent;color:#735636;font:700 28px system-ui,sans-serif;line-height:1;cursor:grab;touch-action:none;user-select:none}
+.workspace .combatant-top .turn-drag-handle:active{cursor:grabbing}
+.workspace .person-name{font-size:18px;font-weight:700;line-height:1.2}
+.workspace .person-kind{font-size:12px;font-weight:500;margin-top:3px}
+.workspace .hp-row{margin-top:9px;gap:6px;flex-wrap:wrap}
+.workspace .hp-track{min-width:50px;height:9px}
+.workspace .hp-number{font-size:13px;font-weight:700}
+.workspace .hp-number small{font-size:12px;font-weight:600}
+.workspace .hp-controls{margin-top:9px;gap:5px}
+.workspace .hp-controls>span{font-size:11px;font-weight:650;letter-spacing:.3px}
+.workspace .hp-controls input{font-size:14px;font-weight:650;max-width:none;height:40px}
+.workspace .active-label{font-size:10px;font-weight:750;letter-spacing:1px}
+.workspace .order-status{font-size:12px;font-weight:500;line-height:1.4}
+.workspace .round-bar{font-size:13px;font-weight:550}
+.workspace .turn-footer>div{font-size:14px;font-weight:600}
