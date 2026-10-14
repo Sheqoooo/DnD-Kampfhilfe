@@ -120,3 +120,5 @@ Top-left grounded artwork v2: there was no prior grounded WebP in the running pr
 Large corner arrangement: desktop upper-left grows to 540–660px with left/top -180/-100; upper-right grows to 560–700px with more exterior cropping; writing grows to 700–880px at -260/-58. Original aspect ratios, registered paired layers, integrated grounded-art shadows, app layout and table clipping remain. Mobile alternatives are unchanged. No extra decoration area is reserved.
 
 Corner balance adjustment: reduce all three desktop groups by 15% and proportionally reduce exterior offsets. Edge cropping, aspect ratios, shadow registration, mobile alternatives and UI layout remain unchanged.
+
+Header spacing: desktop main top padding reduced from 72px to 8px, removing 64px of unused separation below the title plaque. Existing header margin, mobile spacing, decoration and controls are preserved.

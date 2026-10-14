@@ -147,7 +147,7 @@ button .ui-icon{pointer-events:none}.snap-control>span{display:inline-flex;align
 @media(min-width:1201px){
  .topbar{margin-left:140px;margin-right:200px;flex-wrap:wrap;gap:10px}
  .topbar .tagline{display:none}
- main{padding-top:72px}
+ main{padding-top:8px}
 }
 /* Padded SVG/HTML viewport lets the circular glow fade beyond the medal. */
 .map-token-content{width:80px;height:80px;padding:12px;overflow:visible}
