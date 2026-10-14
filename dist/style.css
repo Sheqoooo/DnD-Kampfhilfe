@@ -323,8 +323,8 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 
 /* Larger corner props extend beyond the desk instead of reserving UI space. */
 @media(min-width:1201px){
- .decor-cluster-magic{left:-180px;top:-100px}
- .decor-cluster-magic .refined-magic{--motif-width:clamp(540px,45vw,660px)}
- .decor-cluster-travel .refined-travel{--motif-width:clamp(560px,46vw,700px);right:-130px;top:-70px}
- .decor-cluster-notes .refined-notes{--motif-width:clamp(700px,58vw,880px);left:-260px;bottom:-58px}
+ .decor-cluster-magic{left:-153px;top:-85px}
+ .decor-cluster-magic .refined-magic{--motif-width:clamp(459px,38.25vw,561px)}
+ .decor-cluster-travel .refined-travel{--motif-width:clamp(476px,39.1vw,595px);right:-110px;top:-60px}
+ .decor-cluster-notes .refined-notes{--motif-width:clamp(595px,49.3vw,748px);left:-221px;bottom:-49px}
 }
