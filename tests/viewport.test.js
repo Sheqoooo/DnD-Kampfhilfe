@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {fullView,zoomView,panView} from '../dist/viewport.js';
+import {fullView,zoomView,panView,wheelView} from '../dist/viewport.js';
 
 test('zoom keeps the chosen map point at its relative screen position',()=>{
  const before={x:200,y:140,width:500,height:350,zoom:2},anchor={x:425,y:280};
@@ -39,4 +39,19 @@ test('panning clamps at the expanded world edges and works at 100 percent',()=>{
 });
 test('invalid zoom factors leave the camera unchanged',()=>{
  for(const factor of [0,-1,NaN,Infinity])assert.deepEqual(zoomView(fullView(),factor),fullView());
+});
+
+test('two-finger wheel panning preserves figures and accounts for display scale',()=>{
+ const view=fullView(),before=structuredClone(view),moved=wheelView(view,{deltaX:30,deltaY:20,deltaMode:0},.5);
+ assert.equal(moved.x,60);assert.equal(moved.y,40);assert.equal(moved.zoom,1);assert.deepEqual(view,before);
+});
+test('wheel line and page units pan consistently',()=>{
+ assert.equal(wheelView(fullView(),{deltaY:2,deltaMode:1},1).y,32);
+ assert.equal(wheelView(fullView(),{deltaY:1,deltaMode:2},1,undefined,400).y,400);
+});
+test('pinch wheel zoom keeps the cursor anchor fixed and remains bounded',()=>{
+ const view=fullView(),anchor={x:250,y:175},zoomed=wheelView(view,{deltaY:-20,ctrlKey:true},.5,anchor);
+ assert.ok(zoomed.zoom>1);assert.ok(Math.abs((anchor.x-zoomed.x)/zoomed.width-.25)<1e-9);
+ assert.ok(Math.abs((anchor.y-zoomed.y)/zoomed.height-.25)<1e-9);
+ assert.equal(wheelView(view,{deltaY:30},0).zoom,1);
 });

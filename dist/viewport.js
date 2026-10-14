@@ -11,3 +11,12 @@ export function zoomView(view,factor,anchor={x:view.x+view.width/2,y:view.y+view
 export function panView(view,dx,dy){
  return {...view,x:axis(view.x-dx,view.width,WORLD.left,WORLD.right),y:axis(view.y-dy,view.height,WORLD.top,WORLD.bottom)};
 }
+
+// Normalize native trackpad/mouse wheel deltas in screen pixels.
+export function wheelView(view,event,screenScale,anchor,pagePixels=700){
+ if(!(screenScale>0))return {...view};
+ const unit=event.deltaMode===1?16:event.deltaMode===2?pagePixels:1;
+ const dx=(Number.isFinite(event.deltaX)?event.deltaX:0)*unit,dy=(Number.isFinite(event.deltaY)?event.deltaY:0)*unit;
+ if(event.ctrlKey||event.metaKey)return zoomView(view,Math.exp(-clamp(dy,-100,100)*.006),anchor);
+ return panView(view,-dx/screenScale,-dy/screenScale);
+}
