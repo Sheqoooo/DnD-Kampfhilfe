@@ -126,3 +126,10 @@ Header spacing: desktop main top padding reduced from 72px to 8px, removing 64px
 Small-screen/trackpad view: unified turn summary with an optional order-panel toggle and next-turn control when hidden; views at or below 900px start collapsed. Short laptop views or widths at or below 1440px use a 200px rail, viewport-relative 280–440px canvas and 34px tools for fine pointers; coarse-pointer tool targets remain 44px. Native two-finger wheel deltas pan the camera, pinch/ctrl-wheel zoom around the pointer, Option-wheel leaves page scrolling available. Wheel rendering is batched per animation frame; Safari gesture events have a separate cumulative-scale path. Walls, rectangles and ellipses accept two clicks with a live preview, while drag drawing remains supported; Escape cancels the pending start. Data/coordinates/history are unchanged.
 
 Compact-camera verification: marker minimum size now uses the SVG screen transform scale rather than width/viewWidth, so the existing 28px minimum also holds in wide, short viewports and after hiding the order rail.
+
+
+## Compact map correction — 2026-10-14
+
+The map title now shares the combat-order toggle row. Zoom, multiselect, selection deletion, grid snapping and optional help use a single 34px controls row on desktop. Tool-specific instructions and trackpad guidance remain in a closed-by-default help popover; neither tool changes nor opening help alters canvas position. Drawing mode, automatic connection and clear remain in the short footer. No encounter or character schema changed.
+
+At 1280×720, the area above the frame decreased from 261px to 125px and canvas height increased from 374px to 550px. The frame now uses viewport height instead of the former 52vh cap. At 1366×768 it is 598px tall. At 390×844 the order rail starts collapsed, controls wrap without horizontal overflow and all eight drawing tools stay in one row. Browser checks covered help layout stability, tool changes, two-click room placement and undo, multiselect, zoom/reset and order collapse. Existing 65 tests pass.
