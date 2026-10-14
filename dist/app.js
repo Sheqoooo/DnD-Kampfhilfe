@@ -48,7 +48,7 @@ function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDr
 function renderMap(){
  renderDoorMask();const shapes=$('#shapes'),tokens=$('#tokens');
  shapes.replaceChildren(...[...state.shapes].sort((a,b)=>(a.type==='door'?2:Number(!!a.interior))-(b.type==='door'?2:Number(!!b.interior))).map(s=>makeShape(s)));tokens.replaceChildren();
- const screenScale=$('#map').clientWidth/view.width,markerScale=Math.max(1,28/(56*screenScale));
+ const screenScale=$('#map').getScreenCTM().a,markerScale=Math.max(1,28/(56*screenScale));
  for(const p of state.people){
   const active=p.id===state.active,g=svgEl('g',{'data-token':p.id,transform:`translate(${p.x} ${p.y})`,tabindex:0,role:'button','aria-label':`${participantName(p)}, Kürzel ${tokenCode(p)}, ${p.hp} von ${p.max} HP${active?', am Zug':''}. Pfeiltasten zum Verschieben.`,opacity:p.hp===0?.5:1});
   const visual=svgEl('g',{class:'map-token-visual',transform:`scale(${markerScale})`});
