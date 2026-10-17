@@ -9,23 +9,36 @@ export function tokenSymbol(p){
  return ({humanoid:'character',beast:'token-beast',undead:'token-undead',dragon:'token-dragon'})[type]||'token-unknown';
 }
 export function ensureTokenCodes(campaign,state){
- const groups=new Map(),used=new Map();
- const add=(p,key)=>{if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);};
+ // Character identities persist across battles; enemy labels only need to be
+ // distinct among participants of the same battle, never across its history.
+ const heroes=new Map();
+ const add=(p,key)=>{if(!heroes.has(key))heroes.set(key,[]);heroes.get(key).push(p);};
  for(const c of campaign.characters)add(c,'character:'+c.id);
- for(const encounter of [...campaign.encounters,state])for(const p of encounter.people)add(p,p.characterId?'character:'+p.characterId:'person:'+p.id);
- // Reserve existing labels first, so newly inserted or renamed people cannot steal them.
- const assigned=new Map();
- for(const [key,people] of groups){
-  const code=people.map(p=>p.tokenCode).find(safeCode);
-  if(code&&!used.has(code)){assigned.set(key,code);used.set(code,key);}
+ for(const encounter of [...campaign.encounters,state])for(const p of encounter.people)if(p.kind!=='enemy')add(p,p.characterId?'character:'+p.characterId:'person:'+p.id);
+ assignCodes(heroes,new Set());
+ for(const encounter of [...campaign.encounters,state]){
+  const groups=new Map(),used=new Set(encounter.people.filter(p=>p.kind!=='enemy').map(tokenCode));
+  for(const p of encounter.people)if(p.kind==='enemy'){if(!groups.has(p.id))groups.set(p.id,[]);groups.get(p.id).push(p);}
+  assignCodes(groups,used);
  }
- for(const [key,people] of groups){
+}
+function assignCodes(groups,used){
+ const assigned=new Map();
+ // Existing labels keep their identity unless their suffix disagrees with the
+ // explicit display number. Repair K9 / Knecht 1 to K1 on loading old saves.
+ const candidate=p=>{if(!safeCode(p.tokenCode))return null;if(p.kind==='enemy'&&validEnemyNumber(p.enemyNumber)&&Number(p.tokenCode.match(/(\d+)$/)?.[1])!==p.enemyNumber)return null;return p.tokenCode;};
+ for(const [key,people]of groups){const code=people.map(candidate).find(Boolean);if(code&&!used.has(code)){assigned.set(key,code);used.add(code);}}
+ for(const [key,people]of groups){
   let code=assigned.get(key);
-  if(!code){
-   const name=people[0].name,base=firstLetter(name),number=String(name).match(/\s+(\d{1,5})\s*$/)?.[1]||(people[0].kind==='enemy'&&validEnemyNumber(people[0].enemyNumber)?String(people[0].enemyNumber):null);
-   code=base+(number||'');let n=number?Number(number)+1:2;
-   while(used.has(code))code=base+n++;
-   used.set(code,key);
+  if(!code){const p=people[0],base=firstLetter(p.name),number=p.kind==='enemy'&&validEnemyNumber(p.enemyNumber)?String(p.enemyNumber):String(p.name).match(/\s+(\d{1,5})\s*$/)?.[1];
+   code=base+(number||'');
+   if(number&&p.kind==='enemy'&&validEnemyNumber(p.enemyNumber)){
+    const letters=(String(p.name).match(/[\p{L}]/gu)||[base]).join('').toLocaleUpperCase('de');
+    let length=2;while(used.has(code)&&length<=Math.min(letters.length,7-number.length))code=letters.slice(0,length++)+number;
+    // Keep the enemy number intact even when several names share their initials.
+    let n=65;while(used.has(code)){const next=String.fromCodePoint(n++)+number;if(safeCode(next))code=next;}
+   }else{let n=number?Number(number)+1:2;while(used.has(code))code=base+n++;}
+   used.add(code);
   }
   for(const p of people)p.tokenCode=code;
  }

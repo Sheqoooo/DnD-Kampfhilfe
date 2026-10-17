@@ -62,3 +62,26 @@ test('new duplicate enemies get matching numbered names and map codes',()=>{
  ensureEnemyNumbers(state);ensureTokenCodes(campaign,state);
  for(let i=3;i<=4;i++){state.people.push(person('new'+i,'Goblin'));ensureEnemyNumbers(state);ensureTokenCodes(campaign,state);const p=state.people.at(-1);assert.equal(participantName(p),'Goblin '+i);assert.equal(tokenCode(p),'G'+i);}
 });
+
+test('enemy token numbering restarts locally despite identical enemies in previous battles',()=>{
+ const old=encounter(Array.from({length:8},(_,i)=>({...person('old'+i,'Knecht'),enemyNumber:i+1,tokenCode:'K'+(i+1)})));
+ old.id='previous';const current=encounter([person('new','Knecht')]),campaign={characters:[],encounters:[old]};
+ ensureEnemyNumbers(current);ensureTokenCodes(campaign,current);
+ assert.equal(participantName(current.people[0]),'Knecht 1');assert.equal(tokenCode(current.people[0]),'K1');
+ assert.deepEqual(old.people.map(tokenCode),Array.from({length:8},(_,i)=>'K'+(i+1)));
+ current.people.push(person('new2','Knecht'));ensureEnemyNumbers(current);ensureTokenCodes(campaign,current);assert.equal(tokenCode(current.people[1]),'K2');
+});
+test('saved mismatched codes are repaired to match names without changing combat data',()=>{
+ const current=encounter([{...person('knecht','Knecht'),enemyNumber:1,tokenCode:'K9'}]);const before=structuredClone(current.people[0]);
+ const campaign={characters:[],encounters:[structuredClone(current)]};ensureTokenCodes(campaign,current);
+ assert.equal(tokenCode(current.people[0]),'K1');assert.deepEqual(current.people[0],{...before,tokenCode:'K1'});
+ assert.equal(tokenCode(campaign.encounters[0].people[0]),'K1');
+ const saved=JSON.parse(JSON.stringify(current));ensureTokenCodes({characters:[],encounters:[]},saved);assert.deepEqual(saved,current);
+});
+test('matching enemy initials and hero codes stay unique without changing enemy display numbers',()=>{
+ const current=encounter([{...person('hero','Karl','ally'),tokenCode:'K1'},...['Knecht','Kultist','Kobold'].map((name,i)=>({...person('enemy'+i,name),enemyNumber:1}))]);
+ const campaign={characters:[],encounters:[]};ensureTokenCodes(campaign,current);
+ assert.equal(new Set(current.people.map(tokenCode)).size,4);
+ for(const p of current.people.slice(1))assert.equal(p.tokenCode.match(/\d+$/)[0],'1');
+ const before=current.people.map(tokenCode);current.people.reverse();ensureTokenCodes(campaign,current);assert.deepEqual(current.people.map(tokenCode),before.reverse());
+});

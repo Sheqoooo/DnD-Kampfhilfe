@@ -1,5 +1,5 @@
 import{generateHouse,houseBounds,overlapsBuilding,annexEdges,annexRect,attachAnnex}from'./buildings.js?v=houses-1';
-import{ensureTokenCodes,tokenSymbol,tokenCode,ensureEnemyNumbers,participantName}from'./tokens.js?v=enemy-numbers-1';
+import{ensureTokenCodes,tokenSymbol,tokenCode,ensureEnemyNumbers,participantName}from'./tokens.js?v=local-enemy-codes-1';
 import{icon}from'./ui-icons.js?v=controls-1';
 import{worldRect,clampWorldPoint}from'./world.js?v=manual-order-1';
 import{fullView,zoomView,panView,wheelView}from'./viewport.js?v=trackpad-1';
