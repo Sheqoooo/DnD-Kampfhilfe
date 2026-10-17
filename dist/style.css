@@ -393,3 +393,18 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
  .drawing-toolbar button:has(>.ui-icon){width:28px;min-width:28px;height:32px;min-height:32px;border-width:4px;border-image-width:4px}
  .drawing-toolbar .ui-icon{width:18px;height:18px}
 }
+/* Contextual building tools add no permanent row above the map. */
+.map-controls #house-generator{border-width:5px;border-image-width:5px;padding:2px 6px;min-height:34px;font-size:12px;white-space:nowrap}
+.build-status{position:absolute;z-index:3;top:10px;left:90px;right:45px;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 9px;border:1px solid #a1773c;border-radius:5px;background:#f1dbaaed;color:#55371e;font-size:12px;font-weight:600;pointer-events:none}
+.build-status button{pointer-events:auto;border:0;background:none;padding:2px 5px;min-height:26px;font-size:18px}
+.build-status[hidden]{display:none}
+.annex-handle{cursor:crosshair}.annex-handle:focus-visible{outline:none;filter:drop-shadow(0 0 3px #875c22)}
+#house-dialog{position:fixed;inset:0;margin:auto;width:min(540px,calc(100vw - 24px))}
+#house-preview{display:block;width:100%;height:230px;background:#e8d7ad;border:1px solid #a98a56;margin-top:12px}
+#house-preview [stroke-dasharray]{stroke-dasharray:none}
+#house-preview .door-leaf{stroke-width:6}
+.house-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+#house-error:not(:empty){color:#8c3326;font-weight:650}
+@media(max-width:600px){.build-status{left:8px;right:8px;top:50px;font-size:11px}#house-preview{height:180px}.house-actions button{flex:1;min-width:120px}}
+
+.map-controls #house-generator[aria-pressed=true]{filter:brightness(1.25)}
