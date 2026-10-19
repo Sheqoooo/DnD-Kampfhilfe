@@ -1,4 +1,4 @@
-import{roomRings,unionRooms}from'./drawing.js?v=manual-order-1';
+import{roomRings,unionRooms}from'./drawing.js?v=terrain-1';
 import{inWorld}from'./world.js?v=expanded-grid-1';
 const GRID=50,MIN=100,eps=.001;
 const area=r=>r.reduce((n,p,i)=>n+p.x*r[(i+1)%r.length].y-r[(i+1)%r.length].x*p.y,0)/2;
@@ -44,9 +44,9 @@ function clipToRect(r,b){
  const input=out;out=[];for(let i=0;i<input.length;i++){const a=input[i],c=input[(i+1)%input.length],ia=(a[axis]-value)*sign>=0,ic=(c[axis]-value)*sign>=0;if(ia)out.push(a);if(ia!==ic){const t=(value-a[axis])/(c[axis]-a[axis]);out.push({x:a.x+(c.x-a.x)*t,y:a.y+(c.y-a.y)*t});}}}
  return out;
 }
-export function overlapsBuilding(rect,shapes){return shapes.some(s=>{if(s.interior)return false;const rings=roomRings(s);if(!rings)return false;const total=rings.reduce((n,r)=>n+area(clipToRect(r,rect)),0);return Math.abs(total)>eps;});}
+export function overlapsBuilding(rect,shapes){return shapes.some(s=>{if(s.terrain||s.interior)return false;const rings=roomRings(s);if(!rings)return false;const total=rings.reduce((n,r)=>n+area(clipToRect(r,rect)),0);return Math.abs(total)>eps;});}
 export function annexEdges(shape){
- if(shape.interior||shape.type==='ellipse')return[];const rings=roomRings(shape);if(!rings)return[];
+ if(shape.terrain||shape.interior||shape.type==='ellipse')return[];const rings=roomRings(shape);if(!rings)return[];
  const outer=[...rings].sort((a,b)=>Math.abs(area(b))-Math.abs(area(a)))[0];
  return outer.map((a,i)=>{const b=outer[(i+1)%outer.length],length=Math.hypot(b.x-a.x,b.y-a.y);if(length<MIN||Math.abs(b.x-a.x)>eps&&Math.abs(b.y-a.y)>eps)return null;
  const center={x:(a.x+b.x)/2,y:(a.y+b.y)/2};let normal={x:-(b.y-a.y)/length,y:(b.x-a.x)/length};if(inside({x:center.x+normal.x,y:center.y+normal.y},rings))normal={x:-normal.x,y:-normal.y};

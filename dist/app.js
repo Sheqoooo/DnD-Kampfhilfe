@@ -1,14 +1,18 @@
-import{generateHouse,houseBounds,overlapsBuilding,annexEdges,annexRect,attachAnnex}from'./buildings.js?v=houses-1';
+import{generateTerrain,GENERATORS,defaultTerrainOptions}from'./terrain.js?v=terrain-2';
+import{makeTerrain}from'./terrain-render.js?v=terrain-1';
+import{terrainNames,shapeLayer}from'./terrain-types.js?v=terrain-1';
+import{generateHouse,houseBounds,overlapsBuilding,annexEdges,annexRect,attachAnnex}from'./buildings.js?v=terrain-1';
 import{ensureTokenCodes,tokenSymbol,tokenCode,ensureEnemyNumbers,participantName}from'./tokens.js?v=local-enemy-codes-1';
 import{icon}from'./ui-icons.js?v=controls-1';
 import{worldRect,clampWorldPoint}from'./world.js?v=manual-order-1';
 import{fullView,zoomView,panView,wheelView}from'./viewport.js?v=trackpad-1';
 import{recordChange,undoChange,redoChange}from'./history.js?v=manual-order-1';
-import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=manual-order-1';
-import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=manual-order-1';
-import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=manual-order-1';
+import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=terrain-1';
+import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=terrain-1';
+import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=terrain-1';
 const $=s=>document.querySelector(s),uid=()=>crypto.randomUUID(),KEY='initiative.encounter.v1',NS='http://www.w3.org/2000/svg';
 const demo=()=>({version:1,title:'Überfall am alten Wachturm',demo:true,started:true,round:1,active:'lyra',people:[{id:'lyra',name:'Lyra',kind:'ally',hp:32,max:38,init:19,x:375,y:475},{id:'g1',name:'Goblin-Späher 1',kind:'enemy',hp:7,max:12,init:16,x:575,y:325},{id:'g2',name:'Goblin-Späher 2',kind:'enemy',hp:12,max:12,init:16,x:625,y:375},{id:'thorin',name:'Thorin',kind:'ally',hp:45,max:45,init:12,x:475,y:525}],shapes:[{id:'room',type:'rect',x:250,y:200,w:500,h:350},{id:'tower',type:'ellipse',x:600,y:100,w:200,h:200},{id:'wall1',type:'wall',points:[{x:250,y:350},{x:350,y:350}]},{id:'wall2',type:'wall',points:[{x:500,y:200},{x:500,y:300}]},{id:'pillar',type:'rect',x:400,y:300,w:50,h:50}]});
+let generatorKind='house';
 let pendingHouse=null,housePreview=null,pendingAnnex=null;
 let view=fullView(),spaceHeld=false,wheelFrame=null,safariPinchScale=null;
 const compactOrderQuery=matchMedia('(max-width: 900px)');let orderCollapsed=compactOrderQuery.matches,orderPanelTouched=false;
@@ -45,11 +49,11 @@ function renderDoorMask(){
  mask.replaceChildren(svgEl('rect',{...worldRect,fill:'white'}),...state.shapes.filter(s=>s.type==='door').map(s=>svgEl('line',{x1:s.points[0].x,y1:s.points[0].y,x2:s.points[1].x,y2:s.points[1].y,stroke:'black','stroke-width':12,'stroke-linecap':'butt'})));
 }
 
-function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDraft?'#8d9e70':'#7b806a','stroke-width':isDraft?3:5,'stroke-linecap':'round','stroke-linejoin':'round'};if(sh.type==='door'){el=makeDoor(sh,isDraft);}else if(sh.type==='room'){el=svgEl('path',{d:sh.rings.map(r=>'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join(' '),...attrs,fill:isDraft?'#b9c79d33':'url(#floor)','fill-rule':'evenodd'});}else if(sh.type==='rect'){el=svgEl('rect',{x:sh.x,y:sh.y,width:sh.w,height:sh.h,rx:3,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else if(sh.type==='ellipse'){el=svgEl('ellipse',{cx:sh.x+sh.w/2,cy:sh.y+sh.h/2,rx:sh.w/2,ry:sh.h/2,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else{el=svgEl('polyline',{points:sh.points.map(p=>`${p.x},${p.y}`).join(' '),...attrs});}if(sh.interior){el.setAttribute('fill','none');el.setAttribute('stroke-width',isDraft?3:4);}
- if(isDraft)el.style.pointerEvents='none';if(!isDraft&&sh.type!=='door')el.setAttribute('mask','url(#door-cutouts)');if(isDraft)el.setAttribute('stroke-dasharray','7 5');else{el.dataset.shape=sh.id;if(selectedIds.has(sh.id))el.classList.add('selected-shape');el.style.pointerEvents='all';el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',(sh.type==='door'?'Tür '+(sh.open?'offen':'geschlossen'):sh.type==='wall'?'Wand':sh.interior?'Innenraum':'Gebäude')+' verschieben. Pfeiltasten zum Verschieben.');if(tool==='select')el.style.cursor='grab';if(tool==='erase')el.style.cursor='pointer';}return el;}
+function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDraft?'#8d9e70':'#7b806a','stroke-width':isDraft?3:5,'stroke-linecap':'round','stroke-linejoin':'round'};if(sh.terrain){el=makeTerrain(sh,svgEl);}else if(sh.type==='door'){el=makeDoor(sh,isDraft);}else if(sh.type==='room'){el=svgEl('path',{d:sh.rings.map(r=>'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join(' '),...attrs,fill:isDraft?'#b9c79d33':'url(#floor)','fill-rule':'evenodd'});}else if(sh.type==='rect'){el=svgEl('rect',{x:sh.x,y:sh.y,width:sh.w,height:sh.h,rx:3,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else if(sh.type==='ellipse'){el=svgEl('ellipse',{cx:sh.x+sh.w/2,cy:sh.y+sh.h/2,rx:sh.w/2,ry:sh.h/2,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else{el=svgEl('polyline',{points:sh.points.map(p=>`${p.x},${p.y}`).join(' '),...attrs});}if(sh.interior){el.setAttribute('fill','none');el.setAttribute('stroke-width',isDraft?3:4);}
+ if(isDraft)el.style.pointerEvents='none';if(!isDraft&&sh.type!=='door'&&(!sh.terrain||['ruin-wall','cave-wall'].includes(sh.terrain)))el.setAttribute('mask','url(#door-cutouts)');if(isDraft)el.setAttribute('stroke-dasharray','7 5');else{el.dataset.shape=sh.id;if(selectedIds.has(sh.id))el.classList.add('selected-shape');el.style.pointerEvents='all';el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',(sh.terrain?terrainNames[sh.terrain]:sh.type==='door'?'Tür '+(sh.open?'offen':'geschlossen'):sh.type==='wall'?'Wand':sh.interior?'Innenraum':'Gebäude')+' verschieben. Pfeiltasten zum Verschieben.');if(tool==='select')el.style.cursor='grab';if(tool==='erase')el.style.cursor='pointer';}return el;}
 function renderMap(){
  renderDoorMask();const shapes=$('#shapes'),tokens=$('#tokens');
- shapes.replaceChildren(...[...state.shapes].sort((a,b)=>(a.type==='door'?2:Number(!!a.interior))-(b.type==='door'?2:Number(!!b.interior))).map(s=>makeShape(s)));tokens.replaceChildren();
+ shapes.replaceChildren(...[...state.shapes].sort((a,b)=>shapeLayer(a)-shapeLayer(b)).map(s=>makeShape(s)));tokens.replaceChildren();
  const screenScale=$('#map').getScreenCTM().a,markerScale=Math.max(1,28/(56*screenScale));
  for(const p of state.people){
   const active=p.id===state.active,g=svgEl('g',{'data-token':p.id,transform:`translate(${p.x} ${p.y})`,tabindex:0,role:'button','aria-label':`${participantName(p)}, Kürzel ${tokenCode(p)}, ${p.hp} von ${p.max} HP${active?', am Zug':''}. Pfeiltasten zum Verschieben.`,opacity:p.hp===0?.5:1});
@@ -270,23 +274,31 @@ $('#encounter-list').onclick=e=>{
 
 
 // Procedural houses and annexes use the same editable shapes and history as drawing.
-function updateBuildStatus(){const box=$('#build-status');box.hidden=!(pendingAnnex||tool==='house');box.querySelector('span').textContent=pendingAnnex?'Anbau: äußere Ecke anklicken · Esc bricht ab':'Haus: Grundfläche ziehen oder zwei Ecken anklicken';}
+function updateBuildStatus(){const box=$('#build-status');box.hidden=!(pendingAnnex||tool==='house');box.querySelector('span').textContent=pendingAnnex?'Anbau: äußere Ecke anklicken · Esc bricht ab':GENERATORS[generatorKind]+': Fläche ziehen oder zwei Ecken anklicken';}
 function cancelBuild(){pendingAnnex=null;drawAnchor=null;if(gesture?.type==='annex'||gesture?.type==='draw')gesture=null;$('#draft').replaceChildren();setTool('select');updateBuildStatus();}
 $('#cancel-build').onclick=cancelBuild;
-$('#house-generator').onclick=()=>{setTool('house');updateBuildStatus();toast('Haus: Grundfläche aufziehen oder zwei Ecken anklicken.');};
-function prepareHouse(bounds){pendingHouse=bounds;setTool('select');$('#house-size').textContent=`Grundfläche: ${bounds.w/50} × ${bounds.h/50} Felder · 5 Fuß pro Feld`;
- refreshHouse();$('#house-dialog').showModal();$('#house-rooms').focus();}
+$('#house-generator').onclick=()=>$('#generator-picker').showModal();
+const terrainConfigs={cave:{label:'Kammern',min:2,max:8,detail:'Gangbreite',values:['Eng','Mittel','Breit']},ruins:{label:'Raumbereiche',min:1,max:12,detail:'Zerstörung',values:['Wenig','Mittel','Stark']},forest:{label:'Bäume',min:4,max:60,detail:'Lichtung',values:['Klein','Mittel','Groß']},river:{detail:'Flussbreite',values:['Schmal','Mittel','Breit']},rocks:{label:'Felsen',min:3,max:30,detail:'Felsgröße',values:['Klein','Mittel','Groß']}};
+$('#generator-picker').addEventListener('click',e=>{const b=e.target.closest('[data-generator]');if(!b)return;generatorKind=b.dataset.generator;configureTerrain();$('#generator-picker').close();setTool('house');toast(GENERATORS[generatorKind]+': Fläche aufziehen oder zwei Ecken anklicken.');});
+function configureTerrain(){if(generatorKind==='house')return;const c=terrainConfigs[generatorKind],defaults=defaultTerrainOptions(generatorKind);$('#terrain-count-label').hidden=!c.label;$('#terrain-count').disabled=!c.label;$('#terrain-count').required=!!c.label;if(c.label){$('#terrain-count-label>span').textContent=c.label;Object.assign($('#terrain-count'),{min:c.min,max:c.max,value:defaults.count});}
+ $('#terrain-detail-label').textContent=c.detail;$('#terrain-detail').replaceChildren(...c.values.map((text,i)=>{const option=document.createElement('option');option.value=['low','normal','high'][i];option.textContent=text;return option;}));$('#terrain-detail').value='normal';$('#terrain-entrances-label').hidden=generatorKind!=='cave';$('#terrain-entrances').value='2';$('#terrain-path-label').hidden=!['forest','rocks'].includes(generatorKind);$('#terrain-path-label>span').textContent=generatorKind==='forest'?'Weg durch die Lichtung':'Freie Passage durch die Mitte';$('#terrain-path').checked=true;$('#terrain-river-settings').hidden=generatorKind!=='river';$('#terrain-direction').value='vertical';$('#terrain-crossing').value='bridge';}
+function terrainOptions(){return{count:Number($('#terrain-count').value),detail:$('#terrain-detail').value,entrances:Number($('#terrain-entrances').value),path:$('#terrain-path').checked,direction:$('#terrain-direction').value,crossing:$('#terrain-crossing').value};}
+$('#terrain-settings').addEventListener('input',refreshHouse);
+
+function prepareHouse(bounds){pendingHouse=bounds;setTool('select');const house=generatorKind==='house';$('#generator-title').textContent=house?'Dein Haus':GENERATORS[generatorKind];$('#house-settings').hidden=!house;$('#house-rooms').disabled=!house;$('#house-entrance').disabled=!house;$('#terrain-settings').hidden=house;for(const input of $('#terrain-settings').querySelectorAll('input,select'))input.disabled=house||input.id==='terrain-count'&&generatorKind==='river';$('#place-house').textContent=house?'Haus platzieren':'Gelände platzieren';$('#house-size').textContent=`Grundfläche: ${bounds.w/50} × ${bounds.h/50} Felder · 5 Fuß pro Feld`;
+ refreshHouse();$('#house-dialog').showModal();(house?$('#house-rooms'):generatorKind==='river'?$('#terrain-detail'):$('#terrain-count')).focus();}
 function refreshHouse(){
  const preview=$('#house-preview');preview.replaceChildren();housePreview=null;
- try{if(overlapsBuilding(pendingHouse,state.shapes))throw Error('Hier steht bereits ein Gebäude. Bitte eine freie Grundfläche zeichnen.');
- housePreview=generateHouse(pendingHouse,Number($('#house-rooms').value),$('#house-entrance').value);
+ try{if(generatorKind==='house'&&overlapsBuilding(pendingHouse,state.shapes))throw Error('Hier steht bereits ein Gebäude. Bitte eine freie Grundfläche zeichnen.');
+ housePreview=generatorKind==='house'?generateHouse(pendingHouse,Number($('#house-rooms').value),$('#house-entrance').value):generateTerrain(generatorKind,pendingHouse,terrainOptions());
+ $('#generator-note').textContent=generatorKind==='house'?'Alle Räume sind durch Türen erreichbar. Wände und Türen bleiben einzeln bearbeitbar.':housePreview.summary+' Ergänzt das Feld, ohne vorhandene Elemente zu ersetzen.';
  const b=pendingHouse;preview.setAttribute('viewBox',`${b.x-35} ${b.y-35} ${b.w+70} ${b.h+70}`);const defs=svgEl('defs'),mask=svgEl('mask',{id:'house-preview-cutouts',maskUnits:'userSpaceOnUse',x:b.x-35,y:b.y-35,width:b.w+70,height:b.h+70});mask.append(svgEl('rect',{x:b.x-35,y:b.y-35,width:b.w+70,height:b.h+70,fill:'white'}),...housePreview.shapes.filter(s=>s.type==='door').map(s=>svgEl('line',{x1:s.points[0].x,y1:s.points[0].y,x2:s.points[1].x,y2:s.points[1].y,stroke:'black','stroke-width':12})));defs.append(mask);preview.append(defs,...housePreview.shapes.map(s=>{const el=makeShape(s,true);if(s.type!=='door')el.setAttribute('mask','url(#house-preview-cutouts)');return el;}));$('#house-error').textContent='';}
- catch(error){$('#house-error').textContent=error.message;}
+ catch(error){$('#house-error').textContent=error.message;$('#generator-note').textContent='Die Karte bleibt unverändert, bis du eine gültige Vorschau platzierst.';}
  $('#place-house').disabled=!housePreview;
 }
 $('#house-rooms').oninput=refreshHouse;$('#house-entrance').onchange=refreshHouse;$('#house-variant').onclick=refreshHouse;
 $('#house-form').onsubmit=e=>{e.preventDefault();if(!housePreview)return;const shapes=housePreview.shapes.map(s=>({...s,id:uid()}));if(state.shapes.length+shapes.length>1000){$('#house-error').textContent='Maximal 1000 Formen. Bitte einige entfernen.';return;}
- const count=housePreview.rooms.length;mutate(()=>{state.shapes.push(...shapes);selectedIds=new Set(shapes.map(s=>s.id));});$('#house-dialog').close();pendingHouse=null;housePreview=null;toast(`Haus mit ${count} Räumen und Türen platziert · zum Anbauen die Außenwand auswählen.`);};
+ const count=housePreview.rooms?.length,summary=housePreview.summary;mutate(()=>{state.shapes.push(...shapes);selectedIds=new Set(shapes.map(s=>s.id));});$('#house-dialog').close();pendingHouse=null;housePreview=null;toast(generatorKind==='house'?`Haus mit ${count} Räumen und Türen platziert · zum Anbauen die Außenwand auswählen.`:summary+' Platziert · gemeinsam ausgewählt.');};
 function previewAnnex(plan,rect){const el=makeShape(rect,true);if(overlapsBuilding(rect,state.shapes)){el.setAttribute('stroke','#a23c2b');el.setAttribute('fill','#a23c2b22');}$('#draft').replaceChildren(el);}
 function finishAnnex(plan,point){$('#draft').replaceChildren();try{const result=attachAnnex(state.shapes,plan.parentId,plan.edge,annexRect(plan.edge,point),{idFactory:uid});if(result.length>1000)throw Error('Maximal 1000 Formen. Bitte einige entfernen.');mutate(()=>{state.shapes=result;selectedIds=new Set([plan.parentId]);});toast('Raum angebaut · Verbindungstür automatisch eingesetzt.');}catch(error){$('#draft').replaceChildren();toast(error.message);}}
 

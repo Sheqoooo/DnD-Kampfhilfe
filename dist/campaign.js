@@ -1,6 +1,6 @@
 import{clampWorldPoint}from'./world.js?v=expanded-grid-1';
 
-import {clamp,validState,order,prepareManualOrder} from './core.js?v=manual-order-1';
+import {clamp,validState,order,prepareManualOrder} from './core.js?v=terrain-1';
 export const CAMPAIGN_KEY='initiative.campaign.v2';
 export const HERO_FIELDS=['name','hp','max','ac','initMod','characterClass','level','notes','conditions'];
 export function characterFrom(p,id){return{id,name:p.name,hp:p.hp,max:p.max,ac:p.ac??10,initMod:p.initMod??0,characterClass:p.characterClass??'',level:p.level??1,notes:p.notes??'',conditions:p.conditions??''};}

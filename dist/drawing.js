@@ -24,7 +24,7 @@ function params(e,f){
 }
 export function snapDrawingPoint(p,shapes,grid=true,connect=true,tolerance=22){
  if(connect){const vertices=[],segments=[];
- for(const s of shapes){const rings=roomRings(s);if(rings){vertices.push(...rings.flat());segments.push(...edges(rings));}else if(s.points){vertices.push(s.points[0],s.points.at(-1));for(let i=1;i<s.points.length;i++)segments.push({a:s.points[i-1],b:s.points[i]});}}
+ for(const s of shapes){if(s.terrain)continue;const rings=roomRings(s);if(rings){vertices.push(...rings.flat());segments.push(...edges(rings));}else if(s.points){vertices.push(s.points[0],s.points.at(-1));for(let i=1;i<s.points.length;i++)segments.push({a:s.points[i-1],b:s.points[i]});}}
  let closest=null,d=tolerance;for(const q of vertices){const n=dist(p,q);if(n<=d){closest=q;d=n;}}if(closest)return{...closest,attached:true};
  d=tolerance;for(const e of segments){const q=project(p,e.a,e.b),n=dist(p,q);if(n<d){closest=q;d=n;}}if(closest)return{...closest,attached:true};
  }
@@ -68,12 +68,12 @@ export function unionRooms(shapes){
 }
 function mergeConnected(shapes,newRoom){
  let current=newRoom,removed=[],rest=[...shapes],changed=true;
- while(changed){changed=false;for(let i=0;i<rest.length;i++){const r=roomRings(rest[i]);if(rest[i].interior||!r||!overlap(roomRings(current),r))continue;
+ while(changed){changed=false;for(let i=0;i<rest.length;i++){const r=roomRings(rest[i]);if(rest[i].terrain||rest[i].interior||!r||!overlap(roomRings(current),r))continue;
  const merged=unionRooms([current,rest[i]]);current={...merged,id:newRoom.id};removed.push(rest[i]);rest.splice(i,1);changed=true;break;}}
  return{shapes:[...rest,current],merged:removed.length};
 }
 function closeWalls(shapes,newWall,idFactory){
- const walls=shapes.filter(s=>s.type==='wall'&&s.points.length===2),others=shapes.filter(s=>!walls.includes(s)),split=[];
+ const walls=shapes.filter(s=>!s.terrain&&s.type==='wall'&&s.points.length===2),others=shapes.filter(s=>!walls.includes(s)),split=[];
  for(const w of walls){const cuts=[w.points[0],w.points[1]];for(const p of newWall.points){const q=project(p,...w.points);if(dist(p,q)<.001&&dist(p,w.points[0])>.001&&dist(p,w.points[1])>.001)cuts.push({...p});}
  cuts.sort((a,b)=>dist(a,w.points[0])-dist(b,w.points[0]));for(let i=1;i<cuts.length;i++)if(dist(cuts[i-1],cuts[i])>.001)split.push({...w,id:i===1?w.id:idFactory(),type:'wall',points:[cuts[i-1],cuts[i]]});}
  const [start,end]=newWall.points;
@@ -86,7 +86,7 @@ function closeWalls(shapes,newWall,idFactory){
  return{shapes:[...others,...split,newWall],closed:false};
 }
 export function integrateShape(shapes,shape,{connect=true,idFactory=()=>crypto.randomUUID()}={}){
- if(!connect||shape.interior&&roomRings(shape))return{shapes:[...shapes,shape],merged:0,closed:false};
+ if(shape.terrain||!connect||shape.interior&&roomRings(shape))return{shapes:[...shapes,shape],merged:0,closed:false};
  if(roomRings(shape))return{...mergeConnected(shapes,shape),closed:false};
  if(shape.type==='wall'&&shape.points.length===2){const wall=closeWalls(shapes,shape,idFactory);if(wall.room){if(wall.room.interior)return{shapes:[...wall.shapes,wall.room],merged:0,closed:true};return{...mergeConnected(wall.shapes,wall.room),closed:true};}return{...wall,merged:0};}
  return{shapes:[...shapes,shape],merged:0,closed:false};
@@ -143,7 +143,7 @@ export function shapesInBox(shapes,a,b){
 
 export function placeDoor(point,shapes,{length=50,tolerance=30,grid=true}={}){
  let best=null,nearest=tolerance;
- for(const shape of shapes){if(shape.type==='door')continue;const rings=roomRings(shape),segments=rings?edges(rings):shape.points?.slice(1).map((b,i)=>({a:shape.points[i],b}))||[];
+ for(const shape of shapes){if(shape.type==='door'||shape.terrain&&!['ruin-wall','cave-wall'].includes(shape.terrain))continue;const rings=roomRings(shape),segments=rings?edges(rings):shape.points?.slice(1).map((b,i)=>({a:shape.points[i],b}))||[];
  for(const edge of segments){const q=project(point,edge.a,edge.b),distance=dist(point,q),size=dist(edge.a,edge.b);if(distance>=nearest||size<1)continue;best={edge,q,size,shape};nearest=distance;}}
  if(!best)return null;
  const {edge,size,shape}=best,ux=(edge.b.x-edge.a.x)/size,uy=(edge.b.y-edge.a.y)/size;

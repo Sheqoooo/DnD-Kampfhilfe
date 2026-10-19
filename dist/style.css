@@ -408,3 +408,15 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 @media(max-width:600px){.build-status{left:8px;right:8px;top:50px;font-size:11px}#house-preview{height:180px}.house-actions button{flex:1;min-width:120px}}
 
 .map-controls #house-generator[aria-pressed=true]{filter:brightness(1.25)}
+/* Generator selection lives in a dialog instead of adding permanent tool rows. */
+#generator-picker{position:fixed;inset:0;margin:auto;width:min(570px,calc(100vw - 24px))}
+.generator-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.generator-choice{display:flex;flex-direction:column;gap:6px;align-items:start;text-align:left;min-height:90px;padding:12px;border:1px solid #a4814b;border-radius:6px;background:#e2c58c;color:#4c3018}
+.generator-choice strong{font:700 19px Georgia,serif}.generator-choice small{font:500 12px/1.5 system-ui,sans-serif;color:#745a35}
+.generator-choice:hover,.generator-choice:focus-visible{background:#efd59e;border-color:#785021}
+.generator-choice:focus-visible{outline:2px solid #906529;outline-offset:2px}
+#terrain-settings>label{display:flex;flex-direction:column;gap:6px;font-size:12px;margin-block:12px}
+#terrain-settings>.terrain-check{flex-direction:row;align-items:center}
+#terrain-settings [hidden],#house-settings[hidden]{display:none!important}
+.terrain-outline{display:none}.selected-shape>.terrain-outline{display:block}
+@media(max-width:600px){.generator-choices{gap:7px}.generator-choice{padding:9px;min-height:95px}.generator-choice strong{font-size:17px}.generator-choice small{font-size:11px}}
