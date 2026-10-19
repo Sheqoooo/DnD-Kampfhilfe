@@ -4,7 +4,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const GENERATORS={house:'Haus',cave:'Höhle',ruins:'Ruine',forest:'Wald & Lichtung',river:'Fluss & Übergang',rocks:'Felsfeld'};
 const optionsByKind={cave:{count:4,detail:'normal',entrances:2},ruins:{count:4,detail:'normal'},forest:{count:24,detail:'normal',path:true},river:{detail:'normal',direction:'vertical',crossing:'bridge'},rocks:{count:12,detail:'normal',path:true}};
 export const defaultTerrainOptions=kind=>({...optionsByKind[kind]});
-function boundsCheck(b){if(!b||![b.x,b.y,b.w,b.h].every(Number.isFinite)||b.w<300||b.h<300||b.w>2000||b.h>2000||!inWorld(b)||!inWorld({x:b.x+b.w,y:b.y+b.h}))throw Error('Bitte eine Fläche von 6 × 6 bis 40 × 40 Feldern zeichnen.');}
+function boundsCheck(b){if(!b||![b.x,b.y,b.w,b.h].every(Number.isFinite)||b.w<50||b.h<50||!inWorld(b)||!inWorld({x:b.x+b.w,y:b.y+b.h}))throw Error('Bitte eine Fläche auf dem Raster innerhalb der Karte aufziehen.');}
 function polygon(points,terrain){return{type:'room',rings:[points],terrain};}
 function line(a,b,terrain){return{type:'wall',points:[a,b],terrain};}
 function validateOptions(kind,o){
@@ -43,17 +43,23 @@ function scatter(b,count,radius,allowed,rng,make){
  }
  return shapes;
 }
+// Empty ground defines the clearing and the winding passage, not painted overlays.
+export function forestPathY(layout,x){const t=(x-layout.x)/layout.w;return layout.cy+Math.sin(t*Math.PI*2)*layout.bend;}
+export function forestHasSpace(layout,x,y,r){
+ const angle=Math.atan2((y-layout.cy)/layout.ry,(x-layout.cx)/layout.rx),edge=1+.12*Math.sin(angle*3+layout.phase)+.06*Math.cos(angle*5-layout.phase);
+ const outside=((x-layout.cx)/(layout.rx*edge+r))**2+((y-layout.cy)/(layout.ry*edge+r))**2>1;
+ const slope=Math.abs(layout.bend*Math.PI*2/layout.w),pathClear=!layout.path||Math.abs(y-forestPathY(layout,x))>layout.pathWidth/2+r*Math.sqrt(1+slope*slope)+layout.margin;
+ return outside&&pathClear;
+}
 function forest(b,o,rng){
- const cx=b.x+b.w/2,cy=b.y+b.h/2,rx=b.w*{low:.16,normal:.23,high:.30}[o.detail],ry=b.h*{low:.16,normal:.23,high:.30}[o.detail],pathWidth=Math.min(70,b.h*.16);
- const shapes=[{type:'ellipse',terrain:'clearing',x:cx-rx,y:cy-ry,w:rx*2,h:ry*2}];
- if(o.path)shapes.push(polygon([{x:b.x,y:cy-pathWidth/2},{x:b.x+b.w,y:cy-pathWidth/2},{x:b.x+b.w,y:cy+pathWidth/2},{x:b.x,y:cy+pathWidth/2}],'trail'));
- const radius=Math.min(38,Math.sqrt(b.w*b.h/o.count)*.24);
- shapes.push(...scatter(b,o.count,radius,(x,y,r)=>((x-cx)/(rx+r))**2+((y-cy)/(ry+r))**2>1&&(!o.path||Math.abs(y-cy)>pathWidth/2+r+6),rng,(x,y,r)=>({type:'ellipse',terrain:'tree',x:x-r,y:y-r,w:r*2,h:r*2})));
- return{shapes,summary:`${o.count} Bäume, eine freie Lichtung${o.path?' und ein durchgehender Weg':''}.`};
+ const size={low:.14,normal:.21,high:.28}[o.detail],layout={x:b.x,w:b.w,cx:b.x+b.w*(.47+rng()*.06),cy:b.y+b.h*(.47+rng()*.06),rx:b.w*size,ry:b.h*size,phase:rng()*Math.PI*2,bend:Math.min(40,b.h*.08)*(.6+rng()*.4),pathWidth:Math.min(70,b.h*.12),margin:Math.min(6,Math.min(b.w,b.h)*.025),path:!!o.path};
+ const radius=Math.min(38,Math.min(b.w,b.h)*.12,Math.sqrt(b.w*b.h/o.count)*.24);
+ const shapes=scatter(b,o.count,radius,(x,y,r)=>forestHasSpace(layout,x,y,r),rng,(x,y,r)=>({type:'ellipse',terrain:'tree',x:x-r,y:y-r,w:r*2,h:r*2}));
+ return{shapes,layout,summary:`${o.count} Bäume mit einer natürlich freien Lichtung${o.path?' und einer geschwungenen Schneise':''}.`};
 }
 function rocks(b,o,rng){
- const size={low:.7,normal:1,high:1.35}[o.detail],radius=Math.min(55,Math.sqrt(b.w*b.h/o.count)*.21)*size,cy=b.y+b.h/2,pathWidth=Math.min(100,b.h*.2);
- const shapes=scatter(b,o.count,radius,(x,y,r)=>!o.path||Math.abs(y-cy)>pathWidth/2+r+8,rng,(x,y,r)=>{
+ const size={low:.7,normal:1,high:1.35}[o.detail],radius=Math.min(55,Math.min(b.w,b.h)*.18,Math.sqrt(b.w*b.h/o.count)*.21)*size,cy=b.y+b.h/2,pathWidth=Math.min(100,b.h*.2);
+ const shapes=scatter(b,o.count,radius,(x,y,r)=>!o.path||Math.abs(y-cy)>pathWidth/2+r+Math.min(8,b.h*.04),rng,(x,y,r)=>{
   const n=6+Math.floor(rng()*3),phase=rng()*Math.PI,points=Array.from({length:n},(_,i)=>{const a=phase+i*Math.PI*2/n,scale=.8+rng()*.2;return{x:x+Math.cos(a)*r*scale,y:y+Math.sin(a)*r*scale};});return polygon(points,'rock');
  });return{shapes,summary:`${o.count} einzeln verschiebbare Felsen${o.path?' mit freier Passage durch die Mitte':''}.`};
 }
@@ -63,7 +69,7 @@ function river(b,o,rng){
  const center=t=>span*(.5+Math.sin((t*frequency+phase)*Math.PI*2)*.12),left=[],right=[];
  for(let i=0;i<=24;i++){const t=i/24;left.push(point(center(t)-width/2,t*length));right.push(point(center(t)+width/2,t*length));}
  const shapes=[polygon([...left,...right.reverse()],'water')];
- if(o.crossing!=='none'){const c=center(.5),cross=width+50;shapes.push(vertical?{type:'rect',terrain:o.crossing,x:b.x+c-cross/2,y:b.y+length/2-32,w:cross,h:64}:{type:'rect',terrain:o.crossing,x:b.x+length/2-32,y:b.y+c-cross/2,w:64,h:cross});}
+ if(o.crossing!=='none'){const c=center(.5),cross=width+Math.min(50,span*.18),thickness=Math.min(64,length*.25);shapes.push(vertical?{type:'rect',terrain:o.crossing,x:b.x+c-cross/2,y:b.y+length/2-thickness/2,w:cross,h:thickness}:{type:'rect',terrain:o.crossing,x:b.x+length/2-thickness/2,y:b.y+c-cross/2,w:thickness,h:cross});}
  return{shapes,summary:`Geschwungener Fluss${o.crossing==='bridge'?' mit Brücke':o.crossing==='ford'?' mit Furt':' ohne Übergang'}.`};
 }
 const key=p=>p.x+','+p.y;
@@ -85,7 +91,7 @@ function cellRings(cells,step,b){
  return rings;
 }
 function cave(b,o,rng){
- const step=25,nx=Math.floor(b.w/step),ny=Math.floor(b.h/step);
+ const step=Math.max(25,Math.ceil(Math.max(b.w,b.h)/80/25)*25),nx=Math.floor(b.w/step),ny=Math.floor(b.h/step);
  if(nx*ny<o.count*36)throw Error('Für so viele Kammern bitte eine größere Fläche zeichnen.');
  const cols=Math.min(o.count,Math.max(1,Math.round(Math.sqrt(o.count*nx/ny)))),rows=Math.ceil(o.count/cols),centers=[],cells=new Set();
  const add=(x,y)=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<nx&&y<ny)cells.add(x+','+y);};

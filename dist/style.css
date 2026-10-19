@@ -420,3 +420,12 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 #terrain-settings [hidden],#house-settings[hidden]{display:none!important}
 .terrain-outline{display:none}.selected-shape>.terrain-outline{display:block}
 @media(max-width:600px){.generator-choices{gap:7px}.generator-choice{padding:9px;min-height:95px}.generator-choice strong{font-size:17px}.generator-choice small{font-size:11px}}
+/* Clearing is a board action next to the generator, not below the map. */
+.map-controls #clear-map{display:flex;align-items:center;gap:4px;border-width:5px;border-image-width:5px;padding:2px 6px;min-height:34px;font-size:12px;white-space:nowrap}
+.map-controls #clear-map .ui-icon{width:17px;height:17px}
+#clear-map-dialog{position:fixed;inset:0;margin:auto;width:min(510px,calc(100vw - 24px))}
+#clear-map-dialog p{font-size:14px;line-height:1.5}.clear-figures-choice{flex-direction:row;align-items:center;gap:9px;font-size:13px}
+.map-return-figures{position:absolute;z-index:2;right:46px;top:10px;min-height:34px;padding:3px 7px;font-size:12px;border-width:5px;border-image-width:5px}
+@media(max-width:600px){.map-controls #clear-map span{display:none}.map-controls #clear-map{min-width:34px;justify-content:center}.clear-figures-choice{font-size:12px}}
+
+.map-controls #selection-count:not(:empty){display:inline-grid;place-items:center;min-width:18px;padding:1px 3px;border:1px solid #b7955d;border-radius:4px;background:#dfc38b;font-weight:700}

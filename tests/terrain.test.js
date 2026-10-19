@@ -1,5 +1,5 @@
 import test from'node:test';import assert from'node:assert/strict';
-import{generateTerrain,defaultTerrainOptions}from'../dist/terrain.js';
+import{generateTerrain,defaultTerrainOptions,forestHasSpace}from'../dist/terrain.js';
 import{validState}from'../dist/core.js';import{makeCampaign,validCampaign}from'../dist/campaign.js';
 import{shapeBounds,moveSelection,transformSelection,integrateShape,placeDoor}from'../dist/drawing.js';
 import{overlapsBuilding,annexEdges}from'../dist/buildings.js';
@@ -23,11 +23,17 @@ test('caves connect all chamber centers to each entrance and have explicit open 
   assert.ok(result.shapes.filter(s=>s.terrain==='cave-wall').every(s=>s.type==='path'||s.type==='room'));assert.ok(result.shapes.some(s=>s.terrain==='cave-wall'&&s.type==='path'));
  }
 });
-test('forest honors tree count and leaves both clearing and path free of canopies',()=>{
- const result=generateTerrain('forest',bounds,{count:30,path:true},rng(3)),clearing=result.shapes.find(s=>s.terrain==='clearing'),trees=result.shapes.filter(s=>s.terrain==='tree'),cx=clearing.x+clearing.w/2,cy=clearing.y+clearing.h/2;
- assert.equal(trees.length,30);assert.ok(result.shapes.some(s=>s.terrain==='trail'));
- for(const t of trees){const x=t.x+t.w/2,y=t.y+t.h/2,r=t.w/2;assert.ok(((x-cx)/(clearing.w/2+r))**2+((y-cy)/(clearing.h/2+r))**2>1);assert.ok(Math.abs(y-cy)>Math.min(70,bounds.h*.16)/2+r);}
- assert.equal(generateTerrain('forest',bounds,{path:false},rng(3)).shapes.some(s=>s.terrain==='trail'),false);
+test('forest uses trees and genuinely empty ground instead of painted helper regions',()=>{
+ const result=generateTerrain('forest',bounds,{count:30,path:true},rng(3)),trees=result.shapes;
+ assert.equal(trees.length,30);assert.ok(trees.every(s=>s.terrain==='tree'));
+ for(const t of trees)assert.ok(forestHasSpace(result.layout,t.x+t.w/2,t.y+t.h/2,t.w/2));
+ const noPath=generateTerrain('forest',bounds,{path:false},rng(3));assert.equal(noPath.layout.path,false);assert.equal(noPath.shapes.length,24);
+});
+test('forests accept small, large and narrow footprints without the former 6-to-40-field limit',()=>{
+ for(const b of[{x:0,y:0,w:50,h:50},{x:0,y:0,w:100,h:150},{x:-4000,y:-3000,w:9000,h:6000},{x:0,y:0,w:50,h:3000}]){
+  const result=generateTerrain('forest',b,{},rng(19));assert.equal(result.shapes.length,24);assert.equal(validState(state(result.shapes)),true);
+  for(const t of result.shapes){assert.ok(t.x>=b.x&&t.y>=b.y&&t.x+t.w<=b.x+b.w&&t.y+t.h<=b.y+b.h);}
+ }
 });
 test('rock fields preserve a traversable middle passage and exact obstacle count',()=>{
  const result=generateTerrain('rocks',bounds,{count:18,path:true},rng(6));assert.equal(result.shapes.length,18);
@@ -51,7 +57,7 @@ test('generated terrain survives move, resize, undo/redo and cannot dissolve int
  assert.equal(integrateShape([house],rock).shapes.length,2);assert.equal(integrateShape([rock],house).shapes.length,2);assert.equal(overlapsBuilding(bounds,[rock]),false);assert.deepEqual(annexEdges(rock),[]);assert.equal(placeDoor({x:rock.rings[0][0].x,y:rock.rings[0][0].y},[rock]),null);
 });
 test('invalid inputs and unsupported terrain metadata fail safely',()=>{
- for(const kind of kinds){assert.throws(()=>generateTerrain(kind,{...bounds,w:100}));assert.throws(()=>generateTerrain(kind,{...bounds,w:3000}));assert.throws(()=>generateTerrain(kind,bounds,{detail:'bad'}));assert.throws(()=>generateTerrain(kind,bounds,{},()=>NaN));}
+ for(const kind of kinds){assert.throws(()=>generateTerrain(kind,{...bounds,w:0}));assert.throws(()=>generateTerrain(kind,{...bounds,x:20000}));assert.throws(()=>generateTerrain(kind,bounds,{detail:'bad'}));assert.throws(()=>generateTerrain(kind,bounds,{},()=>NaN));}
  assert.throws(()=>generateTerrain('forest',bounds,{count:100}));assert.throws(()=>generateTerrain('river',bounds,{direction:'diagonal'}));assert.throws(()=>generateTerrain('cave',bounds,{entrances:0}));
  const invalid={id:'bad',type:'ellipse',x:1,y:1,w:50,h:50};for(const terrain of['constructor','__proto__','unknown',{},'water'])assert.equal(validState(state([{...invalid,terrain}])),false);
  assert.equal(validState(state([invalid])),true);assert.equal(defaultTerrainOptions('cave').count,4);
@@ -60,4 +66,8 @@ test('invalid inputs and unsupported terrain metadata fail safely',()=>{
 test('manual walls cannot consume ruin fragments while closing a new room',()=>{
  const fragments=[{id:'r1',type:'wall',terrain:'ruin-wall',points:[{x:0,y:0},{x:100,y:0}]},{id:'r2',type:'wall',terrain:'ruin-wall',points:[{x:100,y:0},{x:100,y:100}]},{id:'r3',type:'wall',terrain:'ruin-wall',points:[{x:100,y:100},{x:0,y:0}]}];
  const result=integrateShape(fragments,{id:'new',type:'wall',points:[{x:0,y:0},{x:100,y:100}]});assert.equal(result.closed,false);for(const f of fragments)assert.deepEqual(result.shapes.find(s=>s.id===f.id),f);
+});
+
+test('large caves adapt resolution instead of rejecting an arbitrary 40-field maximum',()=>{
+ const result=generateTerrain('cave',{x:-4000,y:-3000,w:8000,h:6000},{},rng(2));assert.equal(validState(state(result.shapes)),true);assert.ok(result.topology.cells.length<=80*80);
 });
