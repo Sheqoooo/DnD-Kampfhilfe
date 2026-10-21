@@ -458,3 +458,9 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 @media(max-width:760px){.preparation-mode-heading{align-items:start;flex-direction:column}.preparation-mode-actions{width:100%}.preparation-mode-actions button{flex:1}.preparation-fields{grid-template-columns:1fr}.preparation-library-actions{display:grid}.preparation-card-actions button{flex:1 0 auto}}
 
 .battle-notes{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;color:#f3dbb1;max-height:100px;overflow:auto;margin-top:8px}
+
+/* Direct removal stays beside the drag grip, without another row of controls. */
+.workspace .combatant-top .combatant-actions{grid-column:3;grid-row:1;justify-self:end;display:flex;align-items:center;gap:0;min-width:0}
+.workspace .combatant-top .combatant-actions .turn-drag-handle{width:28px;min-width:28px;height:40px;min-height:40px;font-size:26px}
+.workspace .combatant-top .remove-combatant{width:28px;min-width:28px;height:40px;min-height:40px;flex-shrink:0;padding:0;border:1px solid transparent;border-radius:4px;background:transparent;color:#795337;font:500 25px/1 system-ui,sans-serif}
+.workspace .combatant-top .remove-combatant:hover{color:#8c3326;background:#ba785122;border-color:#94704466}
