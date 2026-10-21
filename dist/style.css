@@ -429,3 +429,32 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 @media(max-width:600px){.map-controls #clear-map span{display:none}.map-controls #clear-map{min-width:34px;justify-content:center}.clear-figures-choice{font-size:12px}}
 
 .map-controls #selection-count:not(:empty){display:inline-grid;place-items:center;min-width:18px;padding:1px 3px;border:1px solid #b7955d;border-radius:4px;background:#dfc38b;font-weight:700}
+/* Preparations reuse the live editor without adding controls to the map toolbar. */
+.preparation-banner{border-color:transparent}
+.preparation-mode-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.preparation-mode-heading h2{margin:5px 0}
+.preparation-mode-heading p{font-size:13px;color:var(--muted);line-height:1.5}
+.preparation-mode-actions,.preparation-library-actions{display:flex;flex-wrap:wrap;gap:8px}
+.preparation-mode-actions button{font-size:13px;min-height:40px}
+.preparation-fields{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;margin-top:12px}
+.preparation-fields label,.preparation-search-label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:650}
+.preparation-fields textarea{resize:vertical;width:100%}
+#preparations-dialog{width:min(760px,calc(100vw - 24px))}
+:is(#preparations-dialog,#preparation-dialog,#start-preparation-dialog,#delete-preparation-dialog){position:fixed;inset:0;margin:auto}
+.preparation-library-actions{margin:12px 0 16px}
+.preparation-library-actions button{font-size:14px}
+.preparation-list{display:grid;gap:10px;margin-top:14px}
+.preparation-card{border:1px solid #92704380;border-radius:6px;background:var(--card);padding:13px}
+.preparation-card h3{font-size:19px;overflow-wrap:anywhere;margin:5px 0}
+.preparation-card small{font-size:12px;color:var(--muted);line-height:1.5}
+.preparation-card p{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0;color:var(--muted)}
+.preparation-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.preparation-card-actions button{font-size:13px;min-height:36px;padding:2px 8px}
+.preparation-checkbox{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:8px!important;line-height:1.5}
+.preparation-checkbox input{width:auto!important;margin-top:4px;flex-shrink:0}
+.preparation-checkbox small{display:block;font-weight:400;color:var(--muted)}
+.preparation-badge{font:700 10px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#70501f}
+.is-preparing .combat-view-bar #next-turn-compact{display:none}
+@media(max-width:760px){.preparation-mode-heading{align-items:start;flex-direction:column}.preparation-mode-actions{width:100%}.preparation-mode-actions button{flex:1}.preparation-fields{grid-template-columns:1fr}.preparation-library-actions{display:grid}.preparation-card-actions button{flex:1 0 auto}}
+
+.battle-notes{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;color:#f3dbb1;max-height:100px;overflow:auto;margin-top:8px}
