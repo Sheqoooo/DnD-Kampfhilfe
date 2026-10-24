@@ -49,7 +49,7 @@ test('local connection accepts only loopback APIs and never forwards credentials
  for(const url of['http://127.0.0.1:47831','http://localhost:8080/','http://[::1]:8080/v1/'])assert.ok(normalizeModelURL(url).endsWith('/v1'));
  for(const url of['https://example.com/v1','http://192.168.1.2:8080/v1','http://127.0.0.1.example.com/v1','file:///v1','http://user:password@localhost:8080/v1','http://localhost:8080/v1?url=https://remote','http://localhost:8080/other'])assert.throws(()=>normalizeModelURL(url));
  let called=false;await assert.rejects(requestScene({base:'https://remote.invalid/v1',model:'q2_0',prompt:'Ort',fetchImpl:()=>{called=true;}}));assert.equal(called,false);
- const fetchImpl=async(url,options)=>{assert.equal(url,'http://127.0.0.1:47831/v1/models');assert.equal(options.credentials,'omit');assert.equal(options.redirect,'error');return new Response(JSON.stringify({data:[{id:'q2_0',meta:{label:'Qwen'}}]}));};
+ const fetchImpl=async(url,options)=>{assert.equal(url,'http://127.0.0.1:47831/v1/models');assert.equal(options.credentials,'omit');assert.equal(options.redirect,'error');assert.deepEqual(options.headers,{});return new Response(JSON.stringify({data:[{id:'q2_0',meta:{label:'Qwen'}}]}));};
  assert.deepEqual(await discoverModels('http://127.0.0.1:47831/v1','',{fetchImpl}),[{id:'q2_0',label:'Qwen'}]);
  await assert.rejects(discoverModels('http://localhost:8080/v1','',{fetchImpl:async()=>new Response('{"data":[]}')}),/noch kein Modell/);
 });

@@ -1,4 +1,4 @@
-import{DEFAULT_MODEL_URL,normalizeModelURL,discoverModels,requestScene}from'./local-model.js?v=map-chat-1';
+import{DEFAULT_MODEL_URL,normalizeModelURL,discoverModels,requestScene}from'./local-model.js?v=map-chat-2';
 import{compileScene}from'./scene-planner.js?v=map-chat-1';
 
 // The model supplies a scene plan only. The host owns all actual map mutations.
