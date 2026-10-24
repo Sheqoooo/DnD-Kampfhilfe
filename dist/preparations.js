@@ -1,4 +1,4 @@
-import {validState, order, prepareManualOrder} from './core.js?v=forest-clean-1';
+import {validState, order, prepareManualOrder} from './core.js?v=map-chat-1';
 
 export const PREPARATION_LIMIT=200;
 export function validPreparations(campaign){

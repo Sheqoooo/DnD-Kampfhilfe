@@ -1,8 +1,10 @@
-import{removeParticipant}from'./participants.js?v=remove-participant-1';
+import{initMapChat}from'./map-chat.js?v=map-chat-1';
+import{applyScene}from'./scene-planner.js?v=map-chat-1';
+import{removeParticipant}from'./participants.js?v=map-chat-1';
 import{clearBoard,showBoardFigures}from'./map-actions.js?v=forest-clean-1';
 import{generateTerrain,GENERATORS,defaultTerrainOptions}from'./terrain.js?v=forest-clean-1';
-import{makeTerrain}from'./terrain-render.js?v=terrain-1';
-import{terrainNames,shapeLayer,isMapShapeVisible}from'./terrain-types.js?v=forest-clean-1';
+import{makeTerrain}from'./terrain-render.js?v=map-chat-1';
+import{terrainNames,shapeLayer,isMapShapeVisible}from'./terrain-types.js?v=map-chat-1';
 import{generateHouse,houseBounds,overlapsBuilding,annexEdges,annexRect,attachAnnex}from'./buildings.js?v=terrain-1';
 import{ensureTokenCodes,tokenSymbol,tokenCode,ensureEnemyNumbers,participantName}from'./tokens.js?v=local-enemy-codes-1';
 import{icon}from'./ui-icons.js?v=controls-1';
@@ -10,9 +12,9 @@ import{worldRect,clampWorldPoint}from'./world.js?v=manual-order-1';
 import{fullView,zoomView,panView,wheelView}from'./viewport.js?v=trackpad-1';
 import{recordChange,undoChange,redoChange}from'./history.js?v=manual-order-1';
 import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=terrain-1';
-import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=forest-clean-1';
-import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=preparations-1';
-import{PREPARATION_LIMIT,isPreparing,workspaceState,savePreparation,createPreparation,startPreparation}from'./preparations.js?v=preparations-1';
+import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=map-chat-1';
+import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=map-chat-1';
+import{PREPARATION_LIMIT,isPreparing,workspaceState,savePreparation,createPreparation,startPreparation}from'./preparations.js?v=map-chat-1';
 const $=s=>document.querySelector(s),uid=()=>crypto.randomUUID(),KEY='initiative.encounter.v1',NS='http://www.w3.org/2000/svg';
 const demo=()=>({version:1,title:'Überfall am alten Wachturm',demo:true,started:true,round:1,active:'lyra',people:[{id:'lyra',name:'Lyra',kind:'ally',hp:32,max:38,init:19,x:375,y:475},{id:'g1',name:'Goblin-Späher 1',kind:'enemy',hp:7,max:12,init:16,x:575,y:325},{id:'g2',name:'Goblin-Späher 2',kind:'enemy',hp:12,max:12,init:16,x:625,y:375},{id:'thorin',name:'Thorin',kind:'ally',hp:45,max:45,init:12,x:475,y:525}],shapes:[{id:'room',type:'rect',x:250,y:200,w:500,h:350},{id:'tower',type:'ellipse',x:600,y:100,w:200,h:200},{id:'wall1',type:'wall',points:[{x:250,y:350},{x:350,y:350}]},{id:'wall2',type:'wall',points:[{x:500,y:200},{x:500,y:300}]},{id:'pillar',type:'rect',x:400,y:300,w:50,h:50}]});
 let generatorKind='house';
@@ -533,6 +535,18 @@ $('#preparation-list').onclick=e=>{
 $('#delete-preparation-form').onsubmit=e=>{
  e.preventDefault();mutate(()=>{if(campaign.editingPreparationId===deletingPreparationId){delete campaign.editingPreparationId;state=workspaceState(campaign);}campaign.preparations=campaign.preparations.filter(p=>p.id!==deletingPreparationId);});resetWorkspaceEditor();$('#delete-preparation-dialog').close();$('#preparations-dialog').showModal();toast('Vorbereitung entfernt. Mit Rückgängig wiederherstellen.');
 };
+
+initMapChat({
+ getState:()=>state,
+ getBounds:()=>({x:view.x,y:view.y,w:view.width,h:view.height}),
+ renderPreview:(svg,shapes)=>{svg.replaceChildren(...shapes.slice().sort((a,b)=>shapeLayer(a)-shapeLayer(b)).map(s=>{const el=makeShape(s,true);el.removeAttribute('stroke-dasharray');return el;}));},
+ commit:(preview,removeIds,bounds)=>{
+  if(gesture||orderPreview)throw Error('Bitte zuerst die laufende Bearbeitung beenden.');
+  const shapes=preview.map(s=>({...s,id:uid()})),candidate=structuredClone(state);applyScene(candidate,shapes,removeIds);
+  setTool('select');mutate(()=>{state.shapes=candidate.shapes;state.demo=false;selectedIds=new Set(shapes.map(s=>s.id));});
+  view={x:bounds.x,y:bounds.y,width:bounds.w,height:bounds.h,zoom:1000/bounds.w};renderView();toast('KI-Szene platziert · mit einem Schritt rückgängig.');return shapes.map(s=>s.id);
+ }
+});
 
 renderView();render();setTool('select');if(!storageBroken)persist();if(storageBroken)toast('Gespeicherter Stand konnte nicht geladen werden. Beispiel geöffnet.');
 

@@ -1,4 +1,4 @@
-import{TERRAIN_TYPES}from'./terrain-types.js?v=forest-clean-1';
+import{TERRAIN_TYPES}from'./terrain-types.js?v=map-chat-1';
 import{WORLD,worldRect,inWorld}from'./world.js?v=expanded-grid-1';
 export const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export const order=people=>[...people].sort((a,b)=>(a.turnPosition??1000)-(b.turnPosition??1000));

@@ -464,3 +464,42 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .workspace .combatant-top .combatant-actions .turn-drag-handle{width:28px;min-width:28px;height:40px;min-height:40px;font-size:26px}
 .workspace .combatant-top .remove-combatant{width:28px;min-width:28px;height:40px;min-height:40px;flex-shrink:0;padding:0;border:1px solid transparent;border-radius:4px;background:transparent;color:#795337;font:500 25px/1 system-ui,sans-serif}
 .workspace .combatant-top .remove-combatant:hover{color:#8c3326;background:#ba785122;border-color:#94704466}
+
+/* A local-model scene planner lives inside the generator picker, keeping the map toolbar compact. */
+.generator-choices .ai-generator-choice{grid-column:1/-1;background:#f3dfa955;border-color:#9d793d}
+#map-chat-dialog{position:fixed;inset:0;margin:auto;width:min(980px,calc(100vw - 24px))}
+#ai-connection{border:1px solid var(--line);border-radius:5px;padding:8px 10px;margin-bottom:14px}
+#ai-connection summary{cursor:pointer;font-size:13px;font-weight:700}
+#ai-connection-status{display:block;font-size:11px;font-weight:500;color:var(--muted);margin:4px 0 0 16px}
+.ai-connection-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:12px;align-items:end}
+.ai-connection-grid label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:650;min-width:0}
+.ai-connection-grid input,.ai-connection-grid select{width:100%;font-size:12px}
+.ai-connection-grid button{font-size:13px;min-height:38px}
+.ai-chat-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.ai-chat-conversation,.ai-preview-panel{min-width:0}
+#ai-log{display:grid;gap:8px;max-height:195px;overflow:auto;scrollbar-color:#b88a40 #39271b}
+.ai-message{padding:10px;border:1px solid var(--line);border-radius:5px;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;background:#e7cfa4}
+.ai-message strong{display:block;margin-bottom:3px;font-size:11px;color:var(--muted)}
+.ai-message.user{background:#f0dfb8}
+.ai-example-list{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.ai-example-list button{padding:5px 8px;border:1px solid #a48855;border-radius:4px;background:#d9be8a;color:#62472b;font-size:11px}
+#ai-chat-form>label{display:block;font-size:13px;font-weight:650;margin:0 0 7px}
+#ai-prompt{width:100%;resize:vertical;font-size:14px;line-height:1.5;min-height:105px}
+.ai-send-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:9px}
+.ai-send-actions button{font-size:13px;min-height:38px}
+.ai-send-actions .text-button{font-size:12px}
+.ai-preview-stage{position:relative;min-height:220px;background:#e8d7ad;border:7px solid transparent;border-image:url('./assets/map-frame.png') 100 / 7px / 0 stretch;overflow:hidden}
+#ai-preview{display:block;width:100%;aspect-ratio:10/7;min-height:220px;background-color:#e8d7ad;background-image:linear-gradient(#b8b3a244 1px,transparent 1px),linear-gradient(90deg,#b8b3a244 1px,transparent 1px);background-size:5% 7.142857%}
+#ai-preview .terrain-outline{display:none}
+#ai-preview-empty{position:absolute;inset:40% 12px auto;text-align:center;font:italic 16px/1.5 Georgia,serif;color:var(--muted);pointer-events:none}
+#ai-preview-summary{font-size:13px;font-weight:650;line-height:1.5;margin:9px 0}
+.ai-preview-panel>.primary{width:100%;font-size:15px}
+#ai-replace-label{font-size:12px;margin:10px 0}
+#ai-status{font-size:13px;line-height:1.5;padding:10px 0 0;margin-top:12px;border-top:1px solid var(--line);color:#5c6335}
+#ai-status.ai-error{color:#8c3326}
+@media(max-width:700px){.ai-chat-layout,.ai-connection-grid{grid-template-columns:1fr}.ai-preview-stage,#ai-preview{min-height:190px}#ai-log{max-height:150px}.ai-send-actions .primary{flex:1}#ai-connection-status{overflow-wrap:anywhere}}
+#ai-replace-label[hidden]{display:none!important}
+#map-chat-dialog{scrollbar-width:thin;scrollbar-color:#b88a40 #39271b}
+#map-chat-dialog::-webkit-scrollbar{width:10px}
+#map-chat-dialog::-webkit-scrollbar-track{background:#39271b url('./assets/scroll-track-vertical.webp') center / 100% auto repeat-y}
+#map-chat-dialog::-webkit-scrollbar-thumb{background:#b88a40;border:1px solid #5b391b;border-image:url('./assets/scroll-thumb-vertical.webp') 55 0 fill / 8px 0 / 0 stretch}
