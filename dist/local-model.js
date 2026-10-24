@@ -1,4 +1,4 @@
-import{SCENE_SYSTEM_PROMPT,parseScene,validateScene,compileScene}from'./scene-planner.js?v=map-chat-3';
+import{SCENE_SYSTEM_PROMPT,parseScene,validateScene,compileScene}from'./scene-planner.js?v=map-outline-1';
 
 export const DEFAULT_MODEL_URL='http://127.0.0.1:47831/v1';
 export function normalizeModelURL(input){

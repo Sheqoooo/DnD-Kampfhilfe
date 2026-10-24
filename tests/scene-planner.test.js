@@ -1,3 +1,4 @@
+import {makeTerrain} from '../dist/terrain-render.js';
 import {readFileSync} from 'node:fs';
 import test from'node:test';import assert from'node:assert/strict';
 import{SCENE_TYPES,SCENE_SYSTEM_PROMPT,validateScene,parseScene,compileScene,applyScene}from'../dist/scene-planner.js';
@@ -8,13 +9,13 @@ const scene=(objects)=>({title:'Beliebiger Ort',summary:'Ein spielbarer Ort mit 
 const fixture=()=>scene([{id:'lake',type:'water',x:0,y:0,w:400,h:400,points:[[0,0],[400,0],[350,350],[0,400]]},{id:'shore',type:'sand',x:0,y:300,w:500,h:100},{id:'pier',type:'pier',x:200,y:200,w:50,h:200},{id:'trail',type:'path',points:[[250,400],[500,500],[800,450]],width:40},{id:'mountain',type:'mountain',x:650,y:0,w:300,h:300},{id:'tree',type:'tree',x:600,y:500,w:70,h:70},{id:'rock',type:'rock',x:750,y:550,w:60,h:50}]);
 const state=shapes=>({version:1,id:'fight',title:'Kampf',round:3,active:'hero',people:[{id:'hero',name:'Ada',kind:'ally',hp:7,max:10,init:0,x:75,y:75}],shapes});
 test('the automatic prompt supplies general capabilities, spatial rules and full-scene editing context',()=>{
- for(const kind of SCENE_TYPES)assert.ok(SCENE_SYSTEM_PROMPT.includes(kind));
+ for(const kind of ['line','wall','stairs','water','door','room','tree','rock','pier','house'])assert.ok(SCENE_SYSTEM_PROMPT.includes(kind));
  assert.ok(SCENE_SYSTEM_PROMPT.includes('COMPLETE revised scene'));assert.ok(SCENE_SYSTEM_PROMPT.includes('1000'));assert.ok(SCENE_SYSTEM_PROMPT.includes('700'));
  assert.ok(SCENE_SYSTEM_PROMPT.includes('Do not ask follow-up'));assert.ok(SCENE_SYSTEM_PROMPT.includes('Never write code'));
 });
 test('every supported semantic object compiles deterministically into editable, saveable geometry',()=>{
  const defaults={x:100,y:100,w:600,h:500},objects={
-  water:{},sand:{},mountain:{},rock:{},tree:{w:70,h:70},pier:{w:60,h:240},room:{w:260,h:160},
+  line:{points:[[10,20],[200,40],[250,90]]},stairs:{steps:4,direction:'vertical'},water:{},sand:{},mountain:{},rock:{},tree:{w:70,h:70},pier:{w:60,h:240},room:{w:260,h:160},
   path:{points:[[0,0],[200,100],[800,650],[1000,700]],width:40},wall:{points:[[100,100],[400,100],[400,400]]},door:{points:[[200,100],[250,100]],open:false},
   house:{w:347,h:271,rooms:4},cave:{count:3},ruins:{count:3},forest:{count:12},rocks:{count:6},river:{direction:'horizontal',crossing:'bridge'}
  };
@@ -85,4 +86,31 @@ test('invalid model output gets one contextual repair attempt before preview',as
 });
 test('cancelling during repair never starts another inference',async()=>{
  let calls=0;const control=new AbortController();await assert.rejects(requestScene({base:'http://localhost:47831',model:'q2_0',prompt:'Ort',signal:control.signal,onRepair:()=>control.abort(),fetchImpl:async()=>{calls++;return new Response(JSON.stringify({choices:[{message:{content:'{}'}}]}));}}),e=>e.name==='AbortError');assert.equal(calls,1);
+});
+
+test('sketch stairs are spaced open tread lines with no rocks, fill geometry or enclosing wall',()=>{
+ for(const direction of ['vertical','horizontal']){
+  const result=compileScene(scene([{id:'stairs',type:'stairs',x:200,y:100,w:300,h:180,steps:4,direction}]));
+  assert.equal(result.shapes.length,4);
+  result.shapes.forEach((s,i)=>{assert.equal(s.type,'path');assert.equal(s.sketch,true);assert.equal(s.terrain,undefined);assert.equal(s.points.length,2);const [a,b]=s.points;if(direction==='vertical'){assert.equal(a.y,b.y);assert.equal(b.x-a.x,300);assert.equal(a.y,100+(i+.5)*45);}else{assert.equal(a.x,b.x);assert.equal(b.y-a.y,180);assert.equal(a.x,200+(i+.5)*75);}});
+ }
+ for(const bad of [{steps:0},{steps:50},{direction:'diagonal'}])assert.throws(()=>validateScene(scene([{id:'stairs',type:'stairs',x:0,y:0,w:200,h:150,...bad}])));
+});
+test('sketch outlines preserve open entrances, aspect ratio, save data and editability',()=>{
+ const plan=scene([{id:'left',type:'line',points:[[100,700],[200,400],[200,0]]},{id:'right',type:'line',points:[[700,700],[600,400],[600,0]]}]);
+ const natural=compileScene(plan),wide=compileScene(plan,{x:0,y:0,w:2000,h:700});
+ assert.equal(wide.shapes.length,2);assert.equal(wide.shapes[0].points.length,3);
+ natural.shapes.forEach((s,i)=>s.points.forEach((p,j)=>{assert.equal(wide.shapes[i].points[j].x,p.x+500);assert.equal(wide.shapes[i].points[j].y,p.y);}));
+ const saved=JSON.parse(JSON.stringify(state(wide.shapes)));assert.ok(validState(saved));assert.ok(saved.shapes.every(s=>s.sketch));saved.shapes[0].sketch='yes';assert.equal(validState(saved),false);
+});
+test('AI terrain renders only outlines and light water while manual terrain retains its styling',()=>{
+ const svg=(tag,attrs)=>({tag,attrs,children:[],append(...kids){this.children.push(...kids);}});
+ for(const type of ['tree','rock','mountain','sand','water','pier']){
+  const s=compileScene(scene([{id:type,type,x:100,y:100,w:200,h:150}])).shapes[0];
+  const g=makeTerrain(s,svg),visible=g.children.filter(n=>n.attrs.class!=='terrain-outline');
+  assert.equal(visible.length,1,type);assert.equal(visible[0].attrs.fill,type==='water'?'#83b8bf':'none',type);
+  if(type==='water')assert.equal(visible[0].attrs['fill-opacity'],.35);
+  assert.ok(makeTerrain({...s,sketch:undefined},svg).children.length>g.children.length,type+' original artwork');
+ }
+ for(const type of ['cave','ruins'])assert.ok(compileScene(scene([{id:type,type,x:100,y:100,w:600,h:500,count:2}])).shapes.every(s=>s.sketch&&!['cave-floor','ruin-floor','rubble'].includes(s.terrain)));
 });

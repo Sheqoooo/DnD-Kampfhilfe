@@ -1,4 +1,4 @@
-import{order,prepareManualOrder}from'./core.js?v=map-chat-1';
+import{order,prepareManualOrder}from'./core.js?v=map-outline-1';
 
 // Remove only this encounter's copy, keeping the current round and libraries.
 export function removeParticipant(state,id){

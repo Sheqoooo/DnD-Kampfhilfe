@@ -28,7 +28,7 @@ Unter **Orte & Kämpfe** lassen sich leere Vorbereitungen anlegen oder die aktue
 
 ## Kartenchat mit lokalem Modell
 
-Unter **Generator ＋ → Kartenchat** einen beliebigen Ort beschreiben. Die App schickt automatisch einen Systemprompt mit Zeichenregeln, verfügbaren Elementen und Vorgaben für zusammenhängende, spielbare Karten mit. Das Modell plant die Szene; die App wandelt den Plan in normale, bearbeitbare Kartenelemente um.
+Unter **Generator ＋ → Kartenchat** einen beliebigen Ort beschreiben. Die App schickt automatisch einen Systemprompt mit Zeichenregeln, verfügbaren Elementen und Vorgaben für zusammenhängende, spielbare Karten mit. Das Modell plant eine grobe Draufsicht mit Umrissen, offenen Durchgängen und nachvollziehbaren Abständen. Die App wandelt den Plan in normale, bearbeitbare Kartenelemente um. Neue KI-Karten verwenden einfache Linien ohne Flächenmalerei oder dekorative Details; nur Wasser wird dezent blau eingefärbt. Treppen bestehen aus wenigen parallelen Stufenlinien. Beim Einfügen bleiben die Größenverhältnisse erhalten. Bereits gespeicherte Karten behalten ihre Darstellung.
 
 1. Strata auf demselben Rechner starten, ein Modell laden und die lokale API aktivieren.
 2. Im Kartenchat die API-Adresse eintragen, standardmäßig `http://127.0.0.1:47831/v1`, und **Verbindung prüfen** wählen. Modell und gegebenenfalls API-Schlüssel auswählen bzw. eintragen.
@@ -63,6 +63,6 @@ npm start
 npm test
 ```
 
-Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 113 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
+Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 116 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
 
 Bei jeder funktionalen Änderung oder Fehlerkorrektur wird [CHANGELOG.md](CHANGELOG.md) ergänzt. Ändern sich Bedienung oder Funktionsumfang, wird zusätzlich diese README aktualisiert. Git-Commits halten die einzelnen Codeänderungen fest; ältere Stände lassen sich darüber wiederherstellen.

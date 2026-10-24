@@ -4,6 +4,14 @@ Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; 
 
 ## 2026-10-24
 
+### Kartenchat als grobe Umrisskarte
+
+- Systemprompt auf eine sparsame Draufsicht mit offenen Konturen, begehbaren Durchgängen und sinnvollen Abständen umgestellt. Der vom Nutzer betonte Bereich bestimmt den Kartenausschnitt.
+- Neue KI-Karten erhalten einfache Linien statt gefüllter Felsen, Berge, Böden oder dekorativer Details. Wasser bleibt leicht blau eingefärbt. Gespeicherte Karten und manuelle Geländegeneratoren behalten ihre bisherige Darstellung.
+- Offene Konturlinien und Treppen als eigene Planungsbausteine ergänzt. Treppen werden zu wenigen parallelen, einzeln bearbeitbaren Stufenlinien.
+- Karten werden proportional in den sichtbaren Ausschnitt eingepasst, damit Breiten und Abstände nicht durch ein anderes Seitenverhältnis verzerrt werden.
+- 116 Tests bestanden, einschließlich offener Durchgänge, Stufenabstände, Speicherung der Darstellung, proportionaler Platzierung und unveränderter manueller Geländedarstellung.
+
 ### Behoben
 
 - Kartenchat lehnte Szenen mit mehrfach verwendeten Objektkennungen vollständig ab, etwa mehrere Felsen mit der Kennung `rock`. Solche Kennungen werden jetzt eindeutig ergänzt; alle Objekte und ihre Geometrie bleiben erhalten.

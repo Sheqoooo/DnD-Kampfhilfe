@@ -11,7 +11,13 @@ export function makeTerrain(sh,svg){
  const add=(tag,a)=>g.append(svg(tag,a)),path=(d,a)=>add('path',{d,...a});
  const ringPath=(smoothly=false)=>sh.rings.map(r=>smoothly?smooth(r,true):'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join('');
  const ellipse=(x,y,rx,ry,a)=>add('ellipse',{cx:x,cy:y,rx,ry,...a});
- if(sh.terrain==='tree'){
+ if(sh.sketch){
+  const attrs={fill:sh.terrain==='water'?'#83b8bf':'none','fill-opacity':.35,stroke:'#7b806a','stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round'};
+  if(sh.rings)path(ringPath(),{...attrs,'fill-rule':'evenodd'});
+  else if(sh.points)path('M'+sh.points.map(p=>p.x+' '+p.y).join('L'),attrs);
+  else if(sh.type==='ellipse')ellipse(cx,cy,b.w/2,b.h/2,attrs);
+  else add('rect',{x:b.x,y:b.y,width:b.w,height:b.h,...attrs});
+ }else if(sh.terrain==='tree'){
   ellipse(cx+1,cy+b.h*.1,b.w*.47,b.h*.43,{fill:'#253f2524'});
   const lobes=[[-.17,.08,.32,.35,'#73965b'],[.17,.04,.31,.34,'#87a86b'],[-.04,-.18,.34,.30,'#a2bd7b']];
   for(const[x,y,rx,ry,fill]of lobes)ellipse(cx+x*b.w,cy+y*b.h,rx*b.w,ry*b.h,{fill,stroke:'#526d3c','stroke-width':2});

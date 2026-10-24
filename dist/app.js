@@ -1,9 +1,9 @@
-import{initMapChat}from'./map-chat.js?v=map-chat-3';
-import{applyScene}from'./scene-planner.js?v=map-chat-1';
-import{removeParticipant}from'./participants.js?v=map-chat-1';
+import{initMapChat}from'./map-chat.js?v=map-outline-1';
+import{applyScene}from'./scene-planner.js?v=map-outline-1';
+import{removeParticipant}from'./participants.js?v=map-outline-1';
 import{clearBoard,showBoardFigures}from'./map-actions.js?v=forest-clean-1';
 import{generateTerrain,GENERATORS,defaultTerrainOptions}from'./terrain.js?v=forest-clean-1';
-import{makeTerrain}from'./terrain-render.js?v=map-chat-1';
+import{makeTerrain}from'./terrain-render.js?v=map-outline-1';
 import{terrainNames,shapeLayer,isMapShapeVisible}from'./terrain-types.js?v=map-chat-1';
 import{generateHouse,houseBounds,overlapsBuilding,annexEdges,annexRect,attachAnnex}from'./buildings.js?v=terrain-1';
 import{ensureTokenCodes,tokenSymbol,tokenCode,ensureEnemyNumbers,participantName}from'./tokens.js?v=local-enemy-codes-1';
@@ -12,9 +12,9 @@ import{worldRect,clampWorldPoint}from'./world.js?v=manual-order-1';
 import{fullView,zoomView,panView,wheelView}from'./viewport.js?v=trackpad-1';
 import{recordChange,undoChange,redoChange}from'./history.js?v=manual-order-1';
 import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=terrain-1';
-import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=map-chat-1';
-import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=map-chat-1';
-import{PREPARATION_LIMIT,isPreparing,workspaceState,savePreparation,createPreparation,startPreparation}from'./preparations.js?v=map-chat-1';
+import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=map-outline-1';
+import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=map-outline-1';
+import{PREPARATION_LIMIT,isPreparing,workspaceState,savePreparation,createPreparation,startPreparation}from'./preparations.js?v=map-outline-1';
 const $=s=>document.querySelector(s),uid=()=>crypto.randomUUID(),KEY='initiative.encounter.v1',NS='http://www.w3.org/2000/svg';
 const demo=()=>({version:1,title:'Überfall am alten Wachturm',demo:true,started:true,round:1,active:'lyra',people:[{id:'lyra',name:'Lyra',kind:'ally',hp:32,max:38,init:19,x:375,y:475},{id:'g1',name:'Goblin-Späher 1',kind:'enemy',hp:7,max:12,init:16,x:575,y:325},{id:'g2',name:'Goblin-Späher 2',kind:'enemy',hp:12,max:12,init:16,x:625,y:375},{id:'thorin',name:'Thorin',kind:'ally',hp:45,max:45,init:12,x:475,y:525}],shapes:[{id:'room',type:'rect',x:250,y:200,w:500,h:350},{id:'tower',type:'ellipse',x:600,y:100,w:200,h:200},{id:'wall1',type:'wall',points:[{x:250,y:350},{x:350,y:350}]},{id:'wall2',type:'wall',points:[{x:500,y:200},{x:500,y:300}]},{id:'pillar',type:'rect',x:400,y:300,w:50,h:50}]});
 let generatorKind='house';
@@ -56,7 +56,7 @@ function renderDoorMask(){
  mask.replaceChildren(svgEl('rect',{...worldRect,fill:'white'}),...state.shapes.filter(s=>s.type==='door').map(s=>svgEl('line',{x1:s.points[0].x,y1:s.points[0].y,x2:s.points[1].x,y2:s.points[1].y,stroke:'black','stroke-width':12,'stroke-linecap':'butt'})));
 }
 
-function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDraft?'#8d9e70':'#7b806a','stroke-width':isDraft?3:5,'stroke-linecap':'round','stroke-linejoin':'round'};if(sh.terrain){el=makeTerrain(sh,svgEl);}else if(sh.type==='door'){el=makeDoor(sh,isDraft);}else if(sh.type==='room'){el=svgEl('path',{d:sh.rings.map(r=>'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join(' '),...attrs,fill:isDraft?'#b9c79d33':'url(#floor)','fill-rule':'evenodd'});}else if(sh.type==='rect'){el=svgEl('rect',{x:sh.x,y:sh.y,width:sh.w,height:sh.h,rx:3,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else if(sh.type==='ellipse'){el=svgEl('ellipse',{cx:sh.x+sh.w/2,cy:sh.y+sh.h/2,rx:sh.w/2,ry:sh.h/2,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else{el=svgEl('polyline',{points:sh.points.map(p=>`${p.x},${p.y}`).join(' '),...attrs});}if(sh.interior){el.setAttribute('fill','none');el.setAttribute('stroke-width',isDraft?3:4);}
+function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDraft?'#8d9e70':'#7b806a','stroke-width':isDraft?3:5,'stroke-linecap':'round','stroke-linejoin':'round'};if(sh.terrain){el=makeTerrain(sh,svgEl);}else if(sh.type==='door'){el=makeDoor(sh,isDraft);}else if(sh.type==='room'){el=svgEl('path',{d:sh.rings.map(r=>'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join(' '),...attrs,fill:isDraft?'#b9c79d33':'url(#floor)','fill-rule':'evenodd'});}else if(sh.type==='rect'){el=svgEl('rect',{x:sh.x,y:sh.y,width:sh.w,height:sh.h,rx:3,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else if(sh.type==='ellipse'){el=svgEl('ellipse',{cx:sh.x+sh.w/2,cy:sh.y+sh.h/2,rx:sh.w/2,ry:sh.h/2,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else{el=svgEl('polyline',{points:sh.points.map(p=>`${p.x},${p.y}`).join(' '),...attrs});}if(sh.sketch&&!sh.terrain&&sh.type!=='door')el.setAttribute('fill','none');if(sh.interior){el.setAttribute('fill','none');el.setAttribute('stroke-width',isDraft?3:4);}
  if(isDraft)el.style.pointerEvents='none';if(!isDraft&&sh.type!=='door'&&(!sh.terrain||['ruin-wall','cave-wall'].includes(sh.terrain)))el.setAttribute('mask','url(#door-cutouts)');if(isDraft)el.setAttribute('stroke-dasharray','7 5');else{el.dataset.shape=sh.id;if(selectedIds.has(sh.id))el.classList.add('selected-shape');el.style.pointerEvents='all';el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',(sh.terrain?terrainNames[sh.terrain]:sh.type==='door'?'Tür '+(sh.open?'offen':'geschlossen'):sh.type==='wall'?'Wand':sh.interior?'Innenraum':'Gebäude')+' verschieben. Pfeiltasten zum Verschieben.');if(tool==='select')el.style.cursor='grab';if(tool==='erase')el.style.cursor='pointer';}return el;}
 function renderMap(){
  renderDoorMask();const shapes=$('#shapes'),tokens=$('#tokens');
