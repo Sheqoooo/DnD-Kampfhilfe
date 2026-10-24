@@ -1,4 +1,4 @@
-import{SCENE_SYSTEM_PROMPT,parseScene,validateScene,compileScene}from'./scene-planner.js?v=map-outline-1';
+import{SCENE_SYSTEM_PROMPT,parseScene,validateScene,compileScene}from'./scene-planner.js?v=free-drawing-1';
 
 export const DEFAULT_MODEL_URL='http://127.0.0.1:47831/v1';
 export function normalizeModelURL(input){
@@ -34,7 +34,7 @@ export async function requestScene({base,model,key='',prompt,previous=null,signa
  messages.push({role:'user',content:prompt.trim()});
  for(let attempt=0;attempt<2;attempt++){
   if(signal?.aborted)throw new DOMException('Abgebrochen','AbortError');
-  const data=await jsonRequest(url+'/chat/completions',{method:'POST',headers:headers(key),signal,fetchImpl,body:JSON.stringify({model,messages,stream:false,reasoning_effort:'none',temperature:attempt?.2:.5,max_tokens:4096,response_format:{type:'json_object'}})});
+  const data=await jsonRequest(url+'/chat/completions',{method:'POST',headers:headers(key),signal,fetchImpl,body:JSON.stringify({model,messages,stream:false,reasoning_effort:'none',temperature:attempt?.2:.5,max_tokens:8192,response_format:{type:'json_object'}})});
   const choice=data.choices?.[0],content=choice?.message?.content;
   try{
    if(choice?.finish_reason==='length')throw Error('Der Kartenplan wurde zu lang. Bitte weniger Details anfordern.');
@@ -43,7 +43,7 @@ export async function requestScene({base,model,key='',prompt,previous=null,signa
    if(attempt)throw Error('Strata konnte den Kartenplan auch nach einer automatischen Korrektur nicht umsetzen. '+error.message);
    if(signal?.aborted)throw new DOMException('Abgebrochen','AbortError');
    if(typeof content==='string'&&content.length<=100000)messages.push({role:'assistant',content});
-   messages.push({role:'user',content:'Correct the invalid scene JSON. Validation error: '+error.message+' Return the COMPLETE valid scene, keeping the original request and unaffected objects. Use only supported types, unique ids and in-bounds geometry. If too complex, simplify details. JSON only.'});
+   messages.push({role:'user',content:'Correct the invalid scene JSON. Validation error: '+error.message+' Return the COMPLETE valid scene, keeping the original request and unaffected objects. Use only supported types, unique ids and in-bounds geometry. Use free line/polygon shapes for creative features; no redundant bounding rectangles are needed for point-based shapes. JSON only.'});
    onRepair?.();
   }
  }

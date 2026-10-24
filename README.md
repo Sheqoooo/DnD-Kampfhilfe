@@ -36,7 +36,7 @@ Unter **Generator ＋ → Kartenchat** einen beliebigen Ort beschreiben. Die App
 
 Getestet mit Qwen3.8-Flash-Next Q2_0. Der Client verwendet die lokalen Endpunkte `/v1/models` und `/v1/chat/completions`. Für den Zugriff von der veröffentlichten App kann eine lokale Netzwerkfreigabe im Browser nötig sein. Strata und das Modell müssen während der Generierung laufen.
 
-Doppelte Objektkennungen werden automatisch eindeutig gemacht. Ungültige Pläne erhalten höchstens einen automatischen Korrekturversuch mit konkreter Fehlerrückmeldung an das Modell. Unbekannte Typen und ungültige Geometrie werden weiterhin geprüft; eine fehlerhafte Antwort verändert die Karte nicht. Die Qualität der Anordnung hängt vom Modell ab, und nicht jedes gewünschte Detail hat einen eigenen Zeichentyp.
+Eigene Grundrisse lassen sich frei aus offenen Linien, geschlossenen Polygonen, Rechtecken und Ellipsen zusammensetzen; Motive brauchen keine feste Geländekategorie. Die Begrenzungen von Wasser und anderen freien Flächen werden aus ihren Punkten berechnet. Zeichnungen außerhalb des Referenzausschnitts werden gemeinsam proportional eingepasst. Doppelte Objektkennungen werden automatisch eindeutig gemacht. Ungültige Pläne erhalten höchstens einen automatischen Korrekturversuch mit konkreter Fehlerrückmeldung an das Modell. Eigene Objektnamen mit Punktgeometrie werden als freie Konturen gelesen. Ungültige Geometrie wird weiterhin geprüft; eine fehlerhafte Antwort verändert die Karte nicht. Die Qualität der Anordnung hängt vom Modell ab, und nicht jedes gewünschte Detail hat einen eigenen Zeichentyp.
 
 Die Übernahme ist ein einzelner rückgängig machbarer Schritt. Folgeänderungen können nur die vorherige KI-Szene ersetzen; andere Zeichnungen, Figuren und HP bleiben erhalten. Chatkontext besteht nur während der geöffneten App-Sitzung. Übernommene Karten werden wie normale Zeichnungen gespeichert.
 
@@ -63,6 +63,6 @@ npm start
 npm test
 ```
 
-Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 116 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
+Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 119 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
 
 Bei jeder funktionalen Änderung oder Fehlerkorrektur wird [CHANGELOG.md](CHANGELOG.md) ergänzt. Ändern sich Bedienung oder Funktionsumfang, wird zusätzlich diese README aktualisiert. Git-Commits halten die einzelnen Codeänderungen fest; ältere Stände lassen sich darüber wiederherstellen.

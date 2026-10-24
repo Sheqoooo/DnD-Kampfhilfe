@@ -1,5 +1,5 @@
-import{initMapChat}from'./map-chat.js?v=map-outline-1';
-import{applyScene}from'./scene-planner.js?v=map-outline-1';
+import{initMapChat}from'./map-chat.js?v=free-drawing-1';
+import{applyScene}from'./scene-planner.js?v=free-drawing-1';
 import{removeParticipant}from'./participants.js?v=map-outline-1';
 import{clearBoard,showBoardFigures}from'./map-actions.js?v=forest-clean-1';
 import{generateTerrain,GENERATORS,defaultTerrainOptions}from'./terrain.js?v=forest-clean-1';

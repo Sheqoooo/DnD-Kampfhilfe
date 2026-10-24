@@ -1,5 +1,5 @@
-import{DEFAULT_MODEL_URL,normalizeModelURL,discoverModels,requestScene}from'./local-model.js?v=map-outline-1';
-import{compileScene}from'./scene-planner.js?v=map-outline-1';
+import{DEFAULT_MODEL_URL,normalizeModelURL,discoverModels,requestScene}from'./local-model.js?v=free-drawing-1';
+import{compileScene}from'./scene-planner.js?v=free-drawing-1';
 
 // The model supplies a scene plan only. The host owns all actual map mutations.
 export function initMapChat({getState,getBounds,renderPreview,commit}){

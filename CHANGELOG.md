@@ -4,6 +4,15 @@ Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; 
 
 ## 2026-10-24
 
+### Freie Zeichnungen und tolerantere Flächenverarbeitung
+
+- Fehler „Die Geländeform passt nicht zu ihrer Grundfläche“ an der Modellgrenze behoben: Bei freien Wasser-/Geländeflächen ergeben sich die Begrenzungen aus den gezeichneten Punkten. Fehlende oder widersprüchliche zusätzliche Rechteckangaben führen nicht mehr zur Ablehnung.
+- Beliebige geschlossene Polygone, Rechtecke und Ellipsen sowie geschlossene Linien ergänzt. Das Modell kann eigene Motive aus Grundformen zusammensetzen, ohne dafür einen benannten Geländetyp zu benötigen.
+- Eigene Objektnamen mit gültigen Punkten werden als freie Konturen interpretiert. Punkte in Objektform werden ebenfalls übernommen.
+- Über den Referenzausschnitt hinausreichende Pläne werden gemeinsam proportional eingepasst. Anschlüsse und relative Abstände bleiben erhalten; einzelne Konturen werden nicht abgeschnitten.
+- Spielraum für größere Pläne und längere Linien erweitert; das Antwortbudget des Modells wurde erhöht. Die Darstellung bleibt eine grobe Umrisskarte.
+- 119 Tests bestanden, darunter widersprüchliche Wasser-Rechtecke, fehlende Begrenzungsangaben, freies Zeichnen außerhalb des Referenzausschnitts, Anschlüsse, eigene Motive und längere Konturen.
+
 ### Kartenchat als grobe Umrisskarte
 
 - Systemprompt auf eine sparsame Draufsicht mit offenen Konturen, begehbaren Durchgängen und sinnvollen Abständen umgestellt. Der vom Nutzer betonte Bereich bestimmt den Kartenausschnitt.

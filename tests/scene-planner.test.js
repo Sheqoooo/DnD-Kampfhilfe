@@ -15,7 +15,7 @@ test('the automatic prompt supplies general capabilities, spatial rules and full
 });
 test('every supported semantic object compiles deterministically into editable, saveable geometry',()=>{
  const defaults={x:100,y:100,w:600,h:500},objects={
-  line:{points:[[10,20],[200,40],[250,90]]},stairs:{steps:4,direction:'vertical'},water:{},sand:{},mountain:{},rock:{},tree:{w:70,h:70},pier:{w:60,h:240},room:{w:260,h:160},
+  polygon:{points:[[100,100],[300,150],[250,300]]},ellipse:{},rect:{},line:{points:[[10,20],[200,40],[250,90]]},stairs:{steps:4,direction:'vertical'},water:{},sand:{},mountain:{},rock:{},tree:{w:70,h:70},pier:{w:60,h:240},room:{w:260,h:160},
   path:{points:[[0,0],[200,100],[800,650],[1000,700]],width:40},wall:{points:[[100,100],[400,100],[400,400]]},door:{points:[[200,100],[250,100]],open:false},
   house:{w:347,h:271,rooms:4},cave:{count:3},ruins:{count:3},forest:{count:12},rocks:{count:6},river:{direction:'horizontal',crossing:'bridge'}
  };
@@ -28,7 +28,7 @@ test('every supported semantic object compiles deterministically into editable, 
 });
 test('invalid model instructions cannot become code, out-of-bounds shapes or unbounded generation',()=>{
  const input=fixture();assert.deepEqual(parseScene('```json\n'+JSON.stringify(input)+'\n```'),validateScene(input));assert.deepEqual(parseScene('<think>not part of output</think>'+JSON.stringify(input)),validateScene(input));
- for(const change of [p=>p.objects[0].type='script',p=>p.objects.push({...p.objects[0]}),p=>p.objects[0].x=-1,p=>p.objects[0].points=[[0,0],[9999,0],[0,400]],p=>p.objects[0].w=Infinity,p=>p.objects[0].w='400',p=>p.objects=Array.from({length:41},(_,i)=>({...p.objects[0],id:'x'+i})),p=>p.objects[0].points=[[0,0],[0,0],[0,0]],p=>p.objects[0].id='../../file']){const p=structuredClone(input);change(p);assert.throws(()=>validateScene(p));}
+ for(const change of [p=>p.objects[0].type='script',p=>p.objects.push({...p.objects[0]}),p=>p.objects[0].x=-1,p=>p.objects[0].points=[[0,0],[9999,0],[0,400]],p=>p.objects[0].w=Infinity,p=>p.objects[0].w='400',p=>p.objects=Array.from({length:201},(_,i)=>({...p.objects[0],id:'x'+i})),p=>p.objects[0].points=[[0,0],[0,0],[0,0]],p=>p.objects[0].id='../../file']){const p=structuredClone(input);change(p);assert.throws(()=>validateScene(p));}
  assert.throws(()=>parseScene('alert("hello")'));assert.throws(()=>parseScene('a'.repeat(100001)));assert.throws(()=>compileScene(input,{x:10900,y:0,w:1000,h:700}));
  const withExtras=fixture();withExtras.people=[{hp:0}];withExtras.objects[0].onclick='fetch("https://attacker.invalid")';assert.equal(validateScene(withExtras).people,undefined);assert.equal(validateScene(withExtras).objects[0].onclick,undefined);
 });
@@ -79,7 +79,7 @@ test('id repair reserves later valid ids and never drops repeated geometry',()=>
  const plan=parseScene(JSON.stringify(p));assert.equal(plan.objects[2].id,'rock_2');assert.equal(new Set(plan.objects.map(o=>o.id)).size,4);assert.equal(plan.objects[1].x,80);
 });
 test('invalid model output gets one contextual repair attempt before preview',async()=>{
- let calls=0,repairs=0;const bad=fixture();bad.objects[0].type='ocean';
+ let calls=0,repairs=0;const bad=fixture();bad.objects[0].type='ocean';delete bad.objects[0].points;
  const fetchImpl=async(url,options)=>{calls++;const sent=JSON.parse(options.body);if(calls===2){assert.match(sent.messages.at(-1).content,/ocean/);assert.equal(sent.messages.at(-2).role,'assistant');assert.match(sent.messages[1].content,/Höhleneingang/);}return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(calls===1?bad:fixture())}}]}));};
  const result=await requestScene({base:'http://localhost:47831',model:'q2_0',prompt:'Höhleneingang',fetchImpl,onRepair:()=>repairs++});assert.equal(calls,2);assert.equal(repairs,1);assert.deepEqual(result,validateScene(fixture()));
  calls=0;await assert.rejects(requestScene({base:'http://localhost:47831',model:'q2_0',prompt:'Ort',fetchImpl:async()=>{calls++;return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(bad)}}]}));}}),/automatischen Korrektur/);assert.equal(calls,2);
@@ -94,7 +94,7 @@ test('sketch stairs are spaced open tread lines with no rocks, fill geometry or 
   assert.equal(result.shapes.length,4);
   result.shapes.forEach((s,i)=>{assert.equal(s.type,'path');assert.equal(s.sketch,true);assert.equal(s.terrain,undefined);assert.equal(s.points.length,2);const [a,b]=s.points;if(direction==='vertical'){assert.equal(a.y,b.y);assert.equal(b.x-a.x,300);assert.equal(a.y,100+(i+.5)*45);}else{assert.equal(a.x,b.x);assert.equal(b.y-a.y,180);assert.equal(a.x,200+(i+.5)*75);}});
  }
- for(const bad of [{steps:0},{steps:50},{direction:'diagonal'}])assert.throws(()=>validateScene(scene([{id:'stairs',type:'stairs',x:0,y:0,w:200,h:150,...bad}])));
+ for(const bad of [{steps:0},{steps:65},{direction:'diagonal'}])assert.throws(()=>validateScene(scene([{id:'stairs',type:'stairs',x:0,y:0,w:200,h:150,...bad}])));
 });
 test('sketch outlines preserve open entrances, aspect ratio, save data and editability',()=>{
  const plan=scene([{id:'left',type:'line',points:[[100,700],[200,400],[200,0]]},{id:'right',type:'line',points:[[700,700],[600,400],[600,0]]}]);
@@ -113,4 +113,25 @@ test('AI terrain renders only outlines and light water while manual terrain reta
   assert.ok(makeTerrain({...s,sketch:undefined},svg).children.length>g.children.length,type+' original artwork');
  }
  for(const type of ['cave','ruins'])assert.ok(compileScene(scene([{id:type,type,x:100,y:100,w:600,h:500,count:2}])).shapes.every(s=>s.sketch&&!['cave-floor','ruin-floor','rubble'].includes(s.terrain)));
+});
+
+test('free polygons and water derive bounds instead of rejecting redundant model rectangles',()=>{
+ const points=[[0,200],[800,150],[1000,700],[0,700]];
+ for(const type of ['water','rock','polygon']){
+  const plan=parseScene(JSON.stringify(scene([{id:'free',type,x:300,y:300,w:30,h:20,points}])));
+  assert.deepEqual(plan.objects[0].points,points);assert.ok(validState(state(compileScene(plan).shapes)));
+  if(type!=='polygon')assert.deepEqual([plan.objects[0].x,plan.objects[0].y,plan.objects[0].w,plan.objects[0].h],[0,150,1000,550]);
+ }
+ const noRectangle=parseScene(JSON.stringify(scene([{id:'water',type:'water',points}])));assert.ok(validState(state(compileScene(noRectangle).shapes)));
+});
+test('free drawing beyond the nominal canvas fits together without clipping connections',()=>{
+ const raw=scene([{id:'edge',type:'line',points:[[-500,-200],[1500,800]]},{id:'pool',type:'water',points:[[500,300],[1500,300],[1500,800],[500,800]]},{id:'oval',type:'ellipse',x:0,y:0,w:500,h:200}]);
+ const plan=parseScene(JSON.stringify(raw)),edge=plan.objects[0].points,pool=plan.objects[1].points;
+ assert.deepEqual(edge[1],pool[2]);assert.equal(edge[1][0]-edge[0][0],1000);assert.equal((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]),2);
+ assert.ok(validState(state(compileScene(plan).shapes)));assert.equal(plan.objects[2].w/plan.objects[2].h,2.5);
+});
+test('invented subjects can use editable free contours without named terrain presets',()=>{
+ const plan=parseScene(JSON.stringify(scene([{id:'altar',type:'floating_altar',closed:true,points:[{x:100,y:100},{x:300,y:100},{x:250,y:300}]},{id:'spiral',type:'line',points:Array.from({length:90},(_,i)=>[500+Math.cos(i/8)*i,350+Math.sin(i/8)*i])}])));
+ assert.equal(plan.objects[0].type,'polygon');const shapes=compileScene(plan).shapes;assert.equal(shapes[0].type,'path');assert.deepEqual(shapes[0].points[0],shapes[0].points.at(-1));assert.equal(shapes[1].points.length,90);assert.ok(validState(state(shapes)));
+ const many=scene(Array.from({length:80},(_,i)=>({id:'mark'+i,type:'line',points:[[i*10,100],[i*10,200]]})));assert.equal(compileScene(parseScene(JSON.stringify(many))).shapes.length,80);
 });
