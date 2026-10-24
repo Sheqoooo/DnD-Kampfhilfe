@@ -1,4 +1,4 @@
-import{initMapChat}from'./map-chat.js?v=map-chat-2';
+import{initMapChat}from'./map-chat.js?v=map-chat-3';
 import{applyScene}from'./scene-planner.js?v=map-chat-1';
 import{removeParticipant}from'./participants.js?v=map-chat-1';
 import{clearBoard,showBoardFigures}from'./map-actions.js?v=forest-clean-1';

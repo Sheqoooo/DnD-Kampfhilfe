@@ -1,5 +1,5 @@
-import{DEFAULT_MODEL_URL,normalizeModelURL,discoverModels,requestScene}from'./local-model.js?v=map-chat-2';
-import{compileScene}from'./scene-planner.js?v=map-chat-1';
+import{DEFAULT_MODEL_URL,normalizeModelURL,discoverModels,requestScene}from'./local-model.js?v=map-chat-3';
+import{compileScene}from'./scene-planner.js?v=map-chat-3';
 
 // The model supplies a scene plan only. The host owns all actual map mutations.
 export function initMapChat({getState,getBounds,renderPreview,commit}){
@@ -45,7 +45,7 @@ export function initMapChat({getState,getBounds,renderPreview,commit}){
   const context=signature(),stateId=getState().id,bounds=applied?.bounds??getBounds();
   try{
    const base=knownModels.length?normalizeModelURL($('#ai-base').value):await connect(control.signal);
-   const scene=await requestScene({base,model:$('#ai-model').value,key:$('#ai-key').value.trim(),prompt,previous,signal:control.signal});
+   const scene=await requestScene({base,model:$('#ai-model').value,key:$('#ai-key').value.trim(),prompt,previous,signal:control.signal,onRepair:()=>status('Strata korrigiert den Kartenplan automatisch …')});
    if(control.signal.aborted||controller!==control)return;
    if(context!==signature())throw Error('Die Karte wurde inzwischen verändert. Bitte die Szene erneut generieren.');
    const result=compileScene(scene,bounds);pending={...result,signature:context,stateId,bounds};previous=scene;

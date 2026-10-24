@@ -1,4 +1,4 @@
-import{SCENE_SYSTEM_PROMPT,parseScene,validateScene}from'./scene-planner.js?v=map-chat-1';
+import{SCENE_SYSTEM_PROMPT,parseScene,validateScene,compileScene}from'./scene-planner.js?v=map-chat-3';
 
 export const DEFAULT_MODEL_URL='http://127.0.0.1:47831/v1';
 export function normalizeModelURL(input){
@@ -26,13 +26,25 @@ export async function discoverModels(base,key='',options={}){
  const models=(Array.isArray(data.data)?data.data:[]).filter(m=>typeof m.id==='string'&&m.id.length>0&&m.id.length<=200).map(m=>({id:m.id,label:typeof m.meta?.label==='string'?m.meta.label.slice(0,120):m.id}));
  if(!models.length)throw Error('Die API läuft, aber noch kein Modell. Lade zuerst Qwen in Strata.');return models;
 }
-export async function requestScene({base,model,key='',prompt,previous=null,signal,fetchImpl}){
+export async function requestScene({base,model,key='',prompt,previous=null,signal,fetchImpl,onRepair}){
  const url=normalizeModelURL(base);if(typeof prompt!=='string'||!prompt.trim()||prompt.length>1600)throw Error('Bitte beschreibe den Ort in maximal 1600 Zeichen.');
  if(typeof model!=='string'||!model||model.length>200)throw Error('Bitte zuerst die Verbindung zu Strata prüfen.');
  const messages=[{role:'system',content:SCENE_SYSTEM_PROMPT}];
  if(previous)messages.push({role:'assistant',content:JSON.stringify(validateScene(previous))});
  messages.push({role:'user',content:prompt.trim()});
- const data=await jsonRequest(url+'/chat/completions',{method:'POST',headers:headers(key),signal,fetchImpl,body:JSON.stringify({model,messages,stream:false,reasoning_effort:'none',temperature:.5,max_tokens:4096,response_format:{type:'json_object'}})});
- const choice=data.choices?.[0];if(choice?.finish_reason==='length')throw Error('Der Kartenplan wurde zu lang. Bitte weniger Details anfordern.');
- return parseScene(choice?.message?.content);
+ for(let attempt=0;attempt<2;attempt++){
+  if(signal?.aborted)throw new DOMException('Abgebrochen','AbortError');
+  const data=await jsonRequest(url+'/chat/completions',{method:'POST',headers:headers(key),signal,fetchImpl,body:JSON.stringify({model,messages,stream:false,reasoning_effort:'none',temperature:attempt?.2:.5,max_tokens:4096,response_format:{type:'json_object'}})});
+  const choice=data.choices?.[0],content=choice?.message?.content;
+  try{
+   if(choice?.finish_reason==='length')throw Error('Der Kartenplan wurde zu lang. Bitte weniger Details anfordern.');
+   const scene=parseScene(content);compileScene(scene);return scene;
+  }catch(error){
+   if(attempt)throw Error('Strata konnte den Kartenplan auch nach einer automatischen Korrektur nicht umsetzen. '+error.message);
+   if(signal?.aborted)throw new DOMException('Abgebrochen','AbortError');
+   if(typeof content==='string'&&content.length<=100000)messages.push({role:'assistant',content});
+   messages.push({role:'user',content:'Correct the invalid scene JSON. Validation error: '+error.message+' Return the COMPLETE valid scene, keeping the original request and unaffected objects. Use only supported types, unique ids and in-bounds geometry. If too complex, simplify details. JSON only.'});
+   onRepair?.();
+  }
+ }
 }

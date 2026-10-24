@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import test from'node:test';import assert from'node:assert/strict';
 import{SCENE_TYPES,SCENE_SYSTEM_PROMPT,validateScene,parseScene,compileScene,applyScene}from'../dist/scene-planner.js';
 import{normalizeModelURL,discoverModels,requestScene}from'../dist/local-model.js';
@@ -64,4 +65,24 @@ test('cancelling a request aborts inference and never yields a plan',async()=>{
  const fetchImpl=async(url,options)=>{networkSignal=options.signal;return new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>reject(new DOMException('cancelled','AbortError')),{once:true}));};
  const request=requestScene({base:'http://localhost:47831/v1',model:'q2_0',prompt:'Eine Taverne',signal:control.signal,fetchImpl});control.abort();
  await assert.rejects(request,e=>e.name==='AbortError');assert.equal(networkSignal.aborted,true);
+});
+
+test('real Qwen cave entrance response keeps every repeated rock and repairs duplicate ids',()=>{
+ const raw=readFileSync(new URL('./fixtures/qwen-cave-entrance.json',import.meta.url),'utf8');
+ const scene=parseScene(raw);assert.equal(scene.objects.length,6);assert.equal(scene.objects.filter(o=>o.type==='rock').length,3);
+ assert.equal(new Set(scene.objects.map(o=>o.id)).size,6);assert.deepEqual(parseScene(raw),scene);
+ assert.ok(validState(state(compileScene(scene).shapes)));
+});
+test('id repair reserves later valid ids and never drops repeated geometry',()=>{
+ const p=scene([{id:'rock',type:'rock',x:10,y:10,w:50,h:50},{id:'rock',type:'rock',x:80,y:10,w:50,h:50},{id:'rock_2',type:'rock',x:150,y:10,w:50,h:50},{type:'tree',x:250,y:10,w:50,h:50}]);
+ const plan=parseScene(JSON.stringify(p));assert.equal(plan.objects[2].id,'rock_2');assert.equal(new Set(plan.objects.map(o=>o.id)).size,4);assert.equal(plan.objects[1].x,80);
+});
+test('invalid model output gets one contextual repair attempt before preview',async()=>{
+ let calls=0,repairs=0;const bad=fixture();bad.objects[0].type='ocean';
+ const fetchImpl=async(url,options)=>{calls++;const sent=JSON.parse(options.body);if(calls===2){assert.match(sent.messages.at(-1).content,/ocean/);assert.equal(sent.messages.at(-2).role,'assistant');assert.match(sent.messages[1].content,/Höhleneingang/);}return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(calls===1?bad:fixture())}}]}));};
+ const result=await requestScene({base:'http://localhost:47831',model:'q2_0',prompt:'Höhleneingang',fetchImpl,onRepair:()=>repairs++});assert.equal(calls,2);assert.equal(repairs,1);assert.deepEqual(result,validateScene(fixture()));
+ calls=0;await assert.rejects(requestScene({base:'http://localhost:47831',model:'q2_0',prompt:'Ort',fetchImpl:async()=>{calls++;return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(bad)}}]}));}}),/automatischen Korrektur/);assert.equal(calls,2);
+});
+test('cancelling during repair never starts another inference',async()=>{
+ let calls=0;const control=new AbortController();await assert.rejects(requestScene({base:'http://localhost:47831',model:'q2_0',prompt:'Ort',signal:control.signal,onRepair:()=>control.abort(),fetchImpl:async()=>{calls++;return new Response(JSON.stringify({choices:[{message:{content:'{}'}}]}));}}),e=>e.name==='AbortError');assert.equal(calls,1);
 });

@@ -7,7 +7,7 @@ export const SCENE_TYPES=['water','sand','path','pier','mountain','tree','rock',
 export const SCENE_SYSTEM_PROMPT=`You are the scene planner for Mini Mind Theater, an editable top-down D&D battle map. The user describes any location in natural language. Interpret their intent, choose useful details yourself, and return a coherent, playable scene. Do not ask follow-up questions for ordinary missing details. Never write code, HTML, SVG, tools, URLs or markdown. Return ONE JSON object, no other text.
 
 OUTPUT: {"title":"short German location name","summary":"brief German description of the layout","objects":[...]}
-Canvas is 1000 wide by 700 high; x increases right, y down. Coordinates are numbers. Stay inside the canvas. Use 4-20 objects normally, at most 40. Each object has a unique stable id (letters, numbers, underscores or hyphens). No players, enemies or combat rules: only terrain and architecture.
+Canvas is 1000 wide by 700 high; x increases right, y down. Coordinates are numbers. Stay inside the canvas. Use 4-20 objects normally, at most 40. Each object has a unique stable id (letters, numbers, underscores or hyphens). Repeated objects need different ids, e.g. rock_1, rock_2, rock_3. Use ONLY the exact available type names below; represent other requested details with these primitives. No players, enemies or combat rules: only terrain and architecture.
 
 AVAILABLE OBJECTS:
 - wall: {id,type,points:[[x,y],[x,y],...]}. An editable wall or fence, 2-24 points. Use connected walls to enclose gardens, courtyards and defensive positions.
@@ -33,12 +33,28 @@ export function parseScene(text){
  if(typeof text!=='string'||text.length>100000)fail('Die Modellantwort ist leer oder zu groß.');
  const cleaned=text.replace(/<think>[\s\S]*?<\/think>/gi,'').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
  let raw;try{raw=JSON.parse(cleaned);}catch{fail('Strata hat keinen gültigen Kartenplan geliefert. Bitte neu generieren.');}
- return validateScene(raw);
+ return validateScene(normalizeSceneIds(raw));
+}
+// IDs identify scene objects, not executable references. Repair model bookkeeping
+// without deleting repeated scenery or relaxing geometry/type validation.
+function normalizeSceneIds(raw){
+ if(!raw||!Array.isArray(raw.objects)||raw.objects.length>40)return raw;
+ const reserved=new Set(raw.objects.map(o=>o?.id).filter(id=>typeof id==='string'&&/^[a-zA-Z0-9_-]{1,40}$/.test(id))),used=new Set();
+ return {...raw,objects:raw.objects.map((o,i)=>{
+  if(!o||typeof o!=='object'||Array.isArray(o))return o;
+  let id=o.id;
+  if(typeof id!=='string'||!/^[a-zA-Z0-9_-]{1,40}$/.test(id)||used.has(id)){
+   const base=typeof id==='string'&&/^[a-zA-Z0-9_-]{1,40}$/.test(id)?id:'object';let n=i+1;
+   do{id=base.slice(0,30)+'_'+n++;}while(reserved.has(id)||used.has(id));
+  }
+  used.add(id);return {...o,id};
+ })};
 }
 export function validateScene(raw){
  if(!raw||typeof raw!=='object'||typeof raw.title!=='string'||!raw.title.trim()||raw.title.length>80||typeof raw.summary!=='string'||raw.summary.length>600||!Array.isArray(raw.objects)||!raw.objects.length||raw.objects.length>40)fail('Der Kartenplan braucht einen Titel, eine Beschreibung und 1–40 Elemente.');
  const ids=new Set();
  const objects=raw.objects.map(o=>{
+  if(o&&typeof o==='object'&&!SCENE_TYPES.includes(o.type))fail('Unbekannter Elementtyp „'+String(o.type).slice(0,60)+'“. Erlaubt: '+SCENE_TYPES.join(', ')+'.');
   if(!o||!SCENE_TYPES.includes(o.type)||typeof o.id!=='string'||!/^[a-zA-Z0-9_-]{1,40}$/.test(o.id)||ids.has(o.id))fail('Der Kartenplan enthält unbekannte oder doppelte Elemente.');ids.add(o.id);
   const item={id:o.id,type:o.type};
   if(!['path','wall','door'].includes(o.type)){
