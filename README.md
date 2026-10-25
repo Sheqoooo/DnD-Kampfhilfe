@@ -22,6 +22,14 @@ Deutschsprachige DnD-Kampfhilfe mit interaktiver Karte, manuell sortierter Zugfo
 - Häuser mit Räumen und Türen sowie Höhlen, Ruinen, Wälder mit freier Lichtung, Flüsse mit Übergängen und Felsfelder generieren. Vor dem Platzieren gibt es eine Vorschau und alternative Varianten.
 - Das Spielfeld komplett oder nur die Zeichnungen leeren; Figuren lassen sich separat wieder einblenden.
 
+## Spielfelder getrennt speichern
+
+Über **Spielfelder** neben „Orte & Kämpfe“ lässt sich die aktuelle Karte unter einem eigenen Namen speichern. Die Sammlung enthält ausschließlich Gebäude, Gelände, Wände, Türen und den Kartenausschnitt – keine Helden, Gegner, HP oder Zugfolge.
+
+Mehrere Spielfelder können gesucht, geladen, umbenannt, dupliziert oder ausdrücklich mit dem aktuellen Feld aktualisiert werden. Laden ersetzt nur die Zeichnungen im aktuellen Arbeitsbereich; Figuren und laufender Kampf bleiben bestehen. Die geladene Karte ist eine unabhängige Kopie: Änderungen daran überschreiben die gespeicherte Vorlage erst über **Aktuelles Feld hier speichern**. Laden, Aktualisieren und Entfernen lassen sich über Rückgängig zurücknehmen.
+
+Die Sammlung liegt im lokalen Browserspeicher und wird mit **Sichern** in die vollständige JSON-Sicherung aufgenommen. Bestehende Sicherungen ohne Spielfeldsammlung funktionieren weiterhin.
+
 ## Orte und Kämpfe vorbereiten
 
 Unter **Orte & Kämpfe** lassen sich leere Vorbereitungen anlegen oder die aktuelle Karte mit Gegnern, Helden, Positionen und Zugfolge speichern. Vorbereitungen können unabhängig bearbeitet, dupliziert und als neuer Kampf gestartet werden. Beim Start stehen aktuelle oder vorbereitete Heldenwerte zur Auswahl; die Vorlage bleibt wiederverwendbar.
@@ -63,6 +71,6 @@ npm start
 npm test
 ```
 
-Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 119 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
+Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 124 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
 
 Bei jeder funktionalen Änderung oder Fehlerkorrektur wird [CHANGELOG.md](CHANGELOG.md) ergänzt. Ändern sich Bedienung oder Funktionsumfang, wird zusätzlich diese README aktualisiert. Git-Commits halten die einzelnen Codeänderungen fest; ältere Stände lassen sich darüber wiederherstellen.

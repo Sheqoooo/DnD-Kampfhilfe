@@ -2,6 +2,17 @@
 
 Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; die Git-Historie enthält die einzelnen Codeänderungen. Frühere Arbeiten sind hier nachträglich zusammengefasst. Ausführliche technische Prüfergebnisse stehen in [dist/DESIGN.md](dist/DESIGN.md).
 
+## 2026-10-25
+
+### Eigenständige Spielfeldsammlung
+
+- **Spielfelder** als eigene Sammlung ergänzt: Aktuelle Karte benennen und getrennt von Kämpfen speichern.
+- Gespeichert werden nur Gebäude, Gelände, Wände, Türen und Kartenausschnitt. Helden, Gegner, HP, Runde und Zugfolge gehören nicht zur Vorlage.
+- Karten suchen, laden, umbenennen, duplizieren, aktualisieren und entfernen. Beim Laden bleiben Beteiligte und Kampfstand erhalten; die Karte wird als unabhängige Kopie eingesetzt.
+- Laden und Änderungen an der Sammlung nutzen den bestehenden Rückgängig-/Wiederholen-Verlauf.
+- Spielfeldsammlung in lokale Speicherung, vollständige JSON-Sicherungen und Importprüfung aufgenommen; ältere Sicherungen bleiben gültig.
+- 124 Tests bestanden, einschließlich unabhängiger Kartenkopien, Erhalt des Kampfstands, Rückgängig, Sicherungen und ungültiger Daten.
+
 ## 2026-10-24
 
 ### Freie Zeichnungen und tolerantere Flächenverarbeitung
