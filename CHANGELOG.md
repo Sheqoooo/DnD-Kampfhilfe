@@ -4,6 +4,14 @@ Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; 
 
 ## 2026-10-25
 
+### Initiative gemeinsam eintragen und automatisch einsortieren
+
+- **Initiative** neben der Runde öffnet eine Liste aller Teilnehmenden für die am Tisch gewürfelten Werte. Speichern sortiert absteigend; Gleichstände behalten die aktuelle Reihenfolge und noch offene Werte stehen hinten. Auch 0 und negative Werte sind möglich.
+- Beim Erstellen neuer Beteiligter kann Initiative direkt eingegeben werden. Ergänzungen über gespeicherte Gegner/Helden oder Drag-and-drop bekommen eine eigene Eingabe und werden nach dem Speichern passend einsortiert.
+- INIT-Werte werden in den Kampf-Karten angezeigt. Manuelles Verschieben bleibt möglich. Vor dem ersten Zug wird die höchste Initiative aktiv; ein laufender Zug und die aktuelle Runde werden beim Sortieren erhalten.
+- Werte, Zuordnung und Sortierung bleiben in Speicherung/Sicherungen erhalten; Rückgängig und Wiederholen greifen gemeinsam. Ältere Sicherungen funktionieren weiterhin.
+- 130 Tests bestanden. Browserprüfung: Sammelliste sortiert, neuer Gegner mit 16 zwischen 18 und 15 eingefügt, Gegner aus der Bibliothek mit 17 passend eingefügt; aktive Figur und HP unverändert. Schmale Ansicht ohne horizontalen Überlauf geprüft.
+
 ### Eigenständige Spielfeldsammlung
 
 - **Spielfelder** als eigene Sammlung ergänzt: Aktuelle Karte benennen und getrennt von Kämpfen speichern.

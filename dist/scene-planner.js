@@ -1,6 +1,6 @@
 import{generateHouse}from'./buildings.js?v=terrain-1';
 import{generateTerrain}from'./terrain.js?v=forest-clean-1';
-import{validState}from'./core.js?v=map-outline-1';
+import{validState}from'./core.js?v=initiative-entry-1';
 import{inWorld}from'./world.js?v=expanded-grid-1';
 
 export const SCENE_TYPES=['water','sand','path','pier','mountain','tree','rock','house','cave','ruins','forest','river','rocks','wall','room','door','line','stairs','polygon','ellipse','rect'];

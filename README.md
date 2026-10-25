@@ -1,6 +1,6 @@
 # Mini Mind Theater — Dein DnD-Kampftisch
 
-Deutschsprachige DnD-Kampfhilfe mit interaktiver Karte, manuell sortierter Zugfolge und einem Fantasy-Spieltisch aus Holz und Pergament. Gewürfelt wird am Tisch mit echten Würfeln.
+Deutschsprachige DnD-Kampfhilfe mit interaktiver Karte, manueller oder nach Initiative sortierter Zugfolge und einem Fantasy-Spieltisch aus Holz und Pergament. Gewürfelt wird am Tisch mit echten Würfeln.
 
 **[App öffnen](https://sheqoooo.github.io/DnD-Kampfhilfe/dist/)** · **[Änderungsprotokoll](CHANGELOG.md)**
 
@@ -8,7 +8,9 @@ Deutschsprachige DnD-Kampfhilfe mit interaktiver Karte, manuell sortierter Zugfo
 
 - Spielercharaktere dauerhaft mit HP, Klasse, Level, Rüstungsklasse, Zuständen und Notizen verwalten.
 - Gegner als wiederverwendbare Vorlagen speichern, suchen und per Drag-and-drop oder ＋ zum Kampf hinzufügen. Jede Kopie hat eigene HP; gleiche Gegner erhalten eindeutige Nummern.
-- Zugfolge nach den am Tisch gewürfelten Ergebnissen am Griff ziehen und mit direkter Vorschau sortieren. Alternativ funktionieren Alt und die Pfeiltasten. Es gibt keine digitalen Würfel und keine verpflichtende Initiative-Eingabe.
+- Über **Initiative** bei der Runde eine Liste aller Teilnehmenden öffnen, die am Tisch gewürfelten Ergebnisse einzeln eintragen und **Speichern & sortieren** wählen. Hohe Werte kommen zuerst, Gleichstände behalten ihre Reihenfolge, leere Werte stehen hinten. Es gibt keine digitalen Würfel.
+- Neue Beteiligte können direkt im Hinzufügen-Dialog eine Initiative erhalten. Bei Ergänzungen aus der Gegner-/Charakterliste oder per Drag-and-drop öffnet sich die Eingabe für die neuen Figuren. Eingetragene Werte werden automatisch passend einsortiert. Eingabe ist optional und lässt sich später gesammelt nachholen.
+- Die Zugfolge kann weiterhin am Griff mit direkter Vorschau oder mit Alt und Pfeiltasten manuell geändert werden. Vor dem ersten Zug beginnt nach dem Sortieren die höchste Initiative; während eines laufenden Kampfes bleiben aktive Figur und Runde erhalten. Initiative und Reihenfolge werden gemeinsam gespeichert und lassen sich rückgängig machen.
 - Deutlich nummerierte Plätze, rote Markierung für die aktive Figur und goldene Markierung für die zuletzt ausgewählte Figur.
 - Schaden und Heilung mit frei wählbarem Betrag, Runden verfolgen und Beteiligte direkt aus dem aktuellen Kampf entfernen. Gespeicherte Charaktere und Gegnervorlagen bleiben erhalten.
 - Frühere Kämpfe über den Kampfverlauf wieder öffnen. Der aktuelle Stand der gespeicherten Helden wird dabei nicht zurückgesetzt.
@@ -71,6 +73,6 @@ npm start
 npm test
 ```
 
-Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 124 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
+Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 130 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
 
 Bei jeder funktionalen Änderung oder Fehlerkorrektur wird [CHANGELOG.md](CHANGELOG.md) ergänzt. Ändern sich Bedienung oder Funktionsumfang, wird zusätzlich diese README aktualisiert. Git-Commits halten die einzelnen Codeänderungen fest; ältere Stände lassen sich darüber wiederherstellen.

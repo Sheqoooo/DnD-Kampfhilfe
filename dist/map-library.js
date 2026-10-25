@@ -1,4 +1,4 @@
-import{validState}from'./core.js?v=map-outline-1';
+import{validState}from'./core.js?v=initiative-entry-1';
 import{WORLD}from'./world.js?v=expanded-grid-1';
 export const MAP_LIMIT=200;
 function validView(v){return v===undefined||!!v&&['x','y','width','height','zoom'].every(k=>Number.isFinite(v[k]))&&v.zoom>=.25&&v.zoom<=4&&Math.abs(v.width-1000/v.zoom)<.001&&Math.abs(v.height-700/v.zoom)<.001&&v.x>=WORLD.left&&v.y>=WORLD.top&&v.x+v.width<=WORLD.right&&v.y+v.height<=WORLD.bottom;}
