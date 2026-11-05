@@ -13,3 +13,10 @@ export function setInitiatives(state,entries){
  if(state.people.some(hasInitiative))sortInitiative(state);else state.initiativeEnabled=false;
  state.demo=false;
 }
+
+// Insert newcomers without resetting deliberate manual positions of existing people.
+export function insertByInitiative(state,newIds){
+ prepareManualOrder(state);const added=new Set(newIds),all=order(state.people),sorted=all.filter(p=>!added.has(p.id));
+ for(const p of all.filter(p=>added.has(p.id))){const at=hasInitiative(p)?sorted.findIndex(other=>!hasInitiative(other)||other.init<p.init):-1;if(at<0)sorted.push(p);else sorted.splice(at,0,p);}
+ sorted.forEach((p,i)=>p.turnPosition=i);state.initiativeEnabled=sorted.some(hasInitiative);if(!state.active||state.started===false)state.active=sorted[0]?.id??null;
+}

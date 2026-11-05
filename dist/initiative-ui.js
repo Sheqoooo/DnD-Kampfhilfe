@@ -1,4 +1,4 @@
-import{hasInitiative,setInitiatives}from'./initiative.js?v=initiative-entry-1';
+import{hasInitiative,setInitiatives}from'./initiative.js?v=quick-combat-1';
 import{order}from'./core.js?v=initiative-entry-1';
 export function initInitiative({getState,change,nameOf,toast}){
  const $=s=>document.querySelector(s),dialog=$('#initiative-dialog'),list=$('#initiative-input-list');let stateId=null;

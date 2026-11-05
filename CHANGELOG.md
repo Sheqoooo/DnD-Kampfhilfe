@@ -2,6 +2,16 @@
 
 Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; die Git-Historie enthält die einzelnen Codeänderungen. Frühere Arbeiten sind hier nachträglich zusammengefasst. Ausführliche technische Prüfergebnisse stehen in [dist/DESIGN.md](dist/DESIGN.md).
 
+## 2026-11-04
+
+### Reihenfolge und Trefferpunkte schneller korrigieren
+
+- **Reihenfolge ändern** und anklickbare Platznummern öffnen eine kompakte Liste: gewünschten Platz direkt wählen oder mit kleinen Pfeilen verschieben. Übernehmen speichert die gesamte Änderung; Abbrechen lässt die Zugfolge unverändert.
+- Aktuelle HP sind anklickbar und können direkt als exakter Wert eingegeben werden. Das kleine **↶** nimmt nur die letzte HP-Änderung der betreffenden Figur zurück, auch wenn danach andere Figuren verändert oder Züge weitergeschaltet wurden.
+- Gespeicherte Heldenwerte werden bei beiden HP-Korrekturwegen mitgeführt. Die gezielte Rücknahme ist sitzungsbezogen; globale Rückgängig-/Wiederholen-Aktionen verwerfen veraltete Rücknahmeziele.
+- Neu hinzukommende Figuren werden nach Initiative eingefügt, ohne die relative manuelle Reihenfolge der übrigen Beteiligten zurückzusetzen.
+- 138 Tests bestanden. Browserprüfung: direkter Wechsel von Platz 4 auf 1, Abbrechen, gezielte HP-Rücknahme nach Schaden an einer anderen Figur und Zugwechsel, exakte HP-Eingabe und vollständige Wiederherstellung mit Rückgängig. Beide Dialoge bei 390×844 ohne seitlichen Überlauf geprüft.
+
 ## 2026-10-25
 
 ### Initiative gemeinsam eintragen und automatisch einsortieren

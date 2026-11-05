@@ -533,3 +533,27 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 #initiative-dialog::-webkit-scrollbar{width:10px}
 #initiative-dialog::-webkit-scrollbar-track{background:#39271b url('./assets/scroll-track-vertical.webp') center / 100% auto repeat-y}
 #initiative-dialog::-webkit-scrollbar-thumb{background:#b88a40;border:1px solid #5b391b;border-image:url('./assets/scroll-thumb-vertical.webp') 55 0 fill / 8px 0 / 0 stretch}
+/* Compact alternatives to dragging and targeted corrections during play. */
+.workspace button.initiative-number{padding:0;margin:0;border:0;background:none;color:inherit;min-height:0;min-width:0;box-shadow:none;cursor:pointer}
+.workspace button.initiative-number:hover strong{outline:2px solid #aa772a;outline-offset:2px}
+.workspace .hp-exact-button{border:0;border-bottom:1px dotted #8c7050;padding:2px 0;background:none;box-shadow:none;color:var(--ink);min-height:26px;white-space:nowrap;font-family:inherit}
+.workspace .hp-revert{width:28px;height:28px;min-width:28px;min-height:28px;padding:0;border:1px solid #a0835266;border-radius:4px;background:#d9be8d44;color:var(--ink);font:700 21px Georgia,serif;line-height:1;box-shadow:none}
+.workspace .hp-revert:disabled{opacity:.3}
+.workspace .order-status{display:grid;gap:5px}
+#open-order-editor{font-size:12px;padding:5px 8px;min-height:32px;width:100%}
+:is(#order-edit-dialog,#hp-edit-dialog){position:fixed;inset:0;margin:auto;width:min(630px,calc(100vw - 24px));scrollbar-width:thin;scrollbar-color:#b88a40 #39271b}
+#hp-edit-dialog{width:min(460px,calc(100vw - 24px))}
+.order-edit-row{display:grid;grid-template-columns:64px minmax(0,1fr) 34px 34px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #9b805644}
+.order-edit-row select{width:100%;padding:5px}
+.order-edit-row span{font-weight:650;overflow-wrap:anywhere}
+.order-edit-row button{width:34px;min-width:34px;height:34px;min-height:34px;padding:0;font-size:19px}
+.order-edit-row.current-turn span::after{content:' · am Zug';font-size:11px;color:#963c29}
+#order-edit-error,#hp-edit-error{color:#8f3027}
+:is(#order-edit-dialog,#hp-edit-dialog)::-webkit-scrollbar{width:10px}
+:is(#order-edit-dialog,#hp-edit-dialog)::-webkit-scrollbar-track{background:#39271b url('./assets/scroll-track-vertical.webp') center / 100% auto repeat-y}
+:is(#order-edit-dialog,#hp-edit-dialog)::-webkit-scrollbar-thumb{background:#b88a40;border:1px solid #5b391b;border-image:url('./assets/scroll-thumb-vertical.webp') 55 0 fill / 8px 0 / 0 stretch}
+@media(max-width:420px){.order-edit-row{grid-template-columns:52px minmax(0,1fr) 32px 32px;gap:5px}}
+.workspace .hp-row{flex-wrap:nowrap}
+.workspace .hp-track{flex:1 1 0;min-width:18px}
+.workspace .hp-exact-button{flex:0 0 auto}
+.workspace .hp-revert{flex:0 0 28px}
