@@ -8,3 +8,9 @@ export function removeParticipant(state,id){
  if(state.active===id)state.active=(sorted[index+1]??sorted.find(p=>p.id!==id))?.id??null;
  prepareManualOrder(state);state.demo=false;return person;
 }
+
+// Clear this encounter in one undoable change; retain map, round and libraries.
+export function removeAllParticipants(state){
+ if(!state.people.length)return 0;
+ const count=state.people.length;state.people=[];state.active=null;state.demo=false;return count;
+}

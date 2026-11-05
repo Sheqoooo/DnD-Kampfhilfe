@@ -14,7 +14,7 @@ Deutschsprachige DnD-Kampfhilfe mit interaktiver Karte, manueller oder nach Init
 - Die Zugfolge kann weiterhin am Griff mit direkter Vorschau oder mit Alt und Pfeiltasten manuell geändert werden. Neue Figuren werden nach Initiative eingefügt, ohne die relative manuelle Reihenfolge der bereits Beteiligten zurückzusetzen. Vor dem ersten Zug beginnt nach dem Sortieren die höchste Initiative; während eines laufenden Kampfes bleiben aktive Figur und Runde erhalten. Initiative und Reihenfolge werden gemeinsam gespeichert und lassen sich rückgängig machen.
 - Deutlich nummerierte Plätze, rote Markierung für die aktive Figur und goldene Markierung für die zuletzt ausgewählte Figur.
 - Schaden und Heilung mit frei wählbarem Betrag. Ein Klick auf die aktuelle **HP-Zahl** öffnet die direkte Eingabe eines exakten Werts. Das kleine **↶** daneben nimmt gezielt die letzte HP-Änderung dieser Figur zurück, auch nach einem Zugwechsel oder anderen Aktionen; andere Beteiligte und die Zugfolge bleiben dabei erhalten. Diese gezielte Rücknahme steht während der Sitzung zur Verfügung; nach Neuladen lässt sich der Wert weiterhin direkt korrigieren.
-- Runden verfolgen und Beteiligte direkt aus dem aktuellen Kampf entfernen. Gespeicherte Charaktere und Gegnervorlagen bleiben erhalten.
+- Runden verfolgen und Beteiligte einzeln oder über **Alle entfernen** oben in der Zugfolge gemeinsam entfernen. Die Sammelaktion fragt zur Bestätigung nach und erfasst auch ausgeblendete Figuren; sie gilt ebenso für die gerade bearbeitete Vorbereitung. Karte, Runde, gespeicherte Charaktere und Gegnervorlagen bleiben erhalten. **Rückgängig** stellt alle Beteiligten samt HP, Positionen und Zugfolge in einem Schritt wieder her.
 - Frühere Kämpfe über den Kampfverlauf wieder öffnen. Der aktuelle Stand der gespeicherten Helden wird dabei nicht zurückgesetzt.
 
 ## Interaktives Kampffeld
@@ -75,6 +75,6 @@ npm start
 npm test
 ```
 
-Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 138 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
+Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 141 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
 
 Bei jeder funktionalen Änderung oder Fehlerkorrektur wird [CHANGELOG.md](CHANGELOG.md) ergänzt. Ändern sich Bedienung oder Funktionsumfang, wird zusätzlich diese README aktualisiert. Git-Commits halten die einzelnen Codeänderungen fest; ältere Stände lassen sich darüber wiederherstellen.

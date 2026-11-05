@@ -2,6 +2,14 @@
 
 Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; die Git-Historie enthält die einzelnen Codeänderungen. Frühere Arbeiten sind hier nachträglich zusammengefasst. Ausführliche technische Prüfergebnisse stehen in [dist/DESIGN.md](dist/DESIGN.md).
 
+## 2026-11-05
+
+### Alle Beteiligten gemeinsam entfernen
+
+- **Alle entfernen** oben in der Zugfolge entfernt nach Bestätigung sämtliche Helden und Gegner aus dem aktuellen Kampf, einschließlich ausgeblendeter Figuren. Auch in einer Vorbereitung verfügbar; bei leerer Liste ist die Schaltfläche deaktiviert.
+- Karte, Runde, gespeicherte Charaktere, Gegnervorlagen und andere Kämpfe bleiben erhalten. **Rückgängig** stellt alle Beteiligten mit HP, Positionen und Zugfolge in einem Schritt wieder her.
+- Prüfung: 141 Tests bestanden, darunter drei neue Tests für Sammelentfernung, Speicherung, Rückgängig/Wiederholen und Vorbereitungen; JavaScript-Syntax geprüft. Visuelle Browserprüfung war wegen einer nicht startenden Browser-Prüfumgebung nicht möglich.
+
 ## 2026-11-04
 
 ### Reihenfolge und Trefferpunkte schneller korrigieren

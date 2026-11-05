@@ -1,11 +1,32 @@
 import test from'node:test';import assert from'node:assert/strict';
-import{removeParticipant}from'../dist/participants.js';
+import{removeParticipant,removeAllParticipants}from'../dist/participants.js';
 import{order,validState}from'../dist/core.js';
 import{makeCampaign,saveEncounter,validCampaign}from'../dist/campaign.js';
 import{createPreparation,savePreparation}from'../dist/preparations.js';
 import{recordChange,undoChange,redoChange}from'../dist/history.js';
 const person=(id,kind,turnPosition)=>({id,name:id,kind,turnPosition,hp:8,max:10,init:0,x:75,y:75});
 const scene=()=>({version:1,title:'Kapelle',started:true,manualOrder:true,round:3,active:'b',people:[person('c','enemy',2),person('a','ally',0),person('b','enemy',1)],shapes:[{id:'room',type:'rect',x:0,y:0,w:200,h:200}]});
+test('bulk removal includes hidden figures, preserves map and round, and is harmless when empty',()=>{
+ const s=scene();s.people[0].mapHidden=true;const before=structuredClone(s);
+ assert.equal(removeAllParticipants(s),3);assert.deepEqual(s.people,[]);assert.equal(s.active,null);
+ assert.equal(s.round,before.round);assert.equal(s.started,before.started);assert.deepEqual(s.shapes,before.shapes);assert.ok(validState(s));
+ const empty=structuredClone(s);assert.equal(removeAllParticipants(s),0);assert.deepEqual(s,empty);
+});
+test('bulk removal saves only the current battle and undo/redo restores the complete group in one step',()=>{
+ let n=0;const campaign=makeCampaign(scene(),()=>`id-${++n}`,1000),state=structuredClone(campaign.encounters[0]);
+ campaign.enemies=[{id:'template',name:'Goblin',max:10,init:0}];campaign.encounters.push({...structuredClone(state),id:'old-battle'});
+ const before={campaign:structuredClone(campaign),state:structuredClone(state)},past=[],future=[];recordChange(past,future,before);
+ removeAllParticipants(state);saveEncounter(campaign,state,2000);
+ assert.deepEqual(campaign.characters,before.campaign.characters);assert.deepEqual(campaign.enemies,before.campaign.enemies);
+ assert.deepEqual(campaign.encounters[1],before.campaign.encounters[1]);assert.ok(validCampaign(JSON.parse(JSON.stringify(campaign))));
+ const after={campaign,state},restored=undoChange(past,future,after);assert.deepEqual(restored,before);assert.equal(past.length,0);assert.deepEqual(redoChange(past,future,restored),after);
+});
+test('bulk removal in a preparation preserves reusable characters and the running battle',()=>{
+ let n=0;const campaign=makeCampaign(scene(),()=>`id-${++n}`,1000),battle=structuredClone(campaign.encounters[0]),characters=structuredClone(campaign.characters);
+ const p=createPreparation(campaign,{title:'Vorbereitung',source:battle,characterIds:characters.map(c=>c.id)},()=>`id-${++n}`,2000);campaign.editingPreparationId=p.id;
+ removeAllParticipants(p);savePreparation(campaign,p,3000);
+ assert.deepEqual(campaign.preparations[0].people,[]);assert.equal(campaign.preparations[0].active,null);assert.deepEqual(campaign.characters,characters);assert.deepEqual(campaign.encounters[0],battle);assert.ok(validCampaign(campaign));
+});
 test('removing the active participant chooses the next displayed person and keeps the round and map',()=>{
  const s=scene(),shapes=structuredClone(s.shapes);removeParticipant(s,'b');
  assert.equal(s.active,'c');assert.equal(s.round,3);assert.deepEqual(order(s.people).map(p=>p.id),['a','c']);assert.deepEqual(s.shapes,shapes);assert.ok(validState(s));
