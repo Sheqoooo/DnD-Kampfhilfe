@@ -26,9 +26,17 @@ Deutschsprachige DnD-Kampfhilfe mit interaktiver Karte, manueller oder nach Init
 - Häuser mit Räumen und Türen sowie Höhlen, Ruinen, Wälder mit freier Lichtung, Flüsse mit Übergängen und Felsfelder generieren. Vor dem Platzieren gibt es eine Vorschau und alternative Varianten.
 - Das Spielfeld komplett oder nur die Zeichnungen leeren; Figuren lassen sich separat wieder einblenden.
 
+## Eigene Bilder als Spielfeld
+
+Über **Bild als Spielfeld** oberhalb der Karte ein **PNG-, JPG- oder WebP-Bild** auswählen, die Vorschau prüfen und **Als Spielfeld übernehmen** wählen. Figuren und Zeichnungen bleiben darüber bedienbar. Die **Bildbreite in Feldern** legt den Maßstab fest (1 Feld = 5 Fuß); das Seitenverhältnis bleibt erhalten. Bei Bildern mit eigenem Raster die Anzahl der Felder über die ganze Bildbreite eintragen und **Raster über dem Bild anzeigen** ausschalten.
+
+**Kartenbild ändern** öffnet später wieder die Einstellungen. Dort kannst du das Bild austauschen, die Breite korrigieren oder nur das Kartenbild entfernen. **Spielfeld leeren** entfernt auch das Bild. Alle Änderungen lassen sich rückgängig machen. Bilder werden mit dem Kampf, gespeicherten Spielfeldern und Vorbereitungen sowie in der JSON-Sicherung aufbewahrt. Beim Laden eines Spielfelds ohne Bild wird ein bisheriges Hintergrundbild entfernt.
+
+Die Bilddatei darf höchstens 20 MB groß sein. Die App verarbeitet sie lokal, verkleinert sie auf maximal 1600 Pixel an der längsten Kante und speichert sie als komprimiertes JPEG; Transparenz erhält einen Pergamenthintergrund. Es gibt keinen Upload an einen Server. Der lokale Browserspeicher begrenzt die Anzahl der Bilder und ihrer gespeicherten Kopien. Reicht der Speicher beim Übernehmen nicht aus, bleibt der bisherige Kampf unverändert; der Dialog zeigt eine Fehlermeldung. Ein Bild bleibt ein flacher Hintergrund, daraus entstehen keine automatisch erkannten Wände oder Türen.
+
 ## Spielfelder getrennt speichern
 
-Über **Spielfelder** neben „Orte & Kämpfe“ lässt sich die aktuelle Karte unter einem eigenen Namen speichern. Die Sammlung enthält ausschließlich Gebäude, Gelände, Wände, Türen und den Kartenausschnitt – keine Helden, Gegner, HP oder Zugfolge.
+Über **Spielfelder** neben „Orte & Kämpfe“ lässt sich die aktuelle Karte unter einem eigenen Namen speichern. Die Sammlung enthält Kartenbilder, Gebäude, Gelände, Wände, Türen und den Kartenausschnitt – keine Helden, Gegner, HP oder Zugfolge.
 
 Mehrere Spielfelder können gesucht, geladen, umbenannt, dupliziert oder ausdrücklich mit dem aktuellen Feld aktualisiert werden. Laden ersetzt nur die Zeichnungen im aktuellen Arbeitsbereich; Figuren und laufender Kampf bleiben bestehen. Die geladene Karte ist eine unabhängige Kopie: Änderungen daran überschreiben die gespeicherte Vorlage erst über **Aktuelles Feld hier speichern**. Laden, Aktualisieren und Entfernen lassen sich über Rückgängig zurücknehmen.
 
@@ -75,6 +83,6 @@ npm start
 npm test
 ```
 
-Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 141 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
+Die lokale App läuft standardmäßig unter `http://127.0.0.1:4173`. Der vollständige Testlauf umfasst aktuell 149 Tests. Die GitHub-Pages-Veröffentlichung führt die Tests aus und stellt die App an der Projektwurzel und unter `/dist/` bereit.
 
 Bei jeder funktionalen Änderung oder Fehlerkorrektur wird [CHANGELOG.md](CHANGELOG.md) ergänzt. Ändern sich Bedienung oder Funktionsumfang, wird zusätzlich diese README aktualisiert. Git-Commits halten die einzelnen Codeänderungen fest; ältere Stände lassen sich darüber wiederherstellen.

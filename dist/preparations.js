@@ -1,4 +1,4 @@
-import {validState, order, prepareManualOrder} from './core.js?v=initiative-entry-1';
+import {validState, order, prepareManualOrder} from './core.js?v=image-map-1';
 
 export const PREPARATION_LIMIT=200;
 export function validPreparations(campaign){
@@ -27,6 +27,7 @@ function copyScene(source,idFactory){
  for(const p of people)p.id=idFactory();
  for(const shape of shapes)shape.id=idFactory();
  const state={version:1,id:idFactory(),title:source?.title??'',notes:source?.notes??'',demo:false,started:false,round:1,active:null,people,shapes};
+ if(source?.background)state.background=structuredClone(source.background);
  prepareManualOrder(state);state.active=order(people)[0]?.id??null;return state;
 }
 function chooseHeroes(state,characters,ids,idFactory,currentValues){

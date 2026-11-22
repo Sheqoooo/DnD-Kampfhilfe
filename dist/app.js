@@ -1,13 +1,14 @@
+import{initMapImage}from'./map-image-ui.js?v=image-map-1';
 import{HpCorrections}from'./combat-edit.js?v=quick-combat-1';
 import{initCombatEdit}from'./combat-edit-ui.js?v=quick-combat-1';
 import{hasInitiative,insertByInitiative}from'./initiative.js?v=quick-combat-1';
 import{initInitiative}from'./initiative-ui.js?v=initiative-entry-1';
-import{initMapLibrary}from'./map-library-ui.js?v=map-library-1';
-import{loadMap}from'./map-library.js?v=map-library-1';
+import{initMapLibrary}from'./map-library-ui.js?v=image-map-1';
+import{loadMap}from'./map-library.js?v=image-map-1';
 import{initMapChat}from'./map-chat.js?v=free-drawing-1';
 import{applyScene}from'./scene-planner.js?v=free-drawing-1';
 import{removeParticipant,removeAllParticipants}from'./participants.js?v=remove-all-1';
-import{clearBoard,showBoardFigures}from'./map-actions.js?v=forest-clean-1';
+import{clearBoard,showBoardFigures}from'./map-actions.js?v=image-map-1';
 import{generateTerrain,GENERATORS,defaultTerrainOptions}from'./terrain.js?v=forest-clean-1';
 import{makeTerrain}from'./terrain-render.js?v=map-outline-1';
 import{terrainNames,shapeLayer,isMapShapeVisible}from'./terrain-types.js?v=map-chat-1';
@@ -18,12 +19,12 @@ import{worldRect,clampWorldPoint}from'./world.js?v=manual-order-1';
 import{fullView,zoomView,panView,wheelView}from'./viewport.js?v=trackpad-1';
 import{recordChange,undoChange,redoChange}from'./history.js?v=manual-order-1';
 import{snapDrawingPoint,integrateShape,translateShape,shapeHandles,reshapeShape,selectionBounds,transformSelection,moveSelection,shapesInBox,placeDoor}from'./drawing.js?v=terrain-1';
-import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=initiative-entry-1';
-import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=initiative-entry-1';
-import{PREPARATION_LIMIT,isPreparing,workspaceState,savePreparation,createPreparation,startPreparation}from'./preparations.js?v=initiative-entry-1';
+import{clamp,order,advance,recognize,validState,reorderCombatants,prepareManualOrder}from'./core.js?v=image-map-1';
+import{CAMPAIGN_KEY,HERO_FIELDS,characterFrom,makeCampaign,saveEncounter,syncCharacterChanges,addToEncounter,validCampaign,updateCharacter,beginEncounter,ensureEnemies,rememberEnemy,spawnEnemy,validEnemy}from'./campaign.js?v=image-map-1';
+import{PREPARATION_LIMIT,isPreparing,workspaceState,savePreparation,createPreparation,startPreparation}from'./preparations.js?v=image-map-1';
 const hpCorrections=new HpCorrections();
 let combatEditUI;
-let mapLibraryUI,initiativeUI,suppressInitiativePrompt=false;
+let mapImageUI,mapLibraryUI,initiativeUI,suppressInitiativePrompt=false;
 const $=s=>document.querySelector(s),uid=()=>crypto.randomUUID(),KEY='initiative.encounter.v1',NS='http://www.w3.org/2000/svg';
 const demo=()=>({version:1,title:'Überfall am alten Wachturm',demo:true,started:true,round:1,active:'lyra',people:[{id:'lyra',name:'Lyra',kind:'ally',hp:32,max:38,init:19,x:375,y:475},{id:'g1',name:'Goblin-Späher 1',kind:'enemy',hp:7,max:12,init:16,x:575,y:325},{id:'g2',name:'Goblin-Späher 2',kind:'enemy',hp:12,max:12,init:16,x:625,y:375},{id:'thorin',name:'Thorin',kind:'ally',hp:45,max:45,init:12,x:475,y:525}],shapes:[{id:'room',type:'rect',x:250,y:200,w:500,h:350},{id:'tower',type:'ellipse',x:600,y:100,w:200,h:200},{id:'wall1',type:'wall',points:[{x:250,y:350},{x:350,y:350}]},{id:'wall2',type:'wall',points:[{x:500,y:200},{x:500,y:300}]},{id:'pillar',type:'rect',x:400,y:300,w:50,h:50}]});
 let generatorKind='house';
@@ -78,6 +79,11 @@ function renderDoorMask(){
 function makeShape(sh,isDraft=false){let el;const attrs={fill:'none',stroke:isDraft?'#8d9e70':'#7b806a','stroke-width':isDraft?3:5,'stroke-linecap':'round','stroke-linejoin':'round'};if(sh.terrain){el=makeTerrain(sh,svgEl);}else if(sh.type==='door'){el=makeDoor(sh,isDraft);}else if(sh.type==='room'){el=svgEl('path',{d:sh.rings.map(r=>'M'+r.map(p=>p.x+' '+p.y).join('L')+'Z').join(' '),...attrs,fill:isDraft?'#b9c79d33':'url(#floor)','fill-rule':'evenodd'});}else if(sh.type==='rect'){el=svgEl('rect',{x:sh.x,y:sh.y,width:sh.w,height:sh.h,rx:3,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else if(sh.type==='ellipse'){el=svgEl('ellipse',{cx:sh.x+sh.w/2,cy:sh.y+sh.h/2,rx:sh.w/2,ry:sh.h/2,...attrs,fill:isDraft?'#b9c79d33':'url(#floor)'});}else{el=svgEl('polyline',{points:sh.points.map(p=>`${p.x},${p.y}`).join(' '),...attrs});}if(sh.sketch&&!sh.terrain&&sh.type!=='door')el.setAttribute('fill','none');if(sh.interior){el.setAttribute('fill','none');el.setAttribute('stroke-width',isDraft?3:4);}
  if(isDraft)el.style.pointerEvents='none';if(!isDraft&&sh.type!=='door'&&(!sh.terrain||['ruin-wall','cave-wall'].includes(sh.terrain)))el.setAttribute('mask','url(#door-cutouts)');if(isDraft)el.setAttribute('stroke-dasharray','7 5');else{el.dataset.shape=sh.id;if(selectedIds.has(sh.id))el.classList.add('selected-shape');el.style.pointerEvents='all';el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',(sh.terrain?terrainNames[sh.terrain]:sh.type==='door'?'Tür '+(sh.open?'offen':'geschlossen'):sh.type==='wall'?'Wand':sh.interior?'Innenraum':'Gebäude')+' verschieben. Pfeiltasten zum Verschieben.');if(tool==='select')el.style.cursor='grab';if(tool==='erase')el.style.cursor='pointer';}return el;}
 function renderMap(){
+ const background=state.background,layer=$('#map-background');
+ if(background){for(const [key,value]of Object.entries({href:background.src,x:background.x,y:background.y,width:background.w,height:background.h}))if(layer.getAttribute(key)!==String(value))layer.setAttribute(key,value);layer.removeAttribute('hidden');}else{layer.setAttribute('hidden','');layer.removeAttribute('href');}
+ $('#map-grid').style.display=background&&!background.showGrid?'none':'';
+ mapImageUI?.render();
+
  renderDoorMask();const shapes=$('#shapes'),tokens=$('#tokens');
  shapes.replaceChildren(...state.shapes.filter(isMapShapeVisible).sort((a,b)=>shapeLayer(a)-shapeLayer(b)).map(s=>makeShape(s)));tokens.replaceChildren();
  const screenScale=$('#map').getScreenCTM().a,markerScale=Math.max(1,28/(56*screenScale));
@@ -91,7 +97,7 @@ function renderMap(){
   if(view.zoom>=.6){const name=svgEl('text',{y:38*markerScale,'text-anchor':'middle',fill:'#49301a','font-size':10*markerScale,'font-weight':600,'paint-order':'stroke',stroke:'#e8d7ad','stroke-width':3,'pointer-events':'none','aria-hidden':'true'});name.textContent=participantName(p);g.append(name);}
   tokens.append(g);
  }
- $('#map-empty').hidden=!!(state.people.some(p=>!p.mapHidden)||state.shapes.some(isMapShapeVisible));$('#map-empty>span').textContent='Dein Spielfeld ist leer.';$('#map-empty small').textContent=state.people.some(p=>p.mapHidden)?'Zeichne etwas oder hole deine Figuren über „Figuren anzeigen“ zurück.':'Zeichne einen Raum oder füge Beteiligte hinzu.';$('#show-map-figures').hidden=!state.people.some(p=>p.mapHidden);$('#clear-map').disabled=!state.shapes.length&&!state.people.some(p=>!p.mapHidden);renderHandles();
+ $('#map-empty').hidden=!!(state.people.some(p=>!p.mapHidden)||state.shapes.some(isMapShapeVisible)||state.background);$('#map-empty>span').textContent='Dein Spielfeld ist leer.';$('#map-empty small').textContent=state.people.some(p=>p.mapHidden)?'Zeichne etwas oder hole deine Figuren über „Figuren anzeigen“ zurück.':'Zeichne einen Raum oder füge Beteiligte hinzu.';$('#show-map-figures').hidden=!state.people.some(p=>p.mapHidden);$('#clear-map').disabled=!state.background&&!state.shapes.length&&!state.people.some(p=>!p.mapHidden);renderHandles();
 }
 
 function removeFromCurrentEncounter(id){
@@ -119,7 +125,7 @@ $('#participant-form').onsubmit=e=>{e.preventDefault();let name=$('#p-name').val
 $('#combatant-list').onclick=e=>{let b=e.target.closest('[data-action]');if(!b)return;let card=b.closest('[data-person]'),p=state.people.find(p=>p.id===card.dataset.person);if(b.dataset.action==='move-up'||b.dataset.action==='move-down'){movePerson(p.id,b.dataset.action==='move-up'?-1:1);return;}if(b.dataset.action==='position'){combatEditUI.openOrder(p.id);return;}if(b.dataset.action==='hp-set'){combatEditUI.openHp(p.id);return;}if(b.dataset.action==='hp-revert'){try{mutate(()=>hpCorrections.revert(state,p.id),{trackHp:false});toast(participantName(p)+': HP-Änderung zurückgenommen.');}catch(error){toast(error.message);}return;}if(b.dataset.action==='edit'){openParticipant(p.id);return;}if(b.dataset.action==='remove'){removeFromCurrentEncounter(p.id);return;}let amount=+card.querySelector('input').value;if(!Number.isInteger(amount)||amount<1||amount>9999){toast('Bitte einen HP-Betrag von 1 bis 9999 eingeben.');return;}mutate(()=>p.hp=clamp(p.hp+(b.dataset.action==='heal'?amount:-amount),0,p.max));toast(`${participantName(p)}: ${p.hp} / ${p.max} HP`);};
 $('#encounter-title').onchange=e=>mutate(()=>{state.title=e.target.value.trim()||'Ein neues Abenteuer';state.demo=false;});$('#next-turn').onclick=()=>{if(!isPreparing(campaign))mutate(()=>{state.started=true;advance(state);});};function undoAction(){if(gesture)return;const previous=undoChange(history,future,snapshot());if(!previous)return;({state,campaign}=previous);hpCorrections.clear();clearSelection();drawAnchor=null;$('#draft').replaceChildren();persist();render();toast('Letzte Änderung zurückgenommen.');}
 function redoAction(){if(gesture)return;const next=redoChange(history,future,snapshot());if(!next)return;({state,campaign}=next);hpCorrections.clear();clearSelection();persist();render();toast('Änderung wiederhergestellt.');}
-$('#undo').onclick=$('#map-undo').onclick=undoAction;$('#map-redo').onclick=redoAction;$('#new-encounter').onclick=()=>openNewEncounter();function openClearBoard(){if(gesture||(!state.shapes.length&&!state.people.some(p=>!p.mapHidden)))return;$('#clear-map-figures').checked=true;$('#clear-map-dialog').showModal();}
+$('#undo').onclick=$('#map-undo').onclick=undoAction;$('#map-redo').onclick=redoAction;$('#new-encounter').onclick=()=>openNewEncounter();function openClearBoard(){if(gesture||(!state.background&&!state.shapes.length&&!state.people.some(p=>!p.mapHidden)))return;$('#clear-map-figures').checked=true;$('#clear-map-dialog').showModal();}
 $('#clear-map').onclick=openClearBoard;
 $('#clear-map-form').onsubmit=e=>{e.preventDefault();const figures=$('#clear-map-figures').checked;pendingAnnex=null;drawAnchor=null;gesture=null;$('#draft').replaceChildren();setTool('select');mutate(()=>{clearBoard(state,{figures});clearSelection();});$('#clear-map-dialog').close();toast('Spielfeld geleert · mit Rückgängig wiederherstellen.');};
 $('#show-map-figures').onclick=()=>mutate(()=>showBoardFigures(state));
@@ -588,3 +594,13 @@ initMapChat({
 renderView();render();setTool('select');if(!storageBroken)persist();if(storageBroken)toast('Gespeicherter Stand konnte nicht geladen werden. Beispiel geöffnet.');
 
 new ResizeObserver(()=>renderMap()).observe($('#map'));
+
+mapImageUI=initMapImage({getState:()=>state,toast,apply:background=>{
+ if(gesture||orderPreview)throw Error('Bitte zuerst die laufende Bearbeitung beenden.');
+ const candidate=structuredClone(state);if(background)candidate.background=background;else delete candidate.background;candidate.demo=false;
+ const nextCampaign=structuredClone(campaign);
+ if(isPreparing(campaign))savePreparation(nextCampaign,candidate);else saveEncounter(nextCampaign,candidate);
+ try{const data=JSON.stringify(nextCampaign);if(new Blob([data]).size>20e6)throw Error();localStorage.setItem(CAMPAIGN_KEY,data);}catch{throw Error('Nicht genug lokaler Speicher für dieses Bild. Bitte zuerst eine Sicherung erstellen und unbenötigte gespeicherte Karten oder Kämpfe entfernen.');}
+ mutate(()=>{if(background)state.background=background;else delete state.background;state.demo=false;});
+ if(background){const zoom=Math.max(.25,Math.min(1,1000/background.w,700/background.h));view={x:background.x+(background.w-1000/zoom)/2,y:background.y+(background.h-700/zoom)/2,width:1000/zoom,height:700/zoom,zoom};renderView();}
+}});mapImageUI.render();

@@ -557,3 +557,12 @@ dialog::before{inset:0}dialog{overflow-x:hidden;scrollbar-gutter:stable}
 .workspace .hp-track{flex:1 1 0;min-width:18px}
 .workspace .hp-exact-button{flex:0 0 auto}
 .workspace .hp-revert{flex:0 0 28px}
+
+/* Uploaded battle maps remain behind all interactive map content. */
+#map-background[hidden]{display:none}
+#map-image-dialog{position:fixed;inset:0;margin:auto;width:min(560px,calc(100vw - 24px))}
+.map-controls #open-map-image{border-width:5px;border-image-width:5px;padding:2px 6px;min-height:34px;font-size:12px}
+#map-image-preview{display:block;max-width:100%;max-height:240px;object-fit:contain;margin:12px auto;background:#e8d7ad}
+#map-image-preview[hidden]{display:none}
+#map-image-file{max-width:100%;font-size:13px}
+#map-image-status{font-size:13px;overflow-wrap:anywhere}

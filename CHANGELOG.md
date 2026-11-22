@@ -2,6 +2,16 @@
 
 Neue Einträge stehen oben. Dieses Protokoll beschreibt Änderungen an der App; die Git-Historie enthält die einzelnen Codeänderungen. Frühere Arbeiten sind hier nachträglich zusammengefasst. Ausführliche technische Prüfergebnisse stehen in [dist/DESIGN.md](dist/DESIGN.md).
 
+## 2026-11-22
+
+### Eigene Bilder als Spielfeld verwenden
+
+- **Bild als Spielfeld** oberhalb der Karte öffnet einen Upload mit Vorschau für PNG, JPG und WebP. Bildbreite in Feldern und ein optionales Raster legen die Darstellung fest; das Seitenverhältnis bleibt erhalten. Figuren und Zeichnungen liegen darüber und bleiben bedienbar.
+- **Kartenbild ändern** erlaubt Austausch, Größenänderung und Entfernen des Hintergrunds. Die Ansicht wird beim Übernehmen auf das Bild zentriert. **Spielfeld leeren** entfernt jetzt auch das Kartenbild. Rückgängig/Wiederholen erfasst den Hintergrund mit.
+- Kartenbilder bleiben in Kämpfen, Vorbereitungen, gespeicherten Spielfeldern und JSON-Sicherungen erhalten. Vorlagen bleiben unabhängige Kopien; ein Spielfeld ohne Bild ersetzt auch einen bisherigen Hintergrund.
+- Bildverarbeitung erfolgt lokal: Dateien bis 20 MB werden auf höchstens 1600 Pixel verkleinert und als komprimiertes JPEG gespeichert. Beim Upload wird freier Browserspeicher geprüft; ein Speicherfehler lässt den bisherigen Kampf unverändert.
+- Prüfung: 149 Tests bestanden, darunter acht neue Tests für Dateiprüfung, Komprimierung, Maßstab, Speicherung, Kartensammlung, Vorbereitungen, Rückgängig/Wiederholen, Abbrechen und verspätete Upload-Ergebnisse. JavaScript-Syntax geprüft. Visuelle Browserprüfung konnte wegen eines OpenSSL-Startfehlers der Prüfumgebung nicht ausgeführt werden.
+
 ## 2026-11-05
 
 ### Alle Beteiligten gemeinsam entfernen
